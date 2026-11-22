@@ -1,29 +1,27 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { AccessTiles, type LandingContext } from "./AccessTiles";
+import { ArrowUpRight, HeartHandshake, Laptop, Phone, Smartphone } from "lucide-react";
+import { LiveProduct } from "./LiveProduct";
 import { Logo } from "../shared/Brand";
 import { HeroMetalScales } from "./HeroMetalScales";
 import { landingImages, brandPhotos as P, tileIcons } from "./landingAssets";
 import "./maven-landing.css";
 
 /**
- * CLANCLAST marketing site — React port of CLANCLAST_Maven_Inspired_Website.html.
- *
- * The layout, copy, colours and interactions come straight from that HTML file
- * (all of its CSS lives in maven-landing.css, scoped under `.cc-site` so it can
- * not leak into the patient / provider / connect / verify screens). What's new
- * is the wiring into the working app: product cards and the "Try the working
- * prototypes" section call `setContext(...)`, exactly like the old landing page
- * did, so every portal in this project is reachable from the new design.
+ * CLANCLAST marketing site. Layout and copy come from the approved website design (CSS in
+ * maven-landing.css, scoped under `.cc-site`). The live-product section embeds the real
+ * patient app and provider workspace, which run as their own pages (/patient, /provider)
+ * on fictional demo data in the visitor's browser.
  */
 
-type Go = (c: LandingContext) => void;
+export type Channel = "ussd" | "caregiver";
+type Go = (c: Channel) => void;
 
 const NAV = [
   ["#platform", "Platform"],
   ["#how", "How it works"],
   ["#trust", "Trust & security"],
   ["#institutions", "Institutions"],
-  ["#prototype", "Prototypes"],
+  ["#demo", "Live demo"],
   ["#progress", "Progress"],
 ] as const;
 
@@ -98,13 +96,13 @@ const AUDIENCE_IMG: Record<string, { img: { src: string; alt: string }; pos: str
 
 type ProdId = "id" | "verify" | "provider" | "connect" | "insights" | "health";
 
-const PRODUCTS: { id: ProdId; icon: string; name: string; tag: string; blurb: string; ctx?: LandingContext; cta?: string }[] = [
+const PRODUCTS: { id: ProdId; icon: string; name: string; tag: string; blurb: string; href?: string; cta?: string }[] = [
   { id: "id", icon: "⌕", name: "CLANCLAST ID", tag: "Identity", blurb: "Find the same person across fragmented records, with a clear reason for each suggestion. Uncertain cases go to a person to decide. Nothing is merged automatically." },
-  { id: "verify", icon: "✓", name: "CLANCLAST Verify", tag: "Consent & credentials", blurb: "Consent, credentials and verification, with an auditable trail of every decision.", ctx: "verify", cta: "Open Verify prototype" },
-  { id: "provider", icon: "⌘", name: "CLANCLAST Provider", tag: "Clinical access", blurb: "Authenticate clinical staff, apply role-based access and surface authorised information requests.", ctx: "provider", cta: "Open Provider prototype" },
-  { id: "connect", icon: "⇄", name: "CLANCLAST Connect", tag: "Interoperability", blurb: "Route authorised requests between institution systems. Holds no clinical content.", ctx: "connect", cta: "Open Connect prototype" },
+  { id: "verify", icon: "✓", name: "CLANCLAST Verify", tag: "Consent & credentials", blurb: "Consent, credentials and verification, with an auditable trail of every decision.", href: "/provider/summaries/verify", cta: "Try verifying a summary" },
+  { id: "provider", icon: "⌘", name: "CLANCLAST Provider", tag: "Clinical access", blurb: "Authenticate clinical staff, apply role-based access and surface authorised information requests.", href: "/provider", cta: "Open the provider workspace" },
+  { id: "connect", icon: "⇄", name: "CLANCLAST Connect", tag: "Interoperability", blurb: "Route authorised requests between institution systems. Holds no clinical content.", href: "/provider/connect", cta: "Open Connect" },
   { id: "insights", icon: "▥", name: "CLANCLAST Insights", tag: "Operational analytics", blurb: "De-identified, aggregate operational analytics for institutional customers." },
-  { id: "health", icon: "▣", name: "CLANCLAST Health", tag: "Stage 2 · Patient layer", blurb: "A patient-facing wallet for credentials and institution-signed summaries, a consent centre, and card and USSD interfaces. Summaries live on the patient’s own device or card.", ctx: "patient", cta: "Open Health prototype" },
+  { id: "health", icon: "▣", name: "CLANCLAST Health", tag: "Stage 2 · Patient layer", blurb: "A patient-facing wallet for credentials and institution-signed summaries, a consent centre, and card and USSD interfaces. Summaries live on the patient’s own device or card.", href: "/patient", cta: "Open the patient app" },
 ];
 
 function VerifyDemo() {
@@ -208,7 +206,7 @@ function ProductVisual({ id }: { id: ProdId }) {
   );
 }
 
-function ProductExplorer({ setContext }: { setContext: Go }) {
+function ProductExplorer() {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduced] = useState(() => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
@@ -242,10 +240,10 @@ function ProductExplorer({ setContext }: { setContext: Go }) {
           </div>
           <div className="pe-visual"><ProductVisual id={p.id} /></div>
           <div className="pe-actions">
-            {p.ctx ? (
-              <button type="button" className="btn light small" onClick={() => setContext(p.ctx!)}>{p.cta} <span className="arrow">↗</span></button>
+            {p.href ? (
+              <a className="btn light small" href={p.href}>{p.cta} <span className="arrow">↗</span></a>
             ) : (
-              <span className="pe-note">Concept · no prototype yet</span>
+              <span className="pe-note">{p.id === "id" ? "Shown in institutional briefings" : "Concept · later stage"}</span>
             )}
             <button type="button" className="btn outline small" onClick={() => setI((i + 1) % PRODUCTS.length)}>Next product <span className="arrow">→</span></button>
           </div>
@@ -336,7 +334,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             ))}
           </nav>
           <div className="nav-actions">
-            <a className="btn small outline" href="#prototype">Try the prototypes</a>
+            <a className="btn small outline" href="#demo">Try it live</a>
             <a className="btn small" href="#contact">Request a briefing <span className="arrow">↗</span></a>
             <button className="menu-btn" aria-label={menuOpen ? "Close menu" : "Open menu"} onClick={() => setMenuOpen((o) => !o)}>
               {menuOpen ? "×" : "☰"}
@@ -358,7 +356,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               <h1>No patient a stranger to their own <em>healthcare system.</em></h1>
               <p>CLANCLAST connects hospitals, laboratories and medical schemes without replacing the systems they already use — helping identity, consent and trusted information move with people.</p>
               <div className="hero-ctas">
-                <a className="btn" href="#how">See how it works <span className="arrow">↗</span></a>
+                <a className="btn" href="#demo">See it running live <span className="arrow">↗</span></a>
                 <a className="btn outline" href="#contact">Partner with us</a>
               </div>
               <div className="trust-mini">
@@ -424,6 +422,8 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             <div className="trust-item"><i>↗</i> Works alongside existing systems</div>
           </div>
         </div>
+
+        <LiveProduct />
 
         {/* ---------- PROBLEM ---------- */}
         <section className="section problem" id="story">
@@ -500,7 +500,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
                 </button>
               ))}
             </div>
-            <ProductExplorer setContext={setContext} />
+            <ProductExplorer />
           </div>
         </section>
 
@@ -561,23 +561,21 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
           </div>
         </section>
 
-        {/* ---------- WORKING PROTOTYPES (new — wires the app into the site) ---------- */}
-        <section className="section proto" id="prototype">
+        {/* ---------- TRY IT YOURSELF ---------- */}
+        <section className="section proto" id="try">
           <div className="wrap">
             <div className="section-head reveal">
-              <span className="eyebrow">Working prototypes</span>
-              <h2>See the workflows running, not just described.</h2>
-              <p>These screens run entirely in your browser with fictional demonstration data. Nothing you type is sent anywhere. They show intended workflows; they are not the production systems.</p>
+              <span className="eyebrow">Try it yourself</span>
+              <h2>Every channel, working.</h2>
+              <p>Open the full apps, or try the channels built for people without a smartphone. All of them share one set of fictional data in your browser, so an answer in one shows up in the others.</p>
             </div>
-          </div>
-          <AccessTiles setContext={setContext} />
-          <div className="wrap" style={{ paddingTop: 8 }}>
-            <div className="proto-links reveal">
-              <button className="btn outline small" onClick={() => setContext("ussd")}>Try the USSD experience <span className="arrow">→</span></button>
-              <button className="btn outline small" onClick={() => setContext("caregiver")}>Caregiver sign in <span className="arrow">→</span></button>
-              <button className="btn outline small" onClick={() => setContext("onboard")}>Onboard an organisation <span className="arrow">→</span></button>
+            <div className="try-grid reveal">
+              <a className="try-card" href="/patient"><span className="ic"><Smartphone size={20} /></span><h3>Patient app</h3><p>Your CLANCLAST ID, consent requests, an encrypted vault for signed summaries, and a tamper-evident access log.</p><span className="go">Open the app <ArrowUpRight size={15} /></span></a>
+              <a className="try-card" href="/provider"><span className="ic"><Laptop size={20} /></span><h3>Provider workspace</h3><p>Check-in without duplicates, consent requests, referrals, and signing summaries patients carry.</p><span className="go">Open the workspace <ArrowUpRight size={15} /></span></a>
+              <button type="button" className="try-card" style={{ textAlign: "left" }} onClick={() => setContext("ussd")}><span className="ic"><Phone size={20} /></span><h3>USSD on any phone</h3><p>Answer access requests and see your ID from the most basic handset, with no data plan.</p><span className="go">Dial in <ArrowUpRight size={15} /></span></button>
+              <button type="button" className="try-card" style={{ textAlign: "left" }} onClick={() => setContext("caregiver")}><span className="ic"><HeartHandshake size={20} /></span><h3>Caregiver</h3><p>Someone the patient trusts answers requests on their behalf, and every answer is logged.</p><span className="go">Sign in as a caregiver <ArrowUpRight size={15} /></span></button>
             </div>
-            <p className="proto-note reveal">Please use demonstration data only. Do not enter real patient or personal health information into the prototypes.</p>
+            <p className="proto-note reveal">Live demo with fictional data. Please don't enter real personal or health information.</p>
           </div>
         </section>
 
@@ -674,7 +672,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               <div className="stage reveal"><div className="status">Next · Gated</div><h3>Stage 2: Early production</h3><p>Live identity, consent and verification with a partner institution, once the required reviews are in place.</p></div>
               <div className="stage reveal"><div className="status">Later · Gated</div><h3>Stage 3: Scale</h3><p>More institutions and regions, when the evidence from earlier stages supports it.</p></div>
             </div>
-            <div className="progress-note"><b>Current status:</b> Pre-pilot. The prototypes on this site use fictional data and show intended workflows. Accuracy is measured with each partner institution, on its own records, before any live use.</div>
+            <div className="progress-note"><b>Current status:</b> Pre-pilot. The apps on this site are the real product running on fictional data; they are not connected to any institution. Accuracy is measured with each partner institution, on its own records, before any live use.</div>
           </div>
         </section>
 
@@ -745,7 +743,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             </div>
             <div className="footer-col"><strong>Explore</strong><a href="#platform">Platform</a><a href="#how">How it works</a><a href="#trust">Trust &amp; security</a><a href="#progress">Progress</a></div>
             <div className="footer-col"><strong>For institutions</strong><a href="#institutions">Hospitals</a><a href="#institutions">Laboratories</a><a href="#institutions">Medical schemes</a><a href="#contact">Request a briefing</a></div>
-            <div className="footer-col"><strong>Company</strong><a href="#story">Our approach</a><a href="#trust">Commitments</a><a href="#prototype">Prototypes</a><a href="#contact">Contact</a></div>
+            <div className="footer-col"><strong>Company</strong><a href="#story">Our approach</a><a href="#trust">Commitments</a><a href="#demo">Live demo</a><a href="#contact">Contact</a></div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 CLANCLAST. All rights reserved.</span>

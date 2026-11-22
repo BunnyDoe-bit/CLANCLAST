@@ -7,6 +7,8 @@ import { resetDemo } from "./db";
  * Styled inline so it works inside either app's design system. Hidden when a demo is
  * embedded on the landing page (?embed=1), where the frame itself carries the label.
  */
+const FONT = '-apple-system, BlinkMacSystemFont, "Inter Variable", "Inter", "Segoe UI", Roboto, system-ui, sans-serif';
+
 export function DemoBar({ app }: { app: "patient" | "provider" }) {
   const [open, setOpen] = useState(false);
   const [wide, setWide] = useState(() => typeof window !== "undefined" && window.innerWidth >= 900);
@@ -18,23 +20,37 @@ export function DemoBar({ app }: { app: "patient" | "provider" }) {
   }, []);
   if (embedded) return null;
 
-  const pos: CSSProperties = wide ? { right: 16, bottom: 16 } : app === "patient" ? { left: 10, bottom: "calc(env(safe-area-inset-bottom, 0px) + 92px)" } : { left: 10, bottom: "calc(env(safe-area-inset-bottom, 0px) + 84px)" };
-  const shell: CSSProperties = {
-    position: "fixed", zIndex: 2147483000, ...pos, fontFamily: '-apple-system, BlinkMacSystemFont, "Inter Variable", "Inter", "Segoe UI", Roboto, system-ui, sans-serif',
-    color: "#eafbf8", background: "rgb(7 43 39 / 0.92)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
-    border: "1px solid rgb(141 212 202 / 0.22)", borderRadius: open ? 18 : 999, boxShadow: "0 12px 32px -12px rgb(0 0 0 / 0.45)",
-    padding: open ? "14px 16px" : "7px 12px 7px 10px", maxWidth: 300, fontSize: 12, lineHeight: 1.4,
-  };
+  // Wide screens: a pill in the corner. Phones: a slim strip across the top, with the
+  // app's own safe-area pushed down so nothing is covered.
+  useEffect(() => {
+    if (embedded) return;
+    const root = document.documentElement;
+    if (wide) root.style.removeProperty("--safe-top");
+    else root.style.setProperty("--safe-top", "calc(env(safe-area-inset-top, 0px) + 30px)");
+  }, [wide, embedded]);
+
+  const shell: CSSProperties = wide
+    ? {
+        position: "fixed", zIndex: 2147483000, right: 16, bottom: 16, maxWidth: 300,
+        color: "#eafbf8", background: "rgb(7 43 39 / 0.92)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
+        border: "1px solid rgb(141 212 202 / 0.22)", borderRadius: open ? 18 : 999, boxShadow: "0 12px 32px -12px rgb(0 0 0 / 0.45)",
+        padding: open ? "14px 16px" : "7px 12px 7px 10px", fontSize: 12, lineHeight: 1.4, fontFamily: FONT,
+      }
+    : {
+        position: "fixed", zIndex: 2147483000, left: 0, right: 0, top: 0, paddingTop: "env(safe-area-inset-top, 0px)",
+        color: "#eafbf8", background: "#072b27", borderBottom: "1px solid rgb(141 212 202 / 0.18)",
+        fontSize: 12, lineHeight: 1.4, fontFamily: FONT, ...(open ? { boxShadow: "0 16px 32px -16px rgb(0 0 0 / 0.5)" } : {}),
+      };
   const link: CSSProperties = { color: "#8dd4ca", fontWeight: 600, textDecoration: "none", background: "none", border: 0, padding: 0, cursor: "pointer", font: "inherit" };
   return (
     <div role="note" aria-label="Demonstration" style={shell}>
       {!open ? (
-        <button onClick={() => setOpen(true)} style={{ ...link, color: "#eafbf8", display: "flex", alignItems: "center", gap: 8 }} aria-expanded="false">
+        <button onClick={() => setOpen(true)} aria-expanded="false" style={{ ...link, color: "#eafbf8", display: "flex", alignItems: "center", gap: 8, ...(wide ? {} : { width: "100%", height: 30, padding: "0 14px", justifyContent: "center" }) }}>
           <span style={{ width: 7, height: 7, borderRadius: 99, background: "#5cbbae", boxShadow: "0 0 0 3px rgb(92 187 174 / 0.25)" }} />
-          Live demo · fictional data
+          Live demo · fictional data{wide ? "" : <span style={{ color: "#8dd4ca", marginLeft: 6 }}>· Options</span>}
         </button>
       ) : (
-        <div>
+        <div style={wide ? undefined : { padding: "12px 16px 14px" }}>
           <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>This is the real CLANCLAST {app === "patient" ? "patient app" : "provider workspace"}</p>
           <p style={{ margin: "4px 0 10px", color: "#a3c2bd" }}>Running on fictional data that stays in this browser. Nothing you enter is sent anywhere.</p>
           <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
