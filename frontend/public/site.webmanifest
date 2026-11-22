@@ -1,25 +1,14 @@
 {
- "name": "clanclast health",
- "short_name": "clanclast",
- "theme_color": "#145c52",
- "background_color": "#f7f9f7",
+ "name": "CLANCLAST",
+ "short_name": "CLANCLAST",
+ "theme_color": "#072b27",
+ "background_color": "#f7faf9",
  "display": "standalone",
  "icons": [
-  {
-   "src": "/icon-192.png",
-   "sizes": "192x192",
-   "type": "image/png"
-  },
-  {
-   "src": "/icon-512.png",
-   "sizes": "512x512",
-   "type": "image/png"
-  },
-  {
-   "src": "/icon-maskable-512.png",
-   "sizes": "512x512",
-   "type": "image/png",
-   "purpose": "maskable"
-  }
- ]
+  { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+  { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+  { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+ ],
+ "start_url": "/",
+ "id": "/"
 }
