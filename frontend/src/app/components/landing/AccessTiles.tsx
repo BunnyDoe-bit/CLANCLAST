@@ -37,7 +37,7 @@ const tiles: Tile[] = [
     title: "CLANCLAST Health",
     eyebrow: "FOR PATIENTS",
     description:
-      "Your health identity, records, emergency information and care journey — securely connected in one place.",
+      "Your health identity, consent choices, emergency information and signed summaries, in one place.",
     icon: <HeartPulse size={18} strokeWidth={2} />,
     context: "patient",
   },
@@ -53,7 +53,7 @@ const tiles: Tile[] = [
     title: "CLANCLAST Connect",
     eyebrow: "FOR SYSTEMS",
     description:
-      "Connect fragmented healthcare systems, organisations and data into one interoperable health infrastructure.",
+      "Connect healthcare organisations through identity and consent, without replacing the systems they use.",
     icon: <Wifi size={18} strokeWidth={2} />,
     context: "connect",
   },
@@ -61,37 +61,32 @@ const tiles: Tile[] = [
     title: "CLANCLAST Verify",
     eyebrow: "FOR TRUST",
     description:
-      "Verify identities, credentials, healthcare organisations and records before information is trusted.",
+      "Verify identities, credentials and healthcare organisations before information is trusted.",
     icon: <BadgeCheck size={18} strokeWidth={2} />,
     context: "verify",
   },
 ];
 
-const experienceUrls: Partial<Record<LandingContext, string>> = {
-  patient: "https://clanclast-patient-health.vercel.app/",
-  provider: "https://clanclast-provider.vercel.app/",
-};
-
 const themes = [
   {
-    bg: "bg-[#f5f8f6]",
-    accent: "text-[#176247]",
-    button: "bg-[#176247] text-white hover:bg-[#0f4431]",
+    bg: "bg-muted",
+    accent: "text-primary",
+    button: "bg-primary text-primary-foreground hover:bg-brand-ink",
   },
   {
-    bg: "bg-[#176247]",
+    bg: "bg-primary",
     accent: "text-white",
-    button: "bg-white text-[#176247] hover:bg-zinc-100",
+    button: "bg-card text-primary hover:bg-zinc-100",
   },
   {
-    bg: "bg-[#176247]",
+    bg: "bg-primary",
     accent: "text-white",
-    button: "bg-white text-[#176247] hover:bg-zinc-100",
+    button: "bg-card text-primary hover:bg-zinc-100",
   },
   {
-    bg: "bg-[#176247]",
+    bg: "bg-primary",
     accent: "text-white",
-    button: "bg-white text-[#176247] hover:bg-zinc-100",
+    button: "bg-card text-primary hover:bg-zinc-100",
   },
 ];
 
@@ -126,13 +121,6 @@ export function AccessTiles({
   const handleNext = () => selectExperience(nextIndex);
 
   const handleExplore = () => {
-  const destination = experienceUrls[activeTile.context];
-
-  if (destination) {
-    window.location.href = destination;
-    return;
-  }
-
   setContext(activeTile.context);
 };
 
@@ -145,17 +133,17 @@ export function AccessTiles({
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className={`absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full blur-3xl transition-all duration-700 ${
-            light ? "bg-[#176247]/5" : "bg-white/5"
+            light ? "bg-primary/5" : "bg-white/5"
           }`}
         />
         <div
           className={`absolute -bottom-60 -left-40 h-[500px] w-[500px] rounded-full blur-3xl transition-all duration-700 ${
-            light ? "bg-[#176247]/5" : "bg-black/10"
+            light ? "bg-primary/5" : "bg-black/10"
           }`}
         />
         <div
           className={`absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl transition-all duration-700 ${
-            light ? "bg-[#176247]/[0.025]" : "bg-white/[0.025]"
+            light ? "bg-primary/[0.025]" : "bg-white/[0.025]"
           }`}
         />
       </div>
@@ -238,7 +226,7 @@ export function AccessTiles({
                 aria-label={`Show next: ${nextTile.title}`}
                 className={`group inline-flex items-center gap-3 rounded-full border px-6 py-3.5 text-xs font-black transition-all duration-300 hover:-translate-y-1 ${
                   light
-                    ? "border-zinc-300 text-zinc-800 hover:border-[#176247] hover:text-[#176247]"
+                    ? "border-zinc-300 text-zinc-800 hover:border-primary hover:text-primary"
                     : "border-white/35 text-white hover:border-white hover:bg-white/10"
                 }`}
               >
@@ -292,7 +280,7 @@ export function AccessTiles({
                           <div className="text-[7px] font-black uppercase tracking-[0.18em] text-zinc-400">EMERGENCY</div>
                           <div className="mt-1 text-xs font-black text-zinc-900">Health Summary</div>
                         </div>
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#176247]/10 text-[#176247]">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">
                           <HeartPulse size={13} />
                         </div>
                       </div>
@@ -301,7 +289,7 @@ export function AccessTiles({
                         <div className="h-1.5 w-3/4 rounded-full bg-zinc-100" />
                         <div className="h-1.5 w-1/2 rounded-full bg-zinc-100" />
                       </div>
-                      <div className="mt-4 flex items-center gap-2 text-[7px] font-bold text-[#176247]">
+                      <div className="mt-4 flex items-center gap-2 text-[7px] font-bold text-primary">
                         <BadgeCheck size={10} />
                         Verified information
                       </div>
@@ -324,8 +312,8 @@ export function AccessTiles({
                       <div className="absolute -right-[7px] top-32 h-16 w-[3px] rounded-r-full bg-[#3d3d3d]" />
 
                       {/* SCREEN */}
-                      <div className="relative h-full w-full overflow-hidden rounded-[36px] bg-[#f7faf8]">
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#eaf4ee] via-white to-[#f7faf8]" />
+                      <div className="relative h-full w-full overflow-hidden rounded-[36px] bg-muted">
+                        <div className="absolute inset-0 bg-gradient-to-b from-accent via-white to-background" />
 
                         <div className="absolute left-1/2 top-3 z-30 h-[25px] w-[92px] -translate-x-1/2 rounded-full bg-black shadow-md">
                           <div className="absolute right-3 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-zinc-800" />
@@ -344,18 +332,18 @@ export function AccessTiles({
                         <div className="relative z-10 px-5 pt-7">
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="text-[7px] font-black tracking-[0.18em] text-[#176247]">CLANCLAST HEALTH</div>
+                              <div className="text-[7px] font-black tracking-[0.18em] text-primary">CLANCLAST HEALTH</div>
                               <div className="mt-1 text-[17px] font-black tracking-tight text-zinc-950">Good morning</div>
                             </div>
-                            <div className="relative flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-white shadow-sm">
+                            <div className="relative flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-card shadow-sm">
                               <Bell size={14} className="text-zinc-700" />
-                              <div className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#176247]" />
+                              <div className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-primary" />
                             </div>
                           </div>
                         </div>
 
                         {/* PASSPORT */}
-                        <div className="relative z-10 mx-5 mt-5 overflow-hidden rounded-[22px] bg-[#176247] p-5 text-white shadow-[0_18px_35px_rgba(23,98,71,0.28)]">
+                        <div className="relative z-10 mx-5 mt-5 overflow-hidden rounded-[22px] bg-primary p-5 text-primary-foreground shadow-[0_18px_35px_rgba(44,129,118,0.28)]">
                           <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full border border-white/10" />
                           <div className="relative flex items-start justify-between">
                             <div>
@@ -368,7 +356,7 @@ export function AccessTiles({
                             </div>
                           </div>
                           <div className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-white/15">
-                            <div className="h-full w-[87%] rounded-full bg-white" />
+                            <div className="h-full w-[87%] rounded-full bg-card" />
                           </div>
                           <div className="relative mt-4 flex justify-between">
                             <span className="text-[7px] font-bold uppercase tracking-widest text-white/50">Identity verified</span>
@@ -382,11 +370,11 @@ export function AccessTiles({
                           <div className="grid grid-cols-3 gap-2">
                             {[
                               { icon: <QrCode size={15} />, label: "Emergency" },
-                              { icon: <HeartPulse size={15} />, label: "Records" },
+                              { icon: <HeartPulse size={15} />, label: "Summaries" },
                               { icon: <Stethoscope size={15} />, label: "Care team" },
                             ].map((item) => (
-                              <div key={item.label} className="rounded-2xl border border-zinc-100 bg-white p-3 text-center shadow-sm">
-                                <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-xl bg-[#176247]/10 text-[#176247]">
+                              <div key={item.label} className="rounded-2xl border border-zinc-100 bg-card p-3 text-center shadow-sm">
+                                <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-xl bg-primary/10 text-primary">
                                   {item.icon}
                                 </div>
                                 <div className="mt-2 text-[7px] font-bold text-zinc-500">{item.label}</div>
@@ -396,13 +384,13 @@ export function AccessTiles({
                         </div>
 
                         {/* RECENT ACTIVITY */}
-                        <div className="relative z-10 mx-5 mt-5 rounded-2xl border border-zinc-100 bg-white p-3.5 shadow-sm">
+                        <div className="relative z-10 mx-5 mt-5 rounded-2xl border border-zinc-100 bg-card p-3.5 shadow-sm">
                           <div className="flex items-center justify-between">
                             <div className="text-[8px] font-black uppercase tracking-wider text-zinc-400">Recent activity</div>
                             <ChevronRight size={12} className="text-zinc-300" />
                           </div>
                           <div className="mt-3 flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#176247]/10 text-[#176247]">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
                               <BadgeCheck size={14} />
                             </div>
                             <div>
@@ -422,7 +410,7 @@ export function AccessTiles({
                       style={{ transform: "translateZ(110px) rotate(-4deg)" }}
                     >
                       <div className="flex items-center gap-2.5">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#176247] text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                           <ShieldCheck size={15} />
                         </div>
                         <div>
@@ -439,15 +427,15 @@ export function AccessTiles({
                   <div className="relative w-full max-w-[600px]" style={{ transform: "translateZ(45px)" }}>
                     <div className="absolute -bottom-10 left-10 right-10 h-20 rounded-full bg-black/25 blur-3xl" />
                     <div className="relative overflow-hidden rounded-[28px] border border-white/20 bg-[#151a18] p-2 shadow-[0_35px_80px_rgba(0,0,0,0.28)]">
-                      <div className="overflow-hidden rounded-[21px] bg-[#f6f8f7]">
-                        <div className="flex h-12 items-center justify-between border-b border-zinc-200 bg-white px-5">
+                      <div className="overflow-hidden rounded-[21px] bg-muted">
+                        <div className="flex h-12 items-center justify-between border-b border-zinc-200 bg-card px-5">
                           <div className="flex items-center gap-2">
-                            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#176247] text-white">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                               <HeartPulse size={12} />
                             </div>
                             <div>
                               <div className="text-[9px] font-black tracking-tight text-zinc-900">CLANCLAST</div>
-                              <div className="text-[5px] font-bold tracking-[0.25em] text-[#176247]">HEALTH</div>
+                              <div className="text-[5px] font-bold tracking-[0.25em] text-primary">HEALTH</div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
@@ -457,21 +445,21 @@ export function AccessTiles({
                         </div>
 
                         <div className="grid min-h-[410px] grid-cols-[145px_1fr]">
-                          <div className="border-r border-zinc-200 bg-white p-4">
+                          <div className="border-r border-zinc-200 bg-card p-4">
                             <div className="text-[7px] font-black uppercase tracking-widest text-zinc-400">WORKSPACE</div>
                             <div className="mt-4 space-y-1.5">
-                              {["Overview", "Patients", "Records", "Verification", "Care team"].map((item, index) => (
+                              {["Overview", "Patients", "Check-in", "Verification", "Consent"].map((item, index) => (
                                 <div
                                   key={item}
                                   className={`rounded-lg px-3 py-2 text-[8px] font-bold ${
-                                    index === 1 ? "bg-[#176247]/10 text-[#176247]" : "text-zinc-400"
+                                    index === 1 ? "bg-primary/10 text-primary" : "text-zinc-400"
                                   }`}
                                 >
                                   {item}
                                 </div>
                               ))}
                             </div>
-                            <div className="mt-20 rounded-xl bg-[#176247] p-3 text-white">
+                            <div className="mt-20 rounded-xl bg-primary p-3 text-primary-foreground">
                               <ShieldCheck size={15} />
                               <div className="mt-2 text-[8px] font-black">Trusted Provider</div>
                               <div className="mt-1 text-[7px] text-white/60">Level 3 verification</div>
@@ -481,10 +469,10 @@ export function AccessTiles({
                           <div className="p-5">
                             <div className="flex items-end justify-between">
                               <div>
-                                <div className="text-[8px] font-black uppercase tracking-widest text-[#176247]">PATIENTS</div>
+                                <div className="text-[8px] font-black uppercase tracking-widest text-primary">PATIENTS</div>
                                 <div className="mt-1 text-xl font-black tracking-tight text-zinc-900">Today&apos;s care</div>
                               </div>
-                              <div className="rounded-full bg-[#176247] px-3 py-1.5 text-[7px] font-black text-white">42 patients</div>
+                              <div className="rounded-full bg-primary px-3 py-1.5 text-[7px] font-black text-primary-foreground">42 patients</div>
                             </div>
 
                             <div className="mt-5 grid grid-cols-3 gap-2">
@@ -493,24 +481,24 @@ export function AccessTiles({
                                 ["96%", "Verified"],
                                 ["08", "Pending"],
                               ].map(([value, label]) => (
-                                <div key={label} className="rounded-xl border border-zinc-100 bg-white p-3 shadow-sm">
+                                <div key={label} className="rounded-xl border border-zinc-100 bg-card p-3 shadow-sm">
                                   <div className="text-lg font-black text-zinc-900">{value}</div>
                                   <div className="mt-1 text-[7px] font-bold uppercase tracking-wider text-zinc-400">{label}</div>
                                 </div>
                               ))}
                             </div>
 
-                            <div className="mt-4 rounded-xl border border-zinc-100 bg-white p-4 shadow-sm">
+                            <div className="mt-4 rounded-xl border border-zinc-100 bg-card p-4 shadow-sm">
                               <div className="flex items-center justify-between">
                                 <div>
                                   <div className="text-[7px] font-black uppercase tracking-widest text-zinc-400">SELECTED PATIENT</div>
                                   <div className="mt-1 text-sm font-black text-zinc-900">Health Passport</div>
                                 </div>
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#176247]/10 text-[#176247]">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                                   <BadgeCheck size={15} />
                                 </div>
                               </div>
-                              <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#f5f8f6] p-3">
+                              <div className="mt-4 flex items-center gap-3 rounded-lg bg-muted p-3">
                                 <div className="h-9 w-9 rounded-full bg-zinc-200" />
                                 <div className="flex-1">
                                   <div className="text-[9px] font-black text-zinc-800">Identity verified</div>
@@ -561,11 +549,11 @@ export function AccessTiles({
                         <div className="absolute h-40 w-40 rounded-full border border-white/5" />
                         <div className="absolute h-28 w-28 rounded-full border border-white/10" />
                         <div
-                          className="relative flex h-24 w-24 items-center justify-center rounded-[28px] border border-white/20 bg-white text-[#176247] shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
+                          className="relative flex h-24 w-24 items-center justify-center rounded-[28px] border border-white/20 bg-card text-primary shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
                           style={{ transform: "translateZ(50px) rotate(-2deg)" }}
                         >
                           <HeartPulse size={27} />
-                          <div className="absolute -bottom-7 rounded-full bg-[#0f4431] px-3 py-1.5 text-[7px] font-black tracking-[0.18em] text-white shadow-lg">
+                          <div className="absolute -bottom-7 rounded-full bg-brand-ink px-3 py-1.5 text-[7px] font-black tracking-[0.18em] text-white shadow-lg">
                             CLANCLAST
                           </div>
                         </div>
@@ -580,11 +568,11 @@ export function AccessTiles({
                         ].map(([name, icon]) => (
                           <div
                             key={String(name)}
-                            className="relative rounded-2xl border border-white/10 bg-white p-4 shadow-[0_15px_30px_rgba(0,0,0,0.15)]"
+                            className="relative rounded-2xl border border-white/10 bg-card p-4 shadow-[0_15px_30px_rgba(0,0,0,0.15)]"
                           >
                             <div className="absolute -left-5 top-1/2 h-px w-5 bg-gradient-to-l from-white/10 to-white/50" />
                             <div className="flex items-center gap-3">
-                              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#176247]/10 text-[#176247]">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
                                 {icon}
                               </div>
                               <div className="text-[9px] font-black text-zinc-900">{name}</div>
@@ -608,29 +596,29 @@ export function AccessTiles({
                   <div className="relative w-full max-w-[550px]" style={{ transform: "translateZ(55px)" }}>
                     <div className="absolute -bottom-12 left-10 right-10 h-20 rounded-full bg-black/25 blur-3xl" />
 
-                    <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-[#f5f8f6] p-5 shadow-[0_35px_80px_rgba(0,0,0,0.25)]">
+                    <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-muted p-5 shadow-[0_35px_80px_rgba(0,0,0,0.25)]">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-[8px] font-black uppercase tracking-[0.22em] text-[#176247]">CLANCLAST VERIFY</div>
+                          <div className="text-[8px] font-black uppercase tracking-[0.22em] text-primary">CLANCLAST VERIFY</div>
                           <div className="mt-1 text-xl font-black tracking-tight text-zinc-950">Credential verification</div>
                         </div>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#176247] text-white shadow-lg">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg">
                           <QrCode size={18} />
                         </div>
                       </div>
 
                       {/* SCANNER */}
                       <div className="relative mt-6 overflow-hidden rounded-[25px] bg-zinc-950 p-8">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(23,98,71,0.35),transparent_55%)]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(44,129,118,0.35),transparent_55%)]" />
                         <div className="relative mx-auto aspect-square max-w-[190px] rounded-[28px] border border-white/10 bg-white/[0.03] p-7">
-                          <div className="absolute left-4 top-4 h-7 w-7 rounded-tl-lg border-l-2 border-t-2 border-[#7ee2b5]" />
-                          <div className="absolute right-4 top-4 h-7 w-7 rounded-tr-lg border-r-2 border-t-2 border-[#7ee2b5]" />
-                          <div className="absolute bottom-4 left-4 h-7 w-7 rounded-bl-lg border-b-2 border-l-2 border-[#7ee2b5]" />
-                          <div className="absolute bottom-4 right-4 h-7 w-7 rounded-br-lg border-b-2 border-r-2 border-[#7ee2b5]" />
-                          <div className="flex h-full w-full items-center justify-center rounded-2xl bg-white">
+                          <div className="absolute left-4 top-4 h-7 w-7 rounded-tl-lg border-l-2 border-t-2 border-brand-500" />
+                          <div className="absolute right-4 top-4 h-7 w-7 rounded-tr-lg border-r-2 border-t-2 border-brand-500" />
+                          <div className="absolute bottom-4 left-4 h-7 w-7 rounded-bl-lg border-b-2 border-l-2 border-brand-500" />
+                          <div className="absolute bottom-4 right-4 h-7 w-7 rounded-br-lg border-b-2 border-r-2 border-brand-500" />
+                          <div className="flex h-full w-full items-center justify-center rounded-2xl bg-card">
                             <QrCode size={95} strokeWidth={1.3} className="text-zinc-900" />
                           </div>
-                          <div className="absolute left-8 right-8 top-1/2 h-px bg-[#7ee2b5] shadow-[0_0_12px_rgba(126,226,181,0.8)]" />
+                          <div className="absolute left-8 right-8 top-1/2 h-px bg-brand-500 shadow-[0_0_12px_rgba(92,187,174,0.8)]" />
                         </div>
                         <div className="relative mt-5 text-center">
                           <div className="text-[8px] font-black uppercase tracking-[0.2em] text-white/50">SCANNING CREDENTIAL</div>
@@ -639,16 +627,16 @@ export function AccessTiles({
                       </div>
 
                       {/* RESULT */}
-                      <div className="mt-5 rounded-2xl bg-white p-4 shadow-sm">
+                      <div className="mt-5 rounded-2xl bg-card p-4 shadow-sm">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#176247] text-white shadow-md">
+                          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
                             <BadgeCheck size={21} />
                           </div>
                           <div className="flex-1">
                             <div className="text-[10px] font-black text-zinc-900">Identity verified</div>
                             <div className="mt-1 text-[7px] text-zinc-400">Credential is authentic and issuer is trusted.</div>
                           </div>
-                          <div className="rounded-full bg-[#176247]/10 px-2.5 py-1 text-[7px] font-black uppercase tracking-wider text-[#176247]">
+                          <div className="rounded-full bg-primary/10 px-2.5 py-1 text-[7px] font-black uppercase tracking-wider text-primary">
                             Trusted
                           </div>
                         </div>
@@ -657,8 +645,8 @@ export function AccessTiles({
                       {/* TRUST SIGNALS */}
                       <div className="mt-3 grid grid-cols-3 gap-2">
                         {["Identity", "Credential", "Issuer"].map((label) => (
-                          <div key={label} className="rounded-xl border border-zinc-100 bg-white p-2.5 text-center">
-                            <ShieldCheck size={13} className="mx-auto text-[#176247]" />
+                          <div key={label} className="rounded-xl border border-zinc-100 bg-card p-2.5 text-center">
+                            <ShieldCheck size={13} className="mx-auto text-primary" />
                             <div className="mt-1 text-[7px] font-bold text-zinc-500">{label}</div>
                           </div>
                         ))}
@@ -671,7 +659,7 @@ export function AccessTiles({
                       style={{ transform: "translateZ(100px) rotate(-5deg)" }}
                     >
                       <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#176247]/10 text-[#176247]">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">
                           <MapPin size={12} />
                         </div>
                         <div>
@@ -716,8 +704,8 @@ export function AccessTiles({
                 className={`h-1.5 rounded-full transition-all duration-500 ${
                   index === activeIndex
                     ? light
-                      ? "w-10 bg-[#176247]"
-                      : "w-10 bg-white"
+                      ? "w-10 bg-primary"
+                      : "w-10 bg-card"
                     : light
                       ? "w-2 bg-zinc-300"
                       : "w-2 bg-white/25"

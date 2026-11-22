@@ -227,10 +227,10 @@ export interface HeroMetalScalesProps {
 }
 
 export function HeroMetalScales({
-  background = "#0a1d18",
-  baseColor = "#1b7a68",
-  accentColor = "#7ee2b5",
-  warmLight = "#e1c27a",
+  background = "#041c19",
+  baseColor = "#2c8176",
+  accentColor = "#5cbbae",
+  warmLight = "#b0e4dc",
   glintColor = "#eafff6",
   speed = 40,
   scale = 100,

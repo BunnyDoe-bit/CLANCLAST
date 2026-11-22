@@ -5,38 +5,38 @@ import {
   FileCheck2, FileText, Fingerprint, Heart, HeartPulse, HelpCircle, Home,
   Hospital, KeyRound, Laptop, Lock, Menu, MoreHorizontal, Paperclip, Phone, Pill,
   Plus, QrCode, Radio, Search, Send, Settings, Shield, ShieldAlert, Smartphone,
-  Stethoscope, User, UserCheck, Users, Wifi, X, Zap, Loader2
+  Stethoscope, User, UserCheck, Users, Wifi, X, Zap, Loader2, type LucideIcon
 } from "lucide-react";
-import { authApi, patientApi, providerApi, verifyApi, connectApi, caregiverApi, ApiError, getToken, setToken as saveToken, clearToken, BASE_URL } from "../lib/api";
+import { authApi, patientApi, providerApi, verifyApi, connectApi, caregiverApi, ussdApi, ApiError, getToken, setToken as saveToken, clearToken } from "../lib/api";
 import { Brand } from "./components/shared/Brand";
 import { PillStatus } from "./components/shared/PillStatus";
 import { MavenLanding } from "./components/landing/MavenLanding";
 
 type Context = "landing" | "patient" | "provider" | "connect" | "verify" | "onboard" | "ussd" | "caregiver";
 
-const patientNav = [
-  ["Home", Home], ["Health Passport", Shield], ["Records", FileText], ["Team", Users], ["Consent", Lock], ["Profile", User]
+const patientNav: [string, LucideIcon][] = [
+  ["Home", Home], ["Health Passport", Shield], ["Summaries", FileText], ["Team", Users], ["Consent", Lock], ["Profile", User]
 ];
-const providerNav = [
+const providerNav: [string, LucideIcon][] = [
   ["Dashboard", Home], ["Check-in", Fingerprint], ["Patients", Users], ["Registration", UserCheck], ["Verification", BadgeCheck], ["Referrals", Send], ["Consent Requests", Lock], ["Connections", Wifi], ["Activity", Activity], ["Settings", Settings]
 ];
 
 function QR({ className = "", src }: { className?: string; src?: string }) {
   if (src) {
-    return <img src={src} alt="Humanet QR code" className={`rounded-2xl bg-white p-3 ${className}`} />;
+    return <img src={src} alt="CLANCLAST code" className={`rounded-2xl bg-white p-3 ${className}`} />;
   }
   const cells = Array.from({ length: 121 }, (_, i) => (i * 7 + Math.floor(i / 11) * 3) % 5 < 2 || [0,1,2,11,12,13,22,23,24,8,9,10,19,20,21,88,89,90,99,100,101,110,111,112].includes(i));
   return (
     <div className={`grid grid-cols-11 gap-[3px] rounded-2xl bg-white p-3 ${className}`}>
-      {cells.map((on, i) => <i key={i} className={`aspect-square rounded-[1px] ${on ? "bg-[#15342d]" : "bg-transparent"}`} />)}
+      {cells.map((on, i) => <i key={i} className={`aspect-square rounded-[1px] ${on ? "bg-[#072b27]" : "bg-transparent"}`} />)}
     </div>
   );
 }
 
 function Modal({ title, children, close }: { title: string; children: React.ReactNode; close: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-end bg-[#10221c]/35 p-4 sm:place-items-center">
-      <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200">
+    <div className="fixed inset-0 z-50 grid place-items-end bg-[#072b27]/45 p-4 sm:place-items-center">
+      <div className="w-full max-w-md rounded-[28px] bg-card p-6 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200">
         <div className="mb-5 flex items-start justify-between">
           <h2 className="font-display text-xl font-extrabold">{title}</h2>
           <button onClick={close} className="rounded-full bg-muted p-2 text-muted-foreground"><X size={18} /></button>
@@ -50,7 +50,7 @@ function Modal({ title, children, close }: { title: string; children: React.Reac
 function ErrorNote({ message }: { message: string }) {
   if (!message) return null;
   return (
-    <div className="mt-4 flex items-start gap-2 rounded-xl bg-[#fee2e2] p-3 text-xs font-semibold text-[#a52c31]">
+    <div className="mt-4 flex items-start gap-2 rounded-xl bg-critical-tint p-3 text-xs font-semibold text-critical">
       <AlertTriangle size={15} className="mt-0.5 shrink-0" />
       <span>{message}</span>
     </div>
@@ -65,7 +65,8 @@ export default function App() {
   const [context, setContext] = useState<Context>("landing");
 
   return (
-    <main className="min-h-screen bg-background font-body text-foreground selection:bg-[#c7eadb]">
+    <main className="min-h-screen bg-background font-body text-foreground selection:bg-accent">
+      {context !== "landing" && <DemoRibbon />}
       {context === "landing" && <MavenLanding setContext={setContext} />}
       {context === "patient" && <Patient setContext={setContext} />}
       {context === "provider" && <Provider setContext={setContext} />}
@@ -78,16 +79,25 @@ export default function App() {
   );
 }
 
+/** Every prototype screen says plainly that it is a demonstration with fictional data. */
+function DemoRibbon() {
+  return (
+    <div role="note" className="pointer-events-none fixed bottom-3 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-brand-ink/90 px-3.5 py-1.5 text-[11px] font-semibold text-white shadow-lg backdrop-blur max-md:bottom-[84px]">
+      Demo · fictional data · nothing you enter leaves this browser
+    </div>
+  );
+}
+
 function Input({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
   return (
     <label className="block text-xs font-bold text-muted-foreground">
       {label}
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1.5 w-full rounded-xl border border-border bg-white px-3.5 py-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20" />
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20" />
     </label>
   );
 }
 
-type PatientProfile = { id: string; humanetId: string; fullName: string; passportCompletion: number };
+type PatientProfile = { id: string; ccId: string; fullName: string; passportCompletion: number };
 type RegForm = { fullName: string; dateOfBirth: string; nationalId: string; mobile: string; password: string; emergencyContactName: string; emergencyContactRelationship: string; allergies: string; bloodType: string };
 
 const emptyRegForm: RegForm = { fullName: "", dateOfBirth: "", nationalId: "", mobile: "", password: "", emergencyContactName: "", emergencyContactRelationship: "", allergies: "", bloodType: "" };
@@ -103,29 +113,27 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
 
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [passport, setPassport] = useState<any>(null);
-  const [records, setRecords] = useState<any[]>([]);
+  const [summaries, setSummaries] = useState<any[]>([]);
   const [team, setTeam] = useState<any[]>([]);
   const [consent, setConsent] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [qrUrl, setQrUrl] = useState<string>("");
-  const [activeRecord, setActiveRecord] = useState<any>(null);
+  const [activeSummary, setActiveSummary] = useState<any>(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [caregivers, setCaregivers] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
-  const [recordSyncRequests, setRecordSyncRequests] = useState<any[]>([]);
-  const [medications, setMedications] = useState<any[]>([]);
 
   async function loadAll() {
     setDataLoading(true);
     try {
-      const [p, r, t, c, n, rs, m] = await Promise.all([
-        patientApi.passport(), patientApi.records(), patientApi.team(), patientApi.consent(), patientApi.notifications(), patientApi.recordSyncRequests(), patientApi.medications(),
+      const [p, r, t, c, n] = await Promise.all([
+        patientApi.passport(), patientApi.summaries(), patientApi.team(), patientApi.consent(), patientApi.notifications(),
       ]);
-      setPassport(p); setRecords(r); setTeam(t); setConsent(c); setNotifications(n); setRecordSyncRequests(rs); setMedications(m);
-      setProfile({ id: "", humanetId: p.patient.humanetId, fullName: p.patient.fullName, passportCompletion: p.patient.passportCompletion });
+      setPassport(p); setSummaries(r); setTeam(t); setConsent(c); setNotifications(n);
+      setProfile({ id: "", ccId: p.patient.ccId, fullName: p.patient.fullName, passportCompletion: p.patient.passportCompletion });
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Could not load your Humanet data.");
+      setError(e instanceof ApiError ? e.message : "Could not load your CLANCLAST data.");
     } finally {
       setDataLoading(false);
     }
@@ -146,11 +154,7 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
     if (view === "consent") patientApi.consent().then(setConsent).catch(() => {});
     if (view === "notifications") patientApi.notifications().then(setNotifications).catch(() => {});
     if (view === "team") patientApi.team().then(setTeam).catch(() => {});
-    if (view === "records") {
-      patientApi.records().then(setRecords).catch(() => {});
-      patientApi.recordSyncRequests().then(setRecordSyncRequests).catch(() => {});
-      patientApi.medications().then(setMedications).catch(() => {});
-    }
+    if (view === "summaries") patientApi.summaries().then(setSummaries).catch(() => {});
   }, [view]);
 
   useEffect(() => {
@@ -258,7 +262,7 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
 
   function signOut() {
     clearToken("patient");
-    setProfile(null); setPassport(null); setRecords([]); setTeam([]); setConsent([]); setNotifications([]);
+    setProfile(null); setPassport(null); setSummaries([]); setTeam([]); setConsent([]); setNotifications([]);
     setOrganizations([]); setCaregivers([]); setSettings(null);
     setView("welcome");
   }
@@ -278,38 +282,24 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
     }
   }
 
-  async function respondToRecordSync(id: string, action: "approve" | "decline") {
-    setBusy(true); setError("");
-    try {
-      if (action === "approve") await patientApi.approveRecordSync(id);
-      if (action === "decline") await patientApi.declineRecordSync(id);
-      const [rs, r, n] = await Promise.all([patientApi.recordSyncRequests(), patientApi.records(), patientApi.notifications()]);
-      setRecordSyncRequests(rs); setRecords(r); setNotifications(n);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : "That action could not be completed.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   if (view === "welcome") {
     return (
-      <div className="min-h-screen bg-[#eaf4ef] p-4 md:grid md:place-items-center">
-        <div className="relative min-h-[760px] w-full overflow-hidden rounded-[34px] bg-[#fbfcfb] shadow-2xl md:max-w-[430px]">
-          <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#d4eddf]" />
+      <div className="min-h-screen cc-canvas p-4 md:grid md:place-items-center">
+        <div className="relative min-h-[760px] w-full overflow-hidden rounded-[34px] bg-background shadow-2xl md:max-w-[430px]">
+          <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent" />
           <div className="relative flex min-h-[760px] flex-col p-7">
             <button onClick={() => setContext("landing")} className="self-start"><Brand /></button>
             <div className="mt-auto">
-              <div className="mb-6 grid h-16 w-16 place-items-center rounded-[23px] bg-primary text-white shadow-lg shadow-primary/20"><HeartPulse size={31} /></div>
-              <p className="text-xs font-bold uppercase tracking-[.2em] text-primary">Humanet Health</p>
+              <div className="mb-6 grid h-16 w-16 place-items-center rounded-[23px] bg-primary text-primary-foreground shadow-lg shadow-primary/20"><HeartPulse size={31} /></div>
+              <p className="text-xs font-bold uppercase tracking-[.2em] text-primary">CLANCLAST</p>
               <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.04] tracking-[-.035em]">Your healthcare identity, connected.</h1>
               <p className="mt-4 text-[15px] leading-6 text-muted-foreground">Access a more connected healthcare experience wherever you receive care.</p>
               <div className="mt-8 space-y-3">
-                <button onClick={() => { setError(""); setRegForm(emptyRegForm); setOnboard(1); setView("onboarding"); }} className="w-full rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-white">Create Humanet Health ID</button>
-                <button onClick={() => { setError(""); setView("login"); }} className="w-full rounded-2xl border border-border bg-white px-5 py-4 text-sm font-bold">Sign In</button>
+                <button onClick={() => { setError(""); setRegForm(emptyRegForm); setOnboard(1); setView("onboarding"); }} className="w-full rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-primary-foreground">Create CLANCLAST ID</button>
+                <button onClick={() => { setError(""); setView("login"); }} className="w-full rounded-2xl border border-border bg-card px-5 py-4 text-sm font-bold">Sign In</button>
                 <button onClick={() => setModal("assist")} className="w-full rounded-2xl bg-muted px-5 py-4 text-sm font-bold text-primary">Continue with Provider Assistance</button>
               </div>
-              <button onClick={() => setModal("help")} className="mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-primary"><HelpCircle size={17} />I need help accessing Humanet</button>
+              <button onClick={() => setModal("help")} className="mt-6 flex w-full items-center justify-center gap-2 text-sm font-bold text-primary"><HelpCircle size={17} />I need help accessing CLANCLAST</button>
             </div>
           </div>
         </div>
@@ -320,8 +310,8 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
 
   if (view === "login") {
     return (
-      <div className="min-h-screen bg-[#eaf4ef] p-4 md:grid md:place-items-center">
-        <div className="min-h-[760px] w-full rounded-[34px] bg-white p-7 shadow-2xl md:max-w-[430px]">
+      <div className="min-h-screen cc-canvas p-4 md:grid md:place-items-center">
+        <div className="min-h-[760px] w-full rounded-[34px] bg-card p-7 shadow-2xl md:max-w-[430px]">
           <button onClick={() => setView("welcome")} className="mb-7 flex items-center gap-2 text-sm font-bold text-muted-foreground"><ArrowLeft size={17} />Back</button>
           <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">Secure sign in</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold">Welcome back</h1>
@@ -329,8 +319,8 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
           <div className="mt-7 space-y-4">
             <Input label="Mobile or email" value={loginForm.identifier} onChange={(v) => setLoginForm((f) => ({ ...f, identifier: v }))} />
             <Input label="Password" type="password" value={loginForm.password} onChange={(v) => setLoginForm((f) => ({ ...f, password: v }))} />
-            <button disabled={busy} onClick={submitLogin} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Sign in</button>
-            <p className="text-center text-xs text-muted-foreground">Demo account: +27825550198 · Patient123!</p>
+            <button disabled={busy} onClick={submitLogin} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Sign in</button>
+            <p className="text-center text-xs text-muted-foreground">Demo account: 082 555 0198 · Patient123!</p>
           </div>
           <ErrorNote message={error} />
         </div>
@@ -341,8 +331,8 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
   if (view === "onboarding") {
     const stepValid = onboard !== 1 || (regForm.fullName && regForm.dateOfBirth && regForm.nationalId && regForm.mobile && regForm.password);
     return (
-      <div className="min-h-screen bg-[#eaf4ef] p-4 md:grid md:place-items-center">
-        <div className="min-h-[760px] w-full rounded-[34px] bg-white p-7 shadow-2xl md:max-w-[430px]">
+      <div className="min-h-screen cc-canvas p-4 md:grid md:place-items-center">
+        <div className="min-h-[760px] w-full rounded-[34px] bg-card p-7 shadow-2xl md:max-w-[430px]">
           <button onClick={() => setView("welcome")} className="mb-7 flex items-center gap-2 text-sm font-bold text-muted-foreground"><ArrowLeft size={17} />Back</button>
           <div className="mb-7 flex gap-1.5">{[1, 2, 3, 4, 5].map((n) => <i key={n} className={`h-1 flex-1 rounded-full ${n <= onboard ? "bg-primary" : "bg-muted"}`} />)}</div>
           <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">Step {onboard} of 5</p>
@@ -359,7 +349,7 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
                 </>
               )}
               {onboard === 2 && (
-                <div className="rounded-3xl bg-[#eef8f2] p-5">
+                <div className="rounded-3xl bg-accent p-5">
                   <BadgeCheck className="text-primary" />
                   <p className="mt-4 font-bold">Identity verification in progress</p>
                   <p className="mt-1 text-sm leading-6 text-muted-foreground">We match your details securely with approved identity sources. Your information remains protected.</p>
@@ -369,33 +359,34 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
                 <>
                   <Input label="Emergency contact" value={regForm.emergencyContactName} onChange={(v) => updateReg("emergencyContactName", v)} />
                   <Input label="Relationship" value={regForm.emergencyContactRelationship} onChange={(v) => updateReg("emergencyContactRelationship", v)} />
-                  <Input label="Allergies" value={regForm.allergies} onChange={(v) => updateReg("allergies", v)} />
-                  <Input label="Blood type" value={regForm.bloodType} onChange={(v) => updateReg("bloodType", v)} />
+                  <Input label="Allergies (optional)" value={regForm.allergies} onChange={(v) => updateReg("allergies", v)} />
+                  <Input label="Blood type (optional)" value={regForm.bloodType} onChange={(v) => updateReg("bloodType", v)} />
+                  <p className="text-xs leading-5 text-muted-foreground">Self-declared, for emergencies only. In the real product this stays on your own device.</p>
                 </>
               )}
               {onboard === 4 && (
                 <div className="rounded-3xl bg-muted p-5">
                   <Lock className="text-primary" />
                   <p className="mt-4 font-bold">You control who can access your healthcare information.</p>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">Review and change access permissions at any time. Humanet only connects information that is authorised for sharing.</p>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">Review and change access permissions at any time. CLANCLAST only connects information that is authorised for sharing.</p>
                 </div>
               )}
               <ErrorNote message={error} />
               <button
                 disabled={busy || !stepValid}
                 onClick={() => (onboard === 4 ? submitRegistration() : setOnboard(onboard + 1))}
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-white disabled:opacity-60"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground disabled:opacity-60"
               >
                 {busy && <Spinner />}{onboard === 4 ? "Agree and continue" : "Continue"}
               </button>
             </div>
           ) : (
             <div className="mt-8 text-center">
-              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[#dcf0e9] text-primary"><CheckCircle2 size={34} /></div>
+              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-accent text-primary"><CheckCircle2 size={34} /></div>
               <p className="mt-5 font-bold">{profile?.fullName}</p>
-              <p className="font-mono text-xs text-muted-foreground">{profile?.humanetId}</p>
+              <p className="font-mono text-xs text-muted-foreground">{profile?.ccId}</p>
               <QR className="mx-auto mt-6 w-40" /><PillStatus>Identity verified</PillStatus>
-              <button onClick={() => setView("home")} className="mt-6 w-full rounded-2xl bg-primary py-4 text-sm font-bold text-white">View My Health Passport</button>
+              <button onClick={() => setView("home")} className="mt-6 w-full rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground">View My Health Passport</button>
             </div>
           )}
         </div>
@@ -406,7 +397,7 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
   const content: Record<string, React.ReactNode> = {
     home: <PatientHome go={setView} open={setModal} profile={profile} passport={passport} loading={dataLoading} />,
     passport: <Passport go={setView} passport={passport} />,
-    records: <Records open={(k, rec) => { setActiveRecord(rec); setModal(k); }} records={records} syncRequests={recordSyncRequests} respondSync={respondToRecordSync} busy={busy} medications={medications} />,
+    summaries: <Summaries open={(k, item) => { setActiveSummary(item); setModal(k); }} summaries={summaries} />,
     team: <Team go={setView} team={team} />,
     consent: <ConsentView consent={consent} respond={respondToConsent} busy={busy} open={setModal} />,
     profile: <Profile go={setView} signOut={signOut} settings={settings} />,
@@ -423,14 +414,14 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
   };
 
   return (
-    <div className={`min-h-screen bg-[#eaf4ef] p-0 md:grid md:place-items-center md:p-5 ${settings?.largeText ? "text-[17px]" : ""}`}>
-      <div className="relative min-h-screen w-full bg-[#fbfcfb] md:min-h-[760px] md:max-w-[430px] md:overflow-hidden md:rounded-[34px] md:shadow-2xl">
+    <div className={`min-h-screen cc-canvas p-0 md:grid md:place-items-center md:p-5 ${settings?.largeText ? "text-[17px]" : ""}`}>
+      <div className="relative min-h-screen w-full bg-background md:min-h-[760px] md:max-w-[430px] md:overflow-hidden md:rounded-[34px] md:shadow-2xl">
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-white/90 px-6 py-4 backdrop-blur">
           <button onClick={() => setContext("landing")}><Brand /></button>
-          <button onClick={() => setView("notifications")} className="relative rounded-full bg-muted p-2.5"><Bell size={18} />{notifications.some((n) => !n.read) && <i className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#d64d48]" />}</button>
+          <button onClick={() => setView("notifications")} className="relative rounded-full bg-muted p-2.5"><Bell size={18} />{notifications.some((n) => !n.read) && <i className="absolute right-2 top-2 h-2 w-2 rounded-full bg-critical" />}</button>
         </div>
         <div className="px-5 pb-24 pt-5">{content[view] || content.home}</div>
-        <nav className="absolute bottom-0 left-0 right-0 flex justify-around border-t border-border bg-white px-2 py-3">
+        <nav className="absolute bottom-0 left-0 right-0 flex justify-around border-t border-border bg-card px-2 py-3">
           {patientNav.map(([label, Icon]) => {
             const target = label === "Health Passport" ? "passport" : (label as string).toLowerCase();
             const active = view === target || (target === "profile" && view.startsWith("profile")) || (target === "team" && view === "connect-provider");
@@ -442,7 +433,7 @@ function Patient({ setContext }: { setContext: (c: Context) => void }) {
           })}
         </nav>
       </div>
-      {modal && <PatientModal kind={modal} close={() => setModal("")} activeRecord={activeRecord} profile={profile} goUssd={() => setContext("ussd")} />}
+      {modal && <PatientModal kind={modal} close={() => setModal("")} activeSummary={activeSummary} profile={profile} goUssd={() => setContext("ussd")} />}
     </div>
   );
 }
@@ -456,27 +447,27 @@ function PatientHome({ go, open, profile, passport, loading }: { go: (s: string)
     <>
       <p className="text-sm text-muted-foreground">{today}</p>
       <h1 className="mt-1 font-display text-3xl font-extrabold">Good morning, {firstName}</h1>
-      <section className="mt-6 overflow-hidden rounded-[27px] bg-[#173b32] p-5 text-white">
+      <section className="mt-6 overflow-hidden rounded-[27px] cc-hero p-5 text-white">
         <div className="flex justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.15em] text-[#a7d5c3]">Health Passport</p>
+            <p className="text-xs font-bold uppercase tracking-[.15em] text-brand-300">Health Passport</p>
             <p className="mt-2 font-display text-4xl font-extrabold">{loading ? "…" : completion}<span className="text-xl">%</span></p>
             <p className="text-sm text-white/65">Complete & ready to share</p>
           </div>
           <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10"><Shield size={25} /></div>
         </div>
-        <div className="mt-5 h-2 rounded-full bg-white/15"><div className="h-full rounded-full bg-[#a5dfc6]" style={{ width: `${completion}%` }} /></div>
-        <button onClick={() => go("passport")} className="mt-5 flex items-center gap-2 text-xs font-bold text-[#c5ecd9]">View health passport <ChevronRight size={14} /></button>
+        <div className="mt-5 h-2 rounded-full bg-white/15"><div className="h-full rounded-full bg-brand-500" style={{ width: `${completion}%` }} /></div>
+        <button onClick={() => go("passport")} className="mt-5 flex items-center gap-2 text-xs font-bold text-brand-200">View health passport <ChevronRight size={14} /></button>
       </section>
       <div className="mt-5 grid grid-cols-2 gap-3">
         <Action icon={<QrCode />} label="Show my QR code" onClick={() => go("qr")} />
-        <Action icon={<FileText />} label="My records" onClick={() => go("records")} />
+        <Action icon={<FileText />} label="Signed summaries" onClick={() => go("summaries")} />
         <Action icon={<Users />} label="Healthcare team" onClick={() => go("team")} />
         <Action icon={<Lock />} label="Manage consent" onClick={() => go("consent")} />
       </div>
-      <section className="mt-6 rounded-[24px] border border-[#f0d6d0] bg-[#fff8f6] p-5">
+      <section className="mt-6 rounded-[24px] border border-critical/25 bg-critical-tint p-5">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-[#ffe5df] p-2.5 text-[#b64f43]"><HeartPulse size={20} /></div>
+          <div className="rounded-xl bg-critical-tint p-2.5 text-critical"><HeartPulse size={20} /></div>
           <div><p className="font-bold">Emergency information</p><PillStatus tone="green">Verified information</PillStatus></div>
         </div>
         <div className="mt-5 grid grid-cols-3 gap-2 text-center">
@@ -485,7 +476,7 @@ function PatientHome({ go, open, profile, passport, loading }: { go: (s: string)
           <Mini label="Contact" value={ei?.emergencyContactName?.split(" ")[0] || "—"} />
         </div>
       </section>
-      <button onClick={() => open("demo")} className="mt-5 flex w-full items-center justify-between rounded-2xl bg-[#e9f5ef] p-4 text-left">
+      <button onClick={() => open("demo")} className="mt-5 flex w-full items-center justify-between rounded-2xl bg-accent p-4 text-left">
         <span><b className="block text-sm">No smartphone? Still connected.</b><span className="text-xs text-muted-foreground">Card, USSD, SMS & caregiver access</span></span>
         <ChevronRight className="text-primary" />
       </button>
@@ -495,7 +486,7 @@ function PatientHome({ go, open, profile, passport, loading }: { go: (s: string)
 
 function Action({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="rounded-[21px] border border-border bg-white p-4 text-left shadow-sm transition hover:border-primary/30">
+    <button onClick={onClick} className="rounded-[21px] border border-border bg-card p-4 text-left shadow-sm transition hover:border-primary/30">
       <span className="mb-5 block text-primary">{icon}</span>
       <span className="text-xs font-bold leading-4">{label}</span>
     </button>
@@ -504,7 +495,7 @@ function Action({ icon, label, onClick }: { icon: React.ReactNode; label: string
 
 function Mini({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-white p-2">
+    <div className="rounded-xl bg-card p-2">
       <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-xs font-bold">{value}</p>
     </div>
@@ -522,7 +513,7 @@ function Header({ title, sub }: { title: string; sub: string }) {
 
 function List({ title, icon, rows }: { title: string; icon: React.ReactNode; rows: string[] }) {
   return (
-    <section className="mt-4 rounded-[22px] border border-border bg-white p-4">
+    <section className="mt-4 rounded-[22px] border border-border bg-card p-4">
       <div className="flex gap-3 text-primary"><span className="rounded-xl bg-muted p-2">{icon}</span><p className="pt-1 text-sm font-bold text-foreground">{title}</p></div>
       <div className="mt-3 divide-y divide-border">
         {rows.length === 0 && <p className="py-3 text-xs text-muted-foreground">Nothing here yet.</p>}
@@ -550,7 +541,7 @@ function CredentialsList({ credentials }: { credentials: any[] }) {
 
   return (
     <>
-      <section className="mt-4 rounded-[22px] border border-border bg-white p-4">
+      <section className="mt-4 rounded-[22px] border border-border bg-card p-4">
         <div className="flex gap-3 text-primary"><span className="rounded-xl bg-muted p-2"><FileCheck2 /></span><p className="pt-1 text-sm font-bold text-foreground">Health credentials</p></div>
         <div className="mt-3 divide-y divide-border">
           {credentials.length === 0 && <p className="py-3 text-xs text-muted-foreground">Nothing here yet.</p>}
@@ -562,7 +553,7 @@ function CredentialsList({ credentials }: { credentials: any[] }) {
                   <button disabled={loadingId === c.id} onClick={() => showCode(c)} className="mt-0.5 font-bold text-primary disabled:opacity-60">{loadingId === c.id ? "Loading…" : "Show verification code"}</button>
                 )}
               </div>
-              {c.status?.toLowerCase() === "revoked" ? <X size={15} className="text-[#a52c31]" /> : <BadgeCheck size={15} className="text-primary" />}
+              {c.status?.toLowerCase() === "revoked" ? <X size={15} className="text-critical" /> : <BadgeCheck size={15} className="text-primary" />}
             </div>
           ))}
         </div>
@@ -571,13 +562,13 @@ function CredentialsList({ credentials }: { credentials: any[] }) {
         <Modal title={`Verification code · ${qrCredential.type}`} close={() => setQrCredential(null)}>
           <div className="text-center">
             <QR className="mx-auto w-56" src={qrUrl} />
-            <p className="mt-4 text-xs leading-5 text-muted-foreground">Anyone can scan this at Humanet Verify to confirm this credential is genuine and still valid — without seeing any of your other information.</p>
+            <p className="mt-4 text-xs leading-5 text-muted-foreground">Anyone can scan this at CLANCLAST Verify to confirm this credential is genuine and still valid — without seeing any of your other information.</p>
             <div className="mt-4 rounded-xl bg-muted px-3 py-2.5">
               <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">No scanner? Enter this reference manually</p>
               <p className="mt-1 select-all break-all font-mono text-xs font-bold">{qrCredential.id}</p>
             </div>
           </div>
-          <button onClick={() => setQrCredential(null)} className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+          <button onClick={() => setQrCredential(null)} className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
         </Modal>
       )}
     </>
@@ -598,12 +589,12 @@ function Passport({ go, passport }: { go: (s: string) => void; passport: any }) 
   return (
     <>
       <Header title="Health Passport" sub="Your trusted health identity" />
-      <section className="rounded-[24px] bg-[#eaf4ef] p-5">
+      <section className="rounded-[24px] cc-canvas p-5">
         <div className="flex gap-4">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white text-primary"><User size={22} /></div>
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-card text-primary"><User size={22} /></div>
           <div>
             <p className="font-bold">{p?.fullName || "—"}</p>
-            <p className="font-mono text-[11px] text-muted-foreground">{p?.humanetId || "—"}</p>
+            <p className="font-mono text-[11px] text-muted-foreground">{p?.ccId || "—"}</p>
             <PillStatus>{p?.identityVerified ? "Verified identity" : "Pending verification"}</PillStatus>
           </div>
         </div>
@@ -611,7 +602,7 @@ function Passport({ go, passport }: { go: (s: string) => void; passport: any }) 
       <List title="Emergency information" icon={<HeartPulse />} rows={emergencyRows} />
       <List title="Healthcare team" icon={<Users />} rows={teamRows} />
       <CredentialsList credentials={passport?.credentials || []} />
-      <button onClick={() => go("consent")} className="mt-4 w-full rounded-2xl border border-border bg-white px-4 py-4 text-left text-sm font-bold">
+      <button onClick={() => go("consent")} className="mt-4 w-full rounded-2xl border border-border bg-card px-4 py-4 text-left text-sm font-bold">
         {passport?.activePermissions ?? 0} active permission{(passport?.activePermissions ?? 0) === 1 ? "" : "s"} <span className="float-right text-primary">Manage</span>
       </button>
     </>
@@ -623,20 +614,20 @@ function QRCode({ go, open, profile, qrUrl }: { go: (s: string) => void; open: (
   async function download() {
     if (!profile) return;
     setDownloading(true);
-    try { await patientApi.downloadHealthCard(profile.humanetId); } catch { /* surfaced via demo modal if this fails repeatedly */ } finally { setDownloading(false); }
+    try { await patientApi.downloadHealthCard(profile.ccId); } catch { /* surfaced via demo modal if this fails repeatedly */ } finally { setDownloading(false); }
   }
   return (
     <div className="pt-4 text-center">
       <button onClick={() => go("home")} className="mr-auto flex items-center gap-2 text-sm font-bold text-muted-foreground"><ArrowLeft size={17} />Home</button>
-      <p className="mt-9 text-xs font-bold uppercase tracking-[.18em] text-primary">Humanet Health ID</p>
+      <p className="mt-9 text-xs font-bold uppercase tracking-[.18em] text-primary">CLANCLAST ID</p>
       <h1 className="mt-2 font-display text-2xl font-extrabold">{profile?.fullName || "—"}</h1>
       <PillStatus>Identity verified</PillStatus>
-      <QR className="mx-auto mt-9 w-64 shadow-[0_15px_35px_-18px_rgba(20,70,55,.35)]" src={qrUrl} />
-      <p className="mt-6 font-mono text-sm text-muted-foreground">{profile?.humanetId || "—"}</p>
+      <QR className="mx-auto mt-9 w-64 shadow-[0_15px_35px_-18px_rgba(7,43,39,.35)]" src={qrUrl} />
+      <p className="mt-6 font-mono text-sm text-muted-foreground">{profile?.ccId || "—"}</p>
       <p className="mx-auto mt-5 max-w-xs text-sm leading-6 text-muted-foreground">Show this QR code to a participating healthcare provider to help identify you quickly. It refreshes every 5 minutes.</p>
       <div className="mt-7 grid grid-cols-2 gap-3">
         <button onClick={() => open("brightness")} className="rounded-2xl bg-muted py-3 text-xs font-bold">Brightness mode</button>
-        <button onClick={() => open("share")} className="rounded-2xl bg-primary py-3 text-xs font-bold text-white">Share ID</button>
+        <button onClick={() => open("share")} className="rounded-2xl bg-primary py-3 text-xs font-bold text-primary-foreground">Share ID</button>
       </div>
       <button disabled={downloading} onClick={download} className="mt-3 w-full rounded-2xl border border-primary py-3 text-xs font-bold text-primary disabled:opacity-60">{downloading ? "Preparing…" : "Download Health Card (PDF)"}</button>
       <button onClick={() => open("demo")} className="mt-6 text-sm font-bold text-primary">I do not have a smartphone</button>
@@ -644,81 +635,24 @@ function QRCode({ go, open, profile, qrUrl }: { go: (s: string) => void; open: (
   );
 }
 
-function Records({ open, records, syncRequests, respondSync, busy, medications }: { open: (kind: string, record: any) => void; records: any[]; syncRequests: any[]; respondSync: (id: string, action: "approve" | "decline") => void; busy: boolean; medications: any[] }) {
-  const [tab, setTab] = useState<"records" | "medications">("records");
-  const pendingSync = syncRequests.filter((r) => r.status === "PENDING");
-
-  async function downloadAttachment(e: React.MouseEvent, recordId: string) {
-    e.stopPropagation();
-    try { await patientApi.viewRecordAttachment(recordId); } catch { /* ignore */ }
-  }
-
+function Summaries({ open, summaries }: { open: (kind: string, item: any) => void; summaries: any[] }) {
   return (
     <>
-      <Header title="Health records" sub="Connected information, with your permission." />
-      <div className="flex gap-2 rounded-2xl bg-muted p-1">
-        <button onClick={() => setTab("records")} className={`flex-1 rounded-xl py-2 text-xs font-bold ${tab === "records" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Records</button>
-        <button onClick={() => setTab("medications")} className={`flex-1 rounded-xl py-2 text-xs font-bold ${tab === "medications" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Medications</button>
+      <Header title="Signed summaries" sub="Issued by your institutions, carried by you." />
+      <div className="rounded-2xl bg-accent p-4 text-xs leading-5 text-accent-foreground"><Wifi className="mb-2" size={18} />CLANCLAST does not hold clinical records. Each institution keeps its own records; a signed summary only shows who issued it, which version it is and when, so it can be checked even offline.</div>
+      <div className="mt-4 space-y-3">
+        {summaries.length === 0 && <p className="text-sm text-muted-foreground">No signed summaries yet.</p>}
+        {summaries.map((r) => (
+          <button key={r.id} onClick={() => open("summary", r)} className="flex w-full items-center gap-3 rounded-[20px] border border-border bg-card p-4 text-left">
+            <div className="rounded-xl bg-muted p-2.5 text-primary"><FileCheck2 size={18} /></div>
+            <div className="flex-1">
+              <p className="text-sm font-bold">{r.title}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">{r.issuer} · version {r.version} · {new Date(r.issuedAt).toLocaleDateString()}</p>
+            </div>
+            <div className="text-right"><PillStatus>{r.verified ? "Signature valid" : "Unverified"}</PillStatus><ChevronRight className="ml-auto mt-2 text-muted-foreground" size={15} /></div>
+          </button>
+        ))}
       </div>
-
-      {tab === "records" && (
-        <>
-          <div className="mt-4 rounded-2xl bg-[#edf6f1] p-4 text-xs leading-5 text-[#285748]"><Wifi className="mb-2" size={18} />Humanet does not replace hospital records. It securely connects authorised information across participating organisations.</div>
-          {pendingSync.length > 0 && (
-            <div className="mt-4 space-y-3">
-              <p className="text-sm font-bold">Awaiting your approval</p>
-              {pendingSync.map((r) => (
-                <section key={r.id} className="rounded-[20px] border border-[#ead9ac] bg-[#fffbef] p-4">
-                  <PillStatus tone="amber">Action required</PillStatus>
-                  <p className="mt-3 text-sm font-bold">{r.issuer} wants to add a record</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{r.title} ({r.type})</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{r.detail}</p>
-                  {r.hasAttachment && <p className="mt-2 flex items-center gap-1.5 text-xs font-bold text-primary"><Paperclip size={13} />{r.attachmentFileName}</p>}
-                  <div className="mt-3 flex gap-2">
-                    <button disabled={busy} onClick={() => respondSync(r.id, "approve")} className="rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-white disabled:opacity-60">Approve & add to timeline</button>
-                    <button disabled={busy} onClick={() => respondSync(r.id, "decline")} className="rounded-lg border border-border px-3.5 py-2 text-xs font-bold disabled:opacity-60">Decline</button>
-                  </div>
-                </section>
-              ))}
-            </div>
-          )}
-          <div className="mt-4 space-y-3">
-            {records.length === 0 && <p className="text-sm text-muted-foreground">No records yet.</p>}
-            {records.map((r) => (
-              <button key={r.id} onClick={() => open("record", r)} className="flex w-full items-center gap-3 rounded-[20px] border border-border bg-white p-4 text-left">
-                <div className="rounded-xl bg-muted p-2.5 text-primary"><FileText size={18} /></div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold">{r.title}</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">{r.issuer} · {new Date(r.issuedAt).toLocaleDateString()}</p>
-                  {r.hasAttachment && (
-                    <span onClick={(e) => downloadAttachment(e, r.id)} className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-primary"><Paperclip size={12} />{r.attachmentFileName || "Attachment"}</span>
-                  )}
-                </div>
-                <div className="text-right"><PillStatus>{r.verified ? "Verified" : "Pending"}</PillStatus><ChevronRight className="ml-auto mt-2 text-muted-foreground" size={15} /></div>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-
-      {tab === "medications" && (
-        <div className="mt-4 space-y-3">
-          {medications.length === 0 && <p className="text-sm text-muted-foreground">No medications on file.</p>}
-          {medications.map((m) => (
-            <div key={m.id} className="rounded-[20px] border border-border bg-white p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-bold">{m.name}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{m.dosage} · {m.frequency}</p>
-                </div>
-                <PillStatus tone={m.status === "ACTIVE" ? "green" : m.status === "DISCONTINUED" ? "red" : "gray"}>{m.status.charAt(0) + m.status.slice(1).toLowerCase()}</PillStatus>
-              </div>
-              {m.notes && <p className="mt-2 text-xs leading-5 text-muted-foreground">{m.notes}</p>}
-              <p className="mt-2 text-[11px] text-muted-foreground">Prescribed by {m.prescribedBy} · {m.organization} · {new Date(m.startDate).toLocaleDateString()}{m.endDate ? ` – ${new Date(m.endDate).toLocaleDateString()}` : ""}</p>
-            </div>
-          ))}
-        </div>
-      )}
     </>
   );
 }
@@ -730,7 +664,7 @@ function Team({ go, team }: { go: (s: string) => void; team: any[] }) {
       <div className="space-y-3">
         {team.length === 0 && <p className="text-sm text-muted-foreground">No connections yet.</p>}
         {team.map((m, i) => (
-          <div className="flex items-center gap-3 rounded-[20px] border border-border bg-white p-4" key={m.id}>
+          <div className="flex items-center gap-3 rounded-[20px] border border-border bg-card p-4" key={m.id}>
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-muted text-primary">{m.role?.toLowerCase().includes("care") ? <Stethoscope size={19} /> : <Building2 size={19} />}</div>
             <div className="flex-1"><p className="text-sm font-bold">{m.label}</p><p className="text-xs text-muted-foreground">{m.role} · connected {new Date(m.connectedAt).toLocaleDateString()}</p></div>
             <PillStatus>{m.status}</PillStatus>
@@ -751,12 +685,12 @@ function ConnectProvider({ go, organizations, connect, busy, error }: { go: (s: 
       <div className="space-y-3">
         {organizations.length === 0 && <p className="text-sm text-muted-foreground">Loading organisations…</p>}
         {organizations.map((o) => (
-          <div key={o.id} className="flex items-center justify-between rounded-[20px] border border-border bg-white p-4">
+          <div key={o.id} className="flex items-center justify-between rounded-[20px] border border-border bg-card p-4">
             <div>
               <p className="text-sm font-bold">{o.name}</p>
               <div className="mt-1"><PillStatus tone={tone(o.status) as any}>{o.status === "CONNECTED" ? "Operational" : o.status === "PENDING" ? "In implementation" : "Review needed"}</PillStatus></div>
             </div>
-            <button disabled={busy} onClick={() => connect(o.id)} className="rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">Connect</button>
+            <button disabled={busy} onClick={() => connect(o.id)} className="rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground disabled:opacity-60">Connect</button>
           </div>
         ))}
       </div>
@@ -785,40 +719,40 @@ function ConsentView({ consent, respond, busy, open }: { consent: any[]; respond
       <Header title="Consent" sub="You control access to your healthcare information." />
       {pending.length === 0 && approved.length === 0 && <p className="text-sm text-muted-foreground">No access requests yet.</p>}
       {pending.map((c) => (
-        <section key={c.id} className="mb-4 rounded-[23px] border border-[#ead9ac] bg-[#fffbef] p-5">
+        <section key={c.id} className="mb-4 rounded-[23px] border border-warning/25 bg-warning-tint p-5">
           <PillStatus tone="amber">Action required</PillStatus>
           <p className="mt-3 font-bold">{c.organization} is requesting access</p>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">{c.scope.join(", ")}{c.reason ? ` — ${c.reason}` : ""}</p>
           <div className="mt-5 grid grid-cols-3 gap-2">
-            <button disabled={busy} onClick={() => respond(c.id, "approve", "ONCE")} className="rounded-xl border border-border bg-white py-3 text-[11px] font-bold disabled:opacity-60">Allow once</button>
-            <button disabled={busy} onClick={() => respond(c.id, "approve", "SEVEN_DAYS")} className="rounded-xl bg-primary py-3 text-[11px] font-bold text-white disabled:opacity-60">Allow 7 days</button>
-            <button disabled={busy} onClick={() => respond(c.id, "approve", "UNTIL_REVOKED")} className="rounded-xl border border-border bg-white py-3 text-[11px] font-bold disabled:opacity-60">Until revoked</button>
+            <button disabled={busy} onClick={() => respond(c.id, "approve", "ONCE")} className="rounded-xl border border-border bg-card py-3 text-[11px] font-bold disabled:opacity-60">Allow once</button>
+            <button disabled={busy} onClick={() => respond(c.id, "approve", "SEVEN_DAYS")} className="rounded-xl bg-primary py-3 text-[11px] font-bold text-primary-foreground disabled:opacity-60">Allow 7 days</button>
+            <button disabled={busy} onClick={() => respond(c.id, "approve", "UNTIL_REVOKED")} className="rounded-xl border border-border bg-card py-3 text-[11px] font-bold disabled:opacity-60">Until revoked</button>
           </div>
-          <button disabled={busy} onClick={() => respond(c.id, "decline")} className="mt-3 w-full py-2 text-xs font-bold text-[#a52c31] disabled:opacity-60">Decline</button>
+          <button disabled={busy} onClick={() => respond(c.id, "decline")} className="mt-3 w-full py-2 text-xs font-bold text-critical disabled:opacity-60">Decline</button>
         </section>
       ))}
       {approved.map((c) => (
-        <section key={c.id} className="mb-4 rounded-[23px] bg-[#e7f6ed] p-5">
+        <section key={c.id} className="mb-4 rounded-[23px] bg-accent p-5">
           <CheckCircle2 className="text-primary" />
           <p className="mt-3 font-bold">Access granted to {c.organization}</p>
           <p className="mt-1 text-sm text-muted-foreground">{c.scope.join(", ")} · {c.duration === "UNTIL_REVOKED" ? "Until revoked" : c.duration === "SEVEN_DAYS" ? "7 days" : "Once"}</p>
-          {expiryLabel(c) && <p className="mt-1 text-xs font-bold text-[#7a6a2e]">{expiryLabel(c)}</p>}
+          {expiryLabel(c) && <p className="mt-1 text-xs font-bold text-warning">{expiryLabel(c)}</p>}
         </section>
       ))}
       {approved.length > 0 && (
-        <section className="mt-5 rounded-[22px] border border-border bg-white p-4">
+        <section className="mt-5 rounded-[22px] border border-border bg-card p-4">
           <p className="text-sm font-bold">Active access</p>
           {approved.map((c) => (
             <div key={c.id} className="mt-3 border-t border-border py-3">
               <p className="text-sm font-bold">{c.provider}</p>
               <p className="text-xs text-muted-foreground">{c.scope.join(", ")} · {c.duration === "UNTIL_REVOKED" ? "Until revoked" : c.duration}{expiryLabel(c) ? ` · ${expiryLabel(c)}` : ""}</p>
-              <button disabled={busy} onClick={() => respond(c.id, "revoke")} className="mt-2 text-xs font-bold text-[#a52c31] disabled:opacity-60">Revoke access</button>
+              <button disabled={busy} onClick={() => respond(c.id, "revoke")} className="mt-2 text-xs font-bold text-critical disabled:opacity-60">Revoke access</button>
             </div>
           ))}
         </section>
       )}
       {history.length > 0 && (
-        <section className="mt-4 rounded-[22px] border border-border bg-white p-4">
+        <section className="mt-4 rounded-[22px] border border-border bg-card p-4">
           <p className="text-sm font-bold">Consent history</p>
           {history.map((c) => (
             <p key={c.id} className="mt-3 text-xs text-muted-foreground">{c.organization} · {c.status.toLowerCase()} · {new Date(c.respondedAt || c.createdAt).toLocaleDateString()}</p>
@@ -844,10 +778,10 @@ function Profile({ go, signOut, settings }: { go: (s: string) => void; signOut: 
       <Header title="Profile & access" sub="Personal settings and inclusive access" />
       <div className="space-y-2">
         {rows.map(([label, target]) => (
-          <button key={target} onClick={() => go(target)} className="flex w-full items-center justify-between rounded-2xl border border-border bg-white p-4 text-sm font-bold">{label}<ChevronRight size={17} className="text-muted-foreground" /></button>
+          <button key={target} onClick={() => go(target)} className="flex w-full items-center justify-between rounded-2xl border border-border bg-card p-4 text-sm font-bold">{label}<ChevronRight size={17} className="text-muted-foreground" /></button>
         ))}
       </div>
-      <button onClick={signOut} className="mt-4 w-full rounded-2xl border border-border bg-white p-4 text-sm font-bold text-[#a52c31]">Sign out</button>
+      <button onClick={signOut} className="mt-4 w-full rounded-2xl border border-border bg-card p-4 text-sm font-bold text-critical">Sign out</button>
     </>
   );
 }
@@ -882,7 +816,7 @@ function ProfilePersonal({ go, settings, save, busy, error }: { go: (s: string) 
         <Input label="Relationship" value={form.emergencyContactRelationship} onChange={(v) => setForm((f) => ({ ...f, emergencyContactRelationship: v }))} />
       </div>
       <ErrorNote message={error} />
-      <button disabled={busy} onClick={() => save(form)} className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Save changes</button>
+      <button disabled={busy} onClick={() => save(form)} className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Save changes</button>
     </>
   );
 }
@@ -894,7 +828,7 @@ function ProfilePrivacy({ go, settings, save, busy }: { go: (s: string) => void;
       <ProfileBack go={go} title="Privacy & consent preferences" sub="Set your preferred default when approving access requests." />
       <div className="space-y-3">
         {options.map(([value, label]) => (
-          <button key={value} disabled={busy} onClick={() => save({ defaultConsentDuration: value })} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left text-sm font-bold disabled:opacity-60 ${settings?.defaultConsentDuration === value ? "border-primary bg-[#f5fbf8] text-primary" : "border-border bg-white"}`}>
+          <button key={value} disabled={busy} onClick={() => save({ defaultConsentDuration: value })} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left text-sm font-bold disabled:opacity-60 ${settings?.defaultConsentDuration === value ? "border-primary bg-accent text-primary" : "border-border bg-card"}`}>
             {label}{settings?.defaultConsentDuration === value && <Check size={17} />}
           </button>
         ))}
@@ -928,21 +862,21 @@ function ProfileAccessLog({ go }: { go: (s: string) => void }) {
       {!loading && logs.length === 0 && <p className="text-sm text-muted-foreground">No access recorded yet.</p>}
       <div className="space-y-3">
         {logs.map((l) => (
-          <div key={l.id} className={`rounded-2xl border p-4 ${l.isEmergency ? "border-[#e4b6ac] bg-[#fdf4f2]" : "border-border bg-white"}`}>
+          <div key={l.id} className={`rounded-2xl border p-4 ${l.isEmergency ? "border-critical/25 bg-critical-tint" : "border-border bg-card"}`}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-bold">{l.provider} <span className="font-medium text-muted-foreground">· {l.organization}</span></p>
                 <p className="mt-1 text-xs text-muted-foreground">{l.action} · {new Date(l.createdAt).toLocaleString()}</p>
               </div>
-              {l.isEmergency && <span className="shrink-0 rounded-full bg-[#e4b6ac] px-2.5 py-1 text-[10px] font-bold text-[#7a2e20]">Emergency access</span>}
+              {l.isEmergency && <span className="shrink-0 rounded-full bg-critical/15 px-2.5 py-1 text-[10px] font-bold text-critical">Emergency access</span>}
             </div>
             {l.isEmergency && (
-              <div className="mt-3 border-t border-[#e4b6ac] pt-3">
-                <p className="text-xs text-[#7a2e20]"><b>Reason given:</b> {l.reason}</p>
+              <div className="mt-3 border-t border-critical/25 pt-3">
+                <p className="text-xs text-critical"><b>Reason given:</b> {l.reason}</p>
                 {l.acknowledgedByPatient ? (
-                  <p className="mt-2 text-xs font-bold text-[#7a2e20]">✓ You've reviewed this</p>
+                  <p className="mt-2 text-xs font-bold text-critical">✓ You've reviewed this</p>
                 ) : (
-                  <button disabled={busyId === l.id} onClick={() => acknowledge(l.id)} className="mt-2 rounded-lg bg-[#7a2e20] px-3 py-1.5 text-xs font-bold text-white disabled:opacity-60">Mark as reviewed</button>
+                  <button disabled={busyId === l.id} onClick={() => acknowledge(l.id)} className="mt-2 rounded-lg bg-critical px-3 py-1.5 text-xs font-bold text-white disabled:opacity-60">Mark as reviewed</button>
                 )}
               </div>
             )}
@@ -962,17 +896,17 @@ function ProfileCaregivers({ go, caregivers, add, remove, busy, error }: { go: (
       <div className="space-y-3">
         {caregivers.length === 0 && <p className="text-sm text-muted-foreground">No caregivers added yet.</p>}
         {caregivers.map((c) => (
-          <div key={c.id} className="flex items-center justify-between rounded-[20px] border border-border bg-white p-4">
+          <div key={c.id} className="flex items-center justify-between rounded-[20px] border border-border bg-card p-4">
             <div>
               <p className="text-sm font-bold">{c.name}</p>
               <p className="text-xs text-muted-foreground">{c.relationship}{c.phone ? ` · ${c.phone}` : ""}</p>
               {c.canSignIn && <p className="mt-1 text-[11px] font-bold text-primary">Can sign in on your behalf</p>}
             </div>
-            <button disabled={busy} onClick={() => remove(c.id)} className="text-xs font-bold text-[#a52c31] disabled:opacity-60">Remove</button>
+            <button disabled={busy} onClick={() => remove(c.id)} className="text-xs font-bold text-critical disabled:opacity-60">Remove</button>
           </div>
         ))}
       </div>
-      <div className="mt-6 rounded-[23px] border border-border bg-white p-5">
+      <div className="mt-6 rounded-[23px] border border-border bg-card p-5">
         <p className="font-bold">Add a caregiver</p>
         <div className="mt-4 space-y-4">
           <Input label="Full name" value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} />
@@ -982,7 +916,7 @@ function ProfileCaregivers({ go, caregivers, add, remove, busy, error }: { go: (
         </div>
         {wantsSignIn && <p className="mt-2 text-xs leading-5 text-muted-foreground">Adding a phone and PIN lets this person sign in separately at "Caregiver sign in" and act on your behalf for consent requests.</p>}
         <ErrorNote message={error} />
-        <button disabled={busy || !form.name || !form.relationship || (wantsSignIn && form.pin.length < 4)} onClick={() => { add(form.pin ? form : { name: form.name, relationship: form.relationship, phone: form.phone || undefined }); setForm({ name: "", relationship: "", phone: "", pin: "" }); }} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Add caregiver</button>
+        <button disabled={busy || !form.name || !form.relationship || (wantsSignIn && form.pin.length < 4)} onClick={() => { add(form.pin ? form : { name: form.name, relationship: form.relationship, phone: form.phone || undefined }); setForm({ name: "", relationship: "", phone: "", pin: "" }); }} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Add caregiver</button>
       </div>
     </>
   );
@@ -997,9 +931,9 @@ function ProfileNotificationPrefs({ go, settings, save, busy }: { go: (s: string
         {toggles.map(([key, label]) => {
           const on = settings?.[key] ?? true;
           return (
-            <button key={key} disabled={busy} onClick={() => save({ [key]: !on })} className="flex w-full items-center justify-between rounded-2xl border border-border bg-white p-4 text-left text-sm font-bold disabled:opacity-60">
+            <button key={key} disabled={busy} onClick={() => save({ [key]: !on })} className="flex w-full items-center justify-between rounded-2xl border border-border bg-card p-4 text-left text-sm font-bold disabled:opacity-60">
               {label}
-              <span className={`grid h-6 w-11 items-center rounded-full p-1 transition ${on ? "bg-primary" : "bg-muted"}`}><span className={`h-4 w-4 rounded-full bg-white transition ${on ? "translate-x-5" : ""}`} /></span>
+              <span className={`grid h-6 w-11 items-center rounded-full p-1 transition ${on ? "bg-primary" : "bg-muted"}`}><span className={`h-4 w-4 rounded-full bg-card transition ${on ? "translate-x-5" : ""}`} /></span>
             </button>
           );
         })}
@@ -1012,10 +946,10 @@ function ProfileLanguage({ go, settings, save, busy }: { go: (s: string) => void
   const languages = ["English", "Afrikaans", "isiZulu", "isiXhosa", "Sesotho"];
   return (
     <>
-      <ProfileBack go={go} title="Language" sub="Choose the language Humanet uses with you." />
+      <ProfileBack go={go} title="Language" sub="Choose the language CLANCLAST uses with you." />
       <div className="space-y-3">
         {languages.map((l) => (
-          <button key={l} disabled={busy} onClick={() => save({ language: l })} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left text-sm font-bold disabled:opacity-60 ${settings?.language === l ? "border-primary bg-[#f5fbf8] text-primary" : "border-border bg-white"}`}>
+          <button key={l} disabled={busy} onClick={() => save({ language: l })} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left text-sm font-bold disabled:opacity-60 ${settings?.language === l ? "border-primary bg-accent text-primary" : "border-border bg-card"}`}>
             {l}{settings?.language === l && <Check size={17} />}
           </button>
         ))}
@@ -1028,10 +962,10 @@ function ProfileAccessibility({ go, settings, save, busy }: { go: (s: string) =>
   const on = settings?.largeText ?? false;
   return (
     <>
-      <ProfileBack go={go} title="Accessibility" sub="Adjust Humanet to be easier for you to use." />
-      <button disabled={busy} onClick={() => save({ largeText: !on })} className="flex w-full items-center justify-between rounded-2xl border border-border bg-white p-4 text-left text-sm font-bold disabled:opacity-60">
+      <ProfileBack go={go} title="Accessibility" sub="Adjust CLANCLAST to be easier for you to use." />
+      <button disabled={busy} onClick={() => save({ largeText: !on })} className="flex w-full items-center justify-between rounded-2xl border border-border bg-card p-4 text-left text-sm font-bold disabled:opacity-60">
         <span>Larger text throughout the app<span className="mt-1 block text-xs font-medium text-muted-foreground">Increases the base text size across every screen.</span></span>
-        <span className={`grid h-6 w-11 shrink-0 items-center rounded-full p-1 transition ${on ? "bg-primary" : "bg-muted"}`}><span className={`h-4 w-4 rounded-full bg-white transition ${on ? "translate-x-5" : ""}`} /></span>
+        <span className={`grid h-6 w-11 shrink-0 items-center rounded-full p-1 transition ${on ? "bg-primary" : "bg-muted"}`}><span className={`h-4 w-4 rounded-full bg-card transition ${on ? "translate-x-5" : ""}`} /></span>
       </button>
     </>
   );
@@ -1045,7 +979,7 @@ function Notifications({ notifications }: { notifications: any[] }) {
       <Header title="Notifications" sub="The latest from your healthcare network" />
       {notifications.length === 0 && <p className="text-sm text-muted-foreground">You're all caught up.</p>}
       {notifications.map((n) => (
-        <div key={n.id} className="mb-3 rounded-2xl border border-border bg-white p-4">
+        <div key={n.id} className="mb-3 rounded-2xl border border-border bg-card p-4">
           <PillStatus tone={tone(n.category) as any}>{label(n.category)}</PillStatus>
           <p className="mt-2 text-sm font-bold">{n.title}</p>
           <p className="mt-1 text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleString()}</p>
@@ -1055,12 +989,18 @@ function Notifications({ notifications }: { notifications: any[] }) {
   );
 }
 
-function PatientModal({ kind, close, activeRecord, profile, goUssd }: { kind: string; close: () => void; activeRecord: any; profile: PatientProfile | null; goUssd: () => void }) {
-  if (kind === "record" && activeRecord) {
+function PatientModal({ kind, close, activeSummary, profile, goUssd }: { kind: string; close: () => void; activeSummary: any; profile: PatientProfile | null; goUssd: () => void }) {
+  if (kind === "summary" && activeSummary) {
     return (
-      <Modal title={activeRecord.title} close={close}>
-        <p className="text-sm leading-6 text-muted-foreground">{activeRecord.detail || `Issued by ${activeRecord.issuer} on ${new Date(activeRecord.issuedAt).toLocaleDateString()}.`}</p>
-        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+      <Modal title={activeSummary.title} close={close}>
+        <div className="grid gap-2 text-sm">
+          <p><b>Issued by:</b> {activeSummary.issuer}</p>
+          <p><b>Version:</b> {activeSummary.version}</p>
+          <p><b>Date:</b> {new Date(activeSummary.issuedAt).toLocaleDateString()}</p>
+          <p><b>Signature:</b> valid (simulated)</p>
+        </div>
+        <p className="mt-4 text-xs leading-5 text-muted-foreground">The clinical content stays with the issuing institution. This demo shows only what the summary would prove: who issued it, which version and when.</p>
+        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
       </Modal>
     );
   }
@@ -1069,16 +1009,16 @@ function PatientModal({ kind, close, activeRecord, profile, goUssd }: { kind: st
   }
   const text: Record<string, [string, string]> = {
     brightness: ["Brightness mode on", "Your screen brightness would increase so the QR code is easier to scan."],
-    share: ["Share Humanet ID", "Your identity code can be shared securely with a participating provider."],
-    connect: ["Connect a provider", "Ask a provider to send a connection request, or scan their Humanet Provider QR code."],
-    help: ["Help accessing Humanet", "Humanet works beyond smartphones. A trusted provider can help you create or retrieve your identity using a Health Card, USSD or SMS."],
-    assist: ["Provider-assisted access", "Humanet works beyond smartphones. A trusted provider can help you create or retrieve your identity using a Health Card, USSD or SMS."],
+    share: ["Share CLANCLAST ID", "Your identity code can be shared securely with a participating provider."],
+    connect: ["Connect a provider", "Ask a provider to send a connection request, or scan their CLANCLAST Provider QR code."],
+    help: ["Help accessing CLANCLAST", "CLANCLAST works beyond smartphones. A trusted provider can help you create or retrieve your identity using a Health Card, USSD or SMS."],
+    assist: ["Provider-assisted access", "CLANCLAST works beyond smartphones. A trusted provider can help you create or retrieve your identity using a Health Card, USSD or SMS."],
   };
   const [title, body] = text[kind] || ["Done", "Your changes have been saved."];
   return (
     <Modal title={title} close={close}>
       <p className="text-sm leading-6 text-muted-foreground">{body}</p>
-      <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+      <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
     </Modal>
   );
 }
@@ -1089,31 +1029,31 @@ function NoSmartphoneModal({ close, profile, goUssd }: { close: () => void; prof
   async function download() {
     if (!profile) return;
     setDownloading(true); setErr("");
-    try { await patientApi.downloadHealthCard(profile.humanetId); } catch { setErr("Could not generate your Health Card. Try again."); } finally { setDownloading(false); }
+    try { await patientApi.downloadHealthCard(profile.ccId); } catch { setErr("Could not generate your Health Card. Try again."); } finally { setDownloading(false); }
   }
   return (
     <Modal title="Every access channel belongs" close={close}>
-      <p className="text-sm leading-6 text-muted-foreground">Use your Humanet Health Card, dial in through USSD, respond by SMS, ask a provider for assistance, or nominate a caregiver.</p>
+      <p className="text-sm leading-6 text-muted-foreground">Use your CLANCLAST Health Card, dial in through USSD, respond by SMS, ask a provider for assistance, or nominate a caregiver.</p>
       <div className="mt-5 space-y-2.5">
-        <button disabled={downloading || !profile} onClick={download} className="flex w-full items-center justify-between rounded-2xl border border-border bg-white p-4 text-left text-sm font-bold disabled:opacity-60">
+        <button disabled={downloading || !profile} onClick={download} className="flex w-full items-center justify-between rounded-2xl border border-border bg-card p-4 text-left text-sm font-bold disabled:opacity-60">
           {downloading ? "Preparing your card…" : "Download Health Card (PDF)"}<CreditCard size={17} className="text-primary" />
         </button>
-        <button onClick={() => { close(); goUssd(); }} className="flex w-full items-center justify-between rounded-2xl border border-border bg-white p-4 text-left text-sm font-bold">
+        <button onClick={() => { close(); goUssd(); }} className="flex w-full items-center justify-between rounded-2xl border border-border bg-card p-4 text-left text-sm font-bold">
           Try the USSD experience<ChevronRight size={17} className="text-primary" />
         </button>
       </div>
-      {err && <p className="mt-3 text-xs font-medium text-[#a52c31]">{err}</p>}
-      <button onClick={close} className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+      {err && <p className="mt-3 text-xs font-medium text-critical">{err}</p>}
+      <button onClick={close} className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
     </Modal>
   );
 }
 
 function AccessModal({ kind, close }: { kind: string; close: () => void }) {
   return (
-    <Modal title={kind === "assist" ? "Provider-assisted access" : "Help accessing Humanet"} close={close}>
-      <p className="text-sm leading-6 text-muted-foreground">Humanet works beyond smartphones. A trusted provider can help you create or retrieve your identity using a Health Card, USSD or SMS.</p>
+    <Modal title={kind === "assist" ? "Provider-assisted access" : "Help accessing CLANCLAST"} close={close}>
+      <p className="text-sm leading-6 text-muted-foreground">CLANCLAST works beyond smartphones. A trusted provider can help you create or retrieve your identity using a Health Card, USSD or SMS.</p>
       <div className="mt-5 grid grid-cols-2 gap-2">{["Health Card", "USSD", "SMS", "Caregiver"].map((x) => <div key={x} className="rounded-xl bg-muted p-3 text-center text-xs font-bold text-primary">{x}</div>)}</div>
-      <button onClick={close} className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Find a participating provider</button>
+      <button onClick={close} className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Find a participating provider</button>
     </Modal>
   );
 }
@@ -1184,11 +1124,11 @@ function Provider({ setContext }: { setContext: (c: Context) => void }) {
 
   if (view === "login") {
     return (
-      <div className="min-h-screen bg-[#eef4f1] p-5 lg:grid lg:place-items-center">
-        <div className="grid w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-2xl lg:grid-cols-[.9fr_1.1fr]">
-          <div className="hidden bg-[#173b32] p-10 text-white lg:block">
+      <div className="min-h-screen cc-canvas p-5 lg:grid lg:place-items-center">
+        <div className="grid w-full max-w-5xl overflow-hidden rounded-[32px] bg-card shadow-2xl lg:grid-cols-[.9fr_1.1fr]">
+          <div className="hidden cc-hero p-10 text-white lg:block">
             <Brand dark />
-            <p className="mt-28 text-xs font-bold uppercase tracking-[.18em] text-[#9ed4bf]">Provider workspace</p>
+            <p className="mt-28 text-xs font-bold uppercase tracking-[.18em] text-brand-300">Provider workspace</p>
             <h1 className="mt-4 font-display text-5xl font-extrabold leading-[1.02]">Care, connected without a rip-and-replace.</h1>
             <p className="mt-6 max-w-sm text-base leading-7 text-white/65">Secure identity, consent and health-information exchange around the systems your team already uses.</p>
             <div className="mt-20 border-t border-white/15 pt-5 text-sm text-white/60">Organisation verified · South Africa</div>
@@ -1202,8 +1142,8 @@ function Provider({ setContext }: { setContext: (c: Context) => void }) {
               <div className="mt-8 space-y-4">
                 <Input label="Email" value={loginForm.email} onChange={(v) => setLoginForm((f) => ({ ...f, email: v }))} />
                 <Input label="Password" type="password" value={loginForm.password} onChange={(v) => setLoginForm((f) => ({ ...f, password: v }))} />
-                <div className="rounded-xl border border-primary/20 bg-[#f0f8f4] p-3 text-xs text-primary"><KeyRound size={15} className="mr-2 inline" />Demo: dr.naidoo@livingstone.org.za · Provider123!</div>
-                <button disabled={busy} onClick={submitLogin} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Sign in securely</button>
+                <div className="rounded-xl border border-primary/20 bg-accent p-3 text-xs text-primary"><KeyRound size={15} className="mr-2 inline" />Demo: dr.naidoo@riverside.demo · Provider123!</div>
+                <button disabled={busy} onClick={submitLogin} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Sign in securely</button>
                 <ErrorNote message={error} />
               </div>
             </div>
@@ -1227,8 +1167,8 @@ function Provider({ setContext }: { setContext: (c: Context) => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f9f7] lg:flex">
-      <aside className="hidden w-[250px] shrink-0 flex-col border-r border-[#28574b] bg-[#173b32] px-4 py-7 text-white lg:flex">
+    <div className="min-h-screen bg-background lg:flex">
+      <aside className="hidden w-[250px] shrink-0 flex-col border-r border-white/10 cc-hero px-4 py-7 text-white lg:flex">
         <button onClick={() => setContext("landing")}><Brand dark /></button>
         <div className="mt-10 space-y-1">
           {providerNav.map(([x, Icon]) => (
@@ -1244,7 +1184,7 @@ function Provider({ setContext }: { setContext: (c: Context) => void }) {
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="flex items-center justify-between border-b border-border bg-white px-5 py-4 lg:px-9">
+        <header className="flex items-center justify-between border-b border-border bg-card px-5 py-4 lg:px-9">
           <div className="flex items-center gap-3 lg:hidden"><button><Menu /></button><Brand /></div>
           <div className="hidden lg:block">
             <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
@@ -1253,9 +1193,9 @@ function Provider({ setContext }: { setContext: (c: Context) => void }) {
           <div className="flex items-center gap-4">
             <PillStatus>{profile?.organization.status === "CONNECTED" ? "Verified organisation" : profile?.organization.status || ""}</PillStatus>
             <div className="relative">
-              <button onClick={toggleNotifications} className="relative rounded-full bg-muted p-2.5"><Bell size={18} />{providerNotifications.length > 0 && <i className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#d64d48]" />}</button>
+              <button onClick={toggleNotifications} className="relative rounded-full bg-muted p-2.5"><Bell size={18} />{providerNotifications.length > 0 && <i className="absolute right-2 top-2 h-2 w-2 rounded-full bg-critical" />}</button>
               {showNotifications && (
-                <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-border bg-white p-3 shadow-xl">
+                <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-border bg-card p-3 shadow-xl">
                   <p className="px-2 py-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">Recent activity</p>
                   <div className="max-h-80 overflow-y-auto">
                     {providerNotifications.length === 0 && <p className="px-2 py-3 text-xs text-muted-foreground">Nothing new.</p>}
@@ -1270,7 +1210,7 @@ function Provider({ setContext }: { setContext: (c: Context) => void }) {
                 </div>
               )}
             </div>
-            <button onClick={() => setView("settings")} className="hidden h-9 w-9 place-items-center rounded-full bg-[#dff4e9] text-sm font-bold text-primary sm:grid">{(profile?.fullName || "").split(" ").map((n) => n[0]).join("").slice(0, 2)}</button>
+            <button onClick={() => setView("settings")} className="hidden h-9 w-9 place-items-center rounded-full bg-accent text-sm font-bold text-primary sm:grid">{(profile?.fullName || "").split(" ").map((n) => n[0]).join("").slice(0, 2)}</button>
           </div>
         </header>
         <div className="p-5 lg:p-9">{pages[view] || pages.dashboard}</div>
@@ -1292,18 +1232,18 @@ function ProviderDashboard({ go, profile }: { go: (s: string) => void; profile: 
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div><p className="text-sm text-muted-foreground">Good morning,</p><h1 className="font-display text-3xl font-extrabold">{profile?.fullName || "…"}</h1></div>
         <div className="flex items-center gap-2">
-          <button onClick={() => go("registration")} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white"><Plus className="mr-1 inline" size={16} />Register patient</button>
-          <button onClick={() => go("verification")} className="rounded-xl border border-primary/25 bg-white px-4 py-3 text-sm font-bold text-primary"><QrCode className="mr-1 inline" size={16} />Quick scan</button>
+          <button onClick={() => go("registration")} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Plus className="mr-1 inline" size={16} />Register patient</button>
+          <button onClick={() => go("verification")} className="rounded-xl border border-primary/25 bg-card px-4 py-3 text-sm font-bold text-primary"><QrCode className="mr-1 inline" size={16} />Quick scan</button>
         </div>
       </div>
       <div className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {(cards.length ? cards : [{ label: "Patients connected", value: "…" }, { label: "Pending registrations", value: "…" }, { label: "Consent requests", value: "…" }, { label: "Verification alerts", value: "…" }]).map((c: any, i: number) => {
           const I = icons[i] || Users;
-          return <div key={c.label} className="rounded-[22px] border border-border bg-white p-5"><I className="text-primary" size={20} /><p className="mt-7 text-3xl font-bold">{c.value}</p><p className="mt-1 text-sm text-muted-foreground">{c.label}</p></div>;
+          return <div key={c.label} className="rounded-[22px] border border-border bg-card p-5"><I className="text-primary" size={20} /><p className="mt-7 text-3xl font-bold">{c.value}</p><p className="mt-1 text-sm text-muted-foreground">{c.label}</p></div>;
         })}
       </div>
       <div className="mt-7 grid gap-6 xl:grid-cols-[1.2fr_.8fr]">
-        <section className="rounded-[25px] border border-border bg-white p-5">
+        <section className="rounded-[25px] border border-border bg-card p-5">
           <div className="flex justify-between">
             <div><h2 className="font-display text-lg font-extrabold">Recent activity</h2><p className="text-sm text-muted-foreground">Priority actions for your team</p></div>
             <button onClick={() => go("activity")} className="text-sm font-bold text-primary">View all</button>
@@ -1311,18 +1251,18 @@ function ProviderDashboard({ go, profile }: { go: (s: string) => void; profile: 
           {(data?.recentActivity || []).length === 0 && <p className="mt-4 border-t border-border pt-4 text-sm text-muted-foreground">No activity yet.</p>}
           {(data?.recentActivity || []).map((a: any) => (
             <button onClick={() => a.status?.toLowerCase().includes("consent") && go("consent requests")} className="mt-4 flex w-full items-center gap-3 border-t border-border pt-4 text-left" key={a.id}>
-              <span className={`grid h-10 w-10 place-items-center rounded-xl ${a.status?.toLowerCase().includes("required") || a.status?.toLowerCase().includes("pending") ? "bg-[#fff0d1] text-[#996415]" : "bg-muted text-primary"}`}>{a.status?.toLowerCase().includes("pending") || a.status?.toLowerCase().includes("required") ? <Clock size={18} /> : <CheckCircle2 size={18} />}</span>
+              <span className={`grid h-10 w-10 place-items-center rounded-xl ${a.status?.toLowerCase().includes("required") || a.status?.toLowerCase().includes("pending") ? "bg-warning-tint text-warning" : "bg-muted text-primary"}`}>{a.status?.toLowerCase().includes("pending") || a.status?.toLowerCase().includes("required") ? <Clock size={18} /> : <CheckCircle2 size={18} />}</span>
               <span className="flex-1"><b className="block text-sm">{a.action}</b><span className="text-xs text-muted-foreground">{a.subjectLabel}</span></span>
               <PillStatus tone={a.status?.toLowerCase().includes("required") || a.status?.toLowerCase().includes("pending") ? "amber" : "green"}>{a.status}</PillStatus>
             </button>
           ))}
         </section>
-        <section className="rounded-[25px] bg-[#173b32] p-5 text-white">
-          <p className="text-xs font-bold uppercase tracking-[.17em] text-[#a7d5c3]">Quick actions</p>
-          {[["Scan Humanet QR", "verification"], ["Search patient", "patients"], ["Request information", "consent requests"], ["Create referral", "referrals"]].map(([x, v]) => (
+        <section className="rounded-[25px] cc-hero p-5 text-white">
+          <p className="text-xs font-bold uppercase tracking-[.17em] text-brand-300">Quick actions</p>
+          {[["Scan CLANCLAST QR", "verification"], ["Search patient", "patients"], ["Request information", "consent requests"], ["Create referral", "referrals"]].map(([x, v]) => (
             <button key={x} onClick={() => go(v)} className="mt-3 flex w-full items-center justify-between rounded-xl bg-white/10 px-4 py-3 text-left text-sm font-bold hover:bg-white/15">{x}<ArrowRight size={16} /></button>
           ))}
-          <p className="mt-6 text-xs leading-5 text-white/55">Humanet layers onto the clinical systems your organisation already uses.</p>
+          <p className="mt-6 text-xs leading-5 text-white/55">CLANCLAST layers onto the clinical systems your organisation already uses.</p>
         </section>
       </div>
     </>
@@ -1338,9 +1278,6 @@ function Patients({ go, notify }: { go: (s: string) => void; notify: (kind: stri
   const [credType, setCredType] = useState("");
   const [credStatus, setCredStatus] = useState("Verified");
   const [issuing, setIssuing] = useState(false);
-  const [orgs, setOrgs] = useState<any[]>([]);
-  const [importForm, setImportForm] = useState({ issuerOrganizationId: "", type: "", title: "", detail: "" });
-  const [importing, setImporting] = useState(false);
   const [emergencyReason, setEmergencyReason] = useState("");
   const [emergencyResult, setEmergencyResult] = useState<any>(null);
   const [emergencyBusy, setEmergencyBusy] = useState(false);
@@ -1349,43 +1286,7 @@ function Patients({ go, notify }: { go: (s: string) => void; notify: (kind: stri
   const [requestScopes, setRequestScopes] = useState<string[]>([]);
   const [requestReason, setRequestReason] = useState("");
   const [requesting, setRequesting] = useState(false);
-  const [medName, setMedName] = useState("");
-  const [medDosage, setMedDosage] = useState("");
-  const [medFrequency, setMedFrequency] = useState("");
-  const [medNotes, setMedNotes] = useState("");
-  const [prescribing, setPrescribing] = useState(false);
-  const [attachment, setAttachment] = useState<{ data: string; mimeType: string; fileName: string } | null>(null);
-  const [attachmentError, setAttachmentError] = useState("");
-
-  const ALLOWED_ATTACHMENT_TYPES = ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"];
-
-  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    setAttachmentError("");
-    if (!file) { setAttachment(null); return; }
-    if (!ALLOWED_ATTACHMENT_TYPES.includes(file.type)) {
-      setAttachmentError("Only PDF, PNG, JPEG or WEBP files are supported.");
-      e.target.value = "";
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setAttachmentError("File is too large (max 5MB).");
-      e.target.value = "";
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      const base64 = result.split(",")[1] || "";
-      setAttachment({ data: base64, mimeType: file.type, fileName: file.name });
-    };
-    reader.onerror = () => setAttachmentError("Could not read that file.");
-    reader.readAsDataURL(file);
-  }
-
-  const SCOPE_OPTIONS = ["Laboratory results", "Referral information", "Consultation notes", "Vaccination records", "Prescription history", "Imaging results"];
-
-  useEffect(() => { providerApi.connections().then((d) => setOrgs(d.organizations)).catch(() => {}); }, []);
+  const SCOPE_OPTIONS = ["Signed summaries", "Referral information", "Laboratory results", "Vaccination records", "Emergency information"];
 
   async function runSearch(q: string) {
     setLoading(true);
@@ -1397,7 +1298,6 @@ function Patients({ go, notify }: { go: (s: string) => void; notify: (kind: stri
     setDetailLoading(true);
     setEmergencyResult(null); setShowEmergencyForm(false); setEmergencyReason("");
     setShowRequestForm(false); setRequestScopes([]); setRequestReason("");
-    setAttachment(null); setAttachmentError("");
     try { setSelected(await providerApi.patient(id)); } catch { /* ignore */ } finally { setDetailLoading(false); }
   }
 
@@ -1465,201 +1365,106 @@ function Patients({ go, notify }: { go: (s: string) => void; notify: (kind: stri
     }
   }
 
-  async function importRecord() {
-    if (!selected || !importForm.issuerOrganizationId || !importForm.type || !importForm.title || !importForm.detail) return;
-    setImporting(true);
-    try {
-      await providerApi.importRecord(selected.id, {
-        ...importForm,
-        attachmentData: attachment?.data,
-        attachmentMimeType: attachment?.mimeType,
-        attachmentFileName: attachment?.fileName,
-      });
-      setImportForm({ issuerOrganizationId: "", type: "", title: "", detail: "" });
-      setAttachment(null);
-      await selectPatient(selected.id);
-      notify("record-imported");
-    } catch (e) {
-      notify("error", { message: e instanceof ApiError ? e.message : "Could not import that record." });
-    } finally {
-      setImporting(false);
-    }
-  }
-
-  async function prescribeMedication() {
-    if (!selected || !medName || !medDosage || !medFrequency) return;
-    setPrescribing(true);
-    try {
-      await providerApi.prescribeMedication(selected.id, { name: medName, dosage: medDosage, frequency: medFrequency, notes: medNotes || undefined });
-      setMedName(""); setMedDosage(""); setMedFrequency(""); setMedNotes("");
-      await selectPatient(selected.id);
-      notify("medication-prescribed");
-    } catch (e) {
-      notify("error", { message: e instanceof ApiError ? e.message : "Could not prescribe that medication." });
-    } finally {
-      setPrescribing(false);
-    }
-  }
-
-  async function viewAttachment(recordId: string) {
-    if (!selected) return;
-    try { await providerApi.viewRecordAttachment(selected.id, recordId); } catch { /* ignore */ }
-  }
-
   return (
     <>
-      <Header title="Patients" sub="Find, verify and connect with a Humanet identity." />
+      <Header title="Patients" sub="Find, verify and connect with a CLANCLAST identity." />
       <div className="flex gap-2">
-        <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-white px-3">
+        <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3">
           <Search size={18} className="text-muted-foreground" />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name, mobile or Humanet ID" className="w-full bg-transparent py-3 text-sm outline-none" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name, mobile or CLANCLAST ID" className="w-full bg-transparent py-3 text-sm outline-none" />
         </div>
-        <button onClick={() => runSearch(query)} className="rounded-xl bg-primary px-4 text-sm font-bold text-white">Search</button>
+        <button onClick={() => runSearch(query)} className="rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground">Search</button>
       </div>
       <div className="mt-4 space-y-2">
         {loading && <p className="text-sm text-muted-foreground">Searching…</p>}
         {!loading && results.length === 0 && <p className="text-sm text-muted-foreground">No patients found.</p>}
         {results.map((p) => (
-          <button key={p.id} onClick={() => selectPatient(p.id)} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left ${selected?.id === p.id ? "border-primary bg-[#f5fbf8]" : "border-border bg-white"}`}>
-            <span><b className="block text-sm">{p.fullName}</b><span className="font-mono text-xs text-muted-foreground">{p.humanetId}</span></span>
+          <button key={p.id} onClick={() => selectPatient(p.id)} className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left ${selected?.id === p.id ? "border-primary bg-accent" : "border-border bg-card"}`}>
+            <span><b className="block text-sm">{p.fullName}</b><span className="font-mono text-xs text-muted-foreground">{p.ccId}</span></span>
             {p.identityVerified && <PillStatus>Verified</PillStatus>}
           </button>
         ))}
       </div>
       {detailLoading && <p className="mt-4 text-sm text-muted-foreground">Loading patient…</p>}
       {selected && !detailLoading && (
-        <section className="mt-5 rounded-[24px] border border-border bg-white p-5">
+        <section className="mt-5 rounded-[24px] border border-border bg-card p-5">
           <div className="flex flex-wrap justify-between gap-3">
-            <div><p className="font-display text-xl font-extrabold">{selected.fullName}</p><p className="font-mono text-xs text-muted-foreground">{selected.humanetId}</p></div>
+            <div><p className="font-display text-xl font-extrabold">{selected.fullName}</p><p className="font-mono text-xs text-muted-foreground">{selected.ccId}</p></div>
             {selected.identityVerified && <PillStatus>Identity verified</PillStatus>}
           </div>
           <div className="mt-5 grid gap-4 border-t border-border pt-5 md:grid-cols-3">
-            <Mini label="Allergies" value={selected.allergies || "—"} />
+            <Mini label="Identity" value={selected.identityVerified ? "Verified" : "Not yet verified"} />
             <Mini label="Emergency contact" value={selected.emergencyContactName || "—"} />
             <Mini label="Last interaction" value={selected.lastInteraction ? new Date(selected.lastInteraction).toLocaleDateString() : "—"} />
           </div>
-          <div className="mt-5 rounded-xl bg-[#f5f8f6] p-4 text-sm text-muted-foreground">
+          <div className="mt-5 rounded-xl bg-muted p-4 text-sm text-muted-foreground">
             {selected.accessGranted ? (
-              <><CheckCircle2 className="mr-2 inline text-primary" size={16} /><b className="text-foreground">Authorised information available.</b> {selected.authorisedRecords?.length || 0} record(s) shared.</>
+              <><CheckCircle2 className="mr-2 inline text-primary" size={16} /><b className="text-foreground">Consent active.</b> {selected.sharedSummaries || 0} signed summar{selected.sharedSummaries === 1 ? "y" : "ies"} shared. Clinical records stay with the institution that holds them.</>
             ) : (
               <><Lock className="mr-2 inline text-primary" size={16} /><b className="text-foreground">Additional information requires patient consent.</b></>
             )}
           </div>
-          {selected.accessGranted && (selected.authorisedRecords || []).length > 0 && (
-            <div className="mt-3 space-y-2">
-              {(selected.authorisedRecords || []).map((r: any) => (
-                <div key={r.id} className="flex items-center justify-between rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs">
-                  <span><b>{r.title}</b> <span className="text-muted-foreground">· {r.type} · {r.issuer}</span></span>
-                  {r.hasAttachment && (
-                    <button onClick={() => viewAttachment(r.id)} className="flex items-center gap-1 font-bold text-primary"><Paperclip size={12} />{r.attachmentFileName || "View"}</button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
           <div className="mt-5 flex gap-3">
-            <button onClick={() => setShowRequestForm((s) => !s)} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white">{selected.accessGranted ? "Request more access" : "Request access"}</button>
-            <button onClick={() => notify("visit")} className="rounded-xl border border-border px-4 py-3 text-sm font-bold">Record visit</button>
-            <button onClick={() => setShowEmergencyForm((s) => !s)} className="ml-auto rounded-xl border border-[#e4b6ac] bg-[#fdf4f2] px-4 py-3 text-sm font-bold text-[#7a2e20]">Emergency access</button>
+            <button onClick={() => setShowRequestForm((s) => !s)} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">{selected.accessGranted ? "Request more access" : "Request access"}</button>
+            <button onClick={() => setShowEmergencyForm((s) => !s)} className="ml-auto rounded-xl border border-critical/25 bg-critical-tint px-4 py-3 text-sm font-bold text-critical">Emergency access</button>
           </div>
           {showRequestForm && (
-            <div className="mt-3 rounded-2xl border border-border bg-[#f5f8f6] p-4">
+            <div className="mt-3 rounded-2xl border border-border bg-muted p-4">
               <p className="text-xs font-bold text-muted-foreground">Choose what you're requesting access to.</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {SCOPE_OPTIONS.map((s) => (
-                  <button key={s} onClick={() => toggleScope(s)} className={`rounded-full border px-3 py-1.5 text-xs font-bold ${requestScopes.includes(s) ? "border-primary bg-primary text-white" : "border-border bg-white text-foreground"}`}>{s}</button>
+                  <button key={s} onClick={() => toggleScope(s)} className={`rounded-full border px-3 py-1.5 text-xs font-bold ${requestScopes.includes(s) ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground"}`}>{s}</button>
                 ))}
               </div>
-              <textarea value={requestReason} onChange={(e) => setRequestReason(e.target.value)} placeholder="Reason (optional) — e.g. cardiology follow-up" rows={2} className="mt-3 w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none" />
+              <textarea value={requestReason} onChange={(e) => setRequestReason(e.target.value)} placeholder="Reason (optional) — e.g. cardiology follow-up" rows={2} className="mt-3 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs font-medium outline-none" />
               <div className="mt-3 flex gap-2">
-                <button disabled={requesting || requestScopes.length === 0} onClick={requestAccess} className="rounded-lg bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{requesting ? "Sending…" : "Send request"}</button>
+                <button disabled={requesting || requestScopes.length === 0} onClick={requestAccess} className="rounded-lg bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground disabled:opacity-60">{requesting ? "Sending…" : "Send request"}</button>
                 <button onClick={() => setShowRequestForm(false)} className="rounded-lg border border-border px-4 py-2.5 text-xs font-bold">Cancel</button>
               </div>
             </div>
           )}
           {showEmergencyForm && (
-            <div className="mt-3 rounded-2xl border border-[#e4b6ac] bg-[#fdf4f2] p-4">
-              <p className="text-xs font-bold text-[#7a2e20]">Break-glass access bypasses normal consent. It is permanently logged for this patient to review, and cannot be undone.</p>
-              <textarea value={emergencyReason} onChange={(e) => setEmergencyReason(e.target.value)} placeholder="Describe the emergency and why immediate access is needed (min. 10 characters)…" rows={3} className="mt-3 w-full rounded-xl border border-[#e4b6ac] bg-white px-3.5 py-2.5 text-xs font-medium outline-none" />
+            <div className="mt-3 rounded-2xl border border-critical/25 bg-critical-tint p-4">
+              <p className="text-xs font-bold text-critical">Break-glass access bypasses normal consent. It is permanently logged for this patient to review, and cannot be undone.</p>
+              <textarea value={emergencyReason} onChange={(e) => setEmergencyReason(e.target.value)} placeholder="Describe the emergency and why immediate access is needed (min. 10 characters)…" rows={3} className="mt-3 w-full rounded-xl border border-critical/25 bg-card px-3.5 py-2.5 text-xs font-medium outline-none" />
               <div className="mt-3 flex gap-2">
-                <button disabled={emergencyBusy || emergencyReason.trim().length < 10} onClick={useEmergencyAccess} className="rounded-lg bg-[#7a2e20] px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{emergencyBusy ? "Accessing…" : "Confirm emergency access"}</button>
-                <button onClick={() => setShowEmergencyForm(false)} className="rounded-lg border border-[#e4b6ac] px-4 py-2.5 text-xs font-bold text-[#7a2e20]">Cancel</button>
+                <button disabled={emergencyBusy || emergencyReason.trim().length < 10} onClick={useEmergencyAccess} className="rounded-lg bg-critical px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{emergencyBusy ? "Accessing…" : "Confirm emergency access"}</button>
+                <button onClick={() => setShowEmergencyForm(false)} className="rounded-lg border border-critical/25 px-4 py-2.5 text-xs font-bold text-critical">Cancel</button>
               </div>
             </div>
           )}
           {emergencyResult && (
-            <div className="mt-3 rounded-2xl border border-[#e4b6ac] bg-[#fdf4f2] p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#7a2e20]">Emergency info (break-glass)</p>
+            <div className="mt-3 rounded-2xl border border-critical/25 bg-critical-tint p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-critical">Emergency info (break-glass)</p>
               <p className="mt-2 text-sm"><b>Blood type:</b> {emergencyResult.bloodType || "Not on file"}</p>
               <p className="mt-1 text-sm"><b>Allergies:</b> {emergencyResult.allergies || "Not on file"}</p>
               <p className="mt-1 text-sm"><b>Emergency contact:</b> {emergencyResult.emergencyContactName ? `${emergencyResult.emergencyContactName} (${emergencyResult.emergencyContactRelationship || "—"})` : "Not on file"}</p>
-              <p className="mt-3 text-[11px] text-[#7a2e20]">The patient has been notified and this access is recorded in their access log.</p>
+              <p className="mt-3 text-[11px] text-critical">The patient has been notified and this access is recorded in their access log.</p>
             </div>
           )}
           <div className="mt-6 border-t border-border pt-5">
             <p className="text-sm font-bold">Credentials</p>
             {(selected.credentials || []).length === 0 && <p className="mt-2 text-xs text-muted-foreground">No credentials issued yet.</p>}
             {(selected.credentials || []).map((c: any) => (
-              <div key={c.id} className="mt-2 flex items-center justify-between rounded-xl bg-[#f5f8f6] px-3 py-2 text-xs">
+              <div key={c.id} className="mt-2 flex items-center justify-between rounded-xl bg-muted px-3 py-2 text-xs">
                 <span><b>{c.type}</b> · {c.issuer}</span>
                 <div className="flex items-center gap-2">
                   <PillStatus tone={c.status.toLowerCase() === "revoked" ? "red" : "green"}>{c.status}</PillStatus>
                   {c.status.toLowerCase() !== "revoked" && (
-                    <button disabled={revokingId === c.id} onClick={() => revokeCred(c.id)} className="text-[11px] font-bold text-[#a52c31] disabled:opacity-60">{revokingId === c.id ? "Revoking…" : "Revoke"}</button>
+                    <button disabled={revokingId === c.id} onClick={() => revokeCred(c.id)} className="text-[11px] font-bold text-critical disabled:opacity-60">{revokingId === c.id ? "Revoking…" : "Revoke"}</button>
                   )}
                 </div>
               </div>
             ))}
             <div className="mt-4 flex flex-wrap gap-2">
-              <input value={credType} onChange={(e) => setCredType(e.target.value)} placeholder="Credential type, e.g. Vaccination record" className="min-w-[220px] flex-1 rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
-              <select value={credStatus} onChange={(e) => setCredStatus(e.target.value)} className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium outline-none">
+              <input value={credType} onChange={(e) => setCredType(e.target.value)} placeholder="Credential type, e.g. Vaccination record" className="min-w-[220px] flex-1 rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
+              <select value={credStatus} onChange={(e) => setCredStatus(e.target.value)} className="rounded-xl border border-border bg-card px-3 py-2.5 text-xs font-medium outline-none">
                 <option>Verified</option>
                 <option>Active</option>
                 <option>Pending</option>
               </select>
-              <button disabled={issuing || !credType} onClick={issueCredential} className="rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{issuing ? "Issuing…" : "Issue credential"}</button>
+              <button disabled={issuing || !credType} onClick={issueCredential} className="rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground disabled:opacity-60">{issuing ? "Issuing…" : "Issue credential"}</button>
             </div>
-          </div>
-          <div className="mt-6 border-t border-border pt-5">
-            <p className="text-sm font-bold">Medications</p>
-            {(selected.medications === undefined) && <p className="mt-2 text-xs text-muted-foreground">Only visible once your organisation holds active consent scoped to prescription history.</p>}
-            {(selected.medications || []).length === 0 && selected.medications !== undefined && <p className="mt-2 text-xs text-muted-foreground">No medications on file.</p>}
-            {(selected.medications || []).map((m: any) => (
-              <div key={m.id} className="mt-2 flex items-center justify-between rounded-xl bg-[#f5f8f6] px-3 py-2 text-xs">
-                <span><b>{m.name}</b> {m.dosage} · {m.frequency}</span>
-                <PillStatus tone={m.status === "ACTIVE" ? "green" : m.status === "DISCONTINUED" ? "red" : "gray"}>{m.status}</PillStatus>
-              </div>
-            ))}
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <input value={medName} onChange={(e) => setMedName(e.target.value)} placeholder="Medication name" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
-              <input value={medDosage} onChange={(e) => setMedDosage(e.target.value)} placeholder="Dosage, e.g. 5mg" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
-              <input value={medFrequency} onChange={(e) => setMedFrequency(e.target.value)} placeholder="Frequency, e.g. Once daily" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
-              <input value={medNotes} onChange={(e) => setMedNotes(e.target.value)} placeholder="Notes (optional)" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
-            </div>
-            <button disabled={prescribing || !medName || !medDosage || !medFrequency} onClick={prescribeMedication} className="mt-3 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{prescribing ? "Prescribing…" : "Prescribe medication"}</button>
-          </div>
-          <div className="mt-6 border-t border-border pt-5">
-            <p className="text-sm font-bold">Request an incoming record sync</p>
-            <p className="mt-1 text-xs text-muted-foreground">Represents another connected organisation's own system asking to sync a record into Humanet. The patient must approve it before it's added to their timeline.</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              <select value={importForm.issuerOrganizationId} onChange={(e) => setImportForm((f) => ({ ...f, issuerOrganizationId: e.target.value }))} className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium outline-none">
-                <option value="">Source organisation…</option>
-                {orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-              </select>
-              <input value={importForm.type} onChange={(e) => setImportForm((f) => ({ ...f, type: e.target.value }))} placeholder="Type, e.g. Laboratory" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20" />
-              <input value={importForm.title} onChange={(e) => setImportForm((f) => ({ ...f, title: e.target.value }))} placeholder="Title, e.g. Cholesterol panel" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20 sm:col-span-2" />
-              <input value={importForm.detail} onChange={(e) => setImportForm((f) => ({ ...f, detail: e.target.value }))} placeholder="Detail summary" className="rounded-xl border border-border bg-white px-3.5 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20 sm:col-span-2" />
-              <div className="sm:col-span-2">
-                <label className="flex w-full cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border bg-white px-3.5 py-2.5 text-xs font-medium text-muted-foreground">
-                  <Paperclip size={14} />
-                  {attachment ? attachment.fileName : "Attach a document (optional) — PDF, PNG or JPEG, max 5MB"}
-                  <input type="file" accept="application/pdf,image/png,image/jpeg,image/webp" onChange={handleFileSelect} className="hidden" />
-                </label>
-                {attachmentError && <p className="mt-1 text-[11px] font-bold text-[#a52c31]">{attachmentError}</p>}
-                {attachment && <button onClick={() => setAttachment(null)} className="mt-1 text-[11px] font-bold text-muted-foreground underline">Remove attachment</button>}
-              </div>
-            </div>
-            <button disabled={importing || !importForm.issuerOrganizationId || !importForm.type || !importForm.title || !importForm.detail} onClick={importRecord} className="mt-3 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{importing ? "Sending…" : "Send sync request"}</button>
           </div>
         </section>
       )}
@@ -1668,7 +1473,7 @@ function Patients({ go, notify }: { go: (s: string) => void; notify: (kind: stri
 }
 
 function Registration({ notify }: { notify: (kind: string, payload?: any) => void }) {
-  const emptyForm = { fullName: "", dateOfBirth: "", nationalId: "", mobile: "", emergencyContactName: "", emergencyContactRelationship: "", allergies: "", bloodType: "" };
+  const emptyForm = { fullName: "", dateOfBirth: "", nationalId: "", mobile: "", emergencyContactName: "", emergencyContactRelationship: "" };
   const [form, setForm] = useState(emptyForm);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -1696,13 +1501,13 @@ function Registration({ notify }: { notify: (kind: string, payload?: any) => voi
 
   return (
     <>
-      <Header title="Patient registration" sub="Verify an existing Humanet identity or create one with assistance." />
+      <Header title="Patient registration" sub="Verify an existing CLANCLAST identity or create one with assistance." />
       <div className="grid gap-3 md:grid-cols-2">
-        {[[QrCode, "Scan Humanet QR", "Quick identity matching for smartphone users"], [CreditCard, "Scan Health Card", "For cardholders and feature-phone patients"], [Search, "Enter Humanet ID", "Look up a known identity"], [Plus, "Create new identity", "Provider-assisted registration, below"]].map(([I, a, b]: any) => (
-          <div key={a} className="rounded-[23px] border border-border bg-white p-5"><I className="text-primary" /><p className="mt-7 font-bold">{a}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{b}</p></div>
+        {[[QrCode, "Scan CLANCLAST QR", "Quick identity matching for smartphone users"], [CreditCard, "Scan Health Card", "For cardholders and feature-phone patients"], [Search, "Enter CLANCLAST ID", "Look up a known identity"], [Plus, "Create new identity", "Provider-assisted registration, below"]].map(([I, a, b]: any) => (
+          <div key={a} className="rounded-[23px] border border-border bg-card p-5"><I className="text-primary" /><p className="mt-7 font-bold">{a}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{b}</p></div>
         ))}
       </div>
-      <div className="mt-6 rounded-[23px] border border-border bg-white p-6">
+      <div className="mt-6 rounded-[23px] border border-border bg-card p-6">
         <p className="font-bold">Create new identity</p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <Input label="Full name" value={form.fullName} onChange={(v) => update("fullName", v)} />
@@ -1711,22 +1516,20 @@ function Registration({ notify }: { notify: (kind: string, payload?: any) => voi
           <Input label="Mobile number" value={form.mobile} onChange={(v) => update("mobile", v)} />
           <Input label="Emergency contact" value={form.emergencyContactName} onChange={(v) => update("emergencyContactName", v)} />
           <Input label="Relationship" value={form.emergencyContactRelationship} onChange={(v) => update("emergencyContactRelationship", v)} />
-          <Input label="Allergies" value={form.allergies} onChange={(v) => update("allergies", v)} />
-          <Input label="Blood type" value={form.bloodType} onChange={(v) => update("bloodType", v)} />
         </div>
         <ErrorNote message={error} />
-        <button disabled={busy} onClick={submit} className="mt-5 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Create Humanet identity</button>
+        <button disabled={busy} onClick={submit} className="mt-5 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Create CLANCLAST identity</button>
       </div>
-      <div className="mt-6 rounded-[23px] bg-[#eef7f2] p-5">
-        <p className="font-bold text-primary">Humanet helps reduce duplicate registration, verify patient identity and connect authorised information.</p>
-        <p className="mt-2 text-sm text-muted-foreground">No smartphone? Use a Humanet Health Card, Humanet ID, USSD verification or provider-assisted registration.</p>
+      <div className="mt-6 rounded-[23px] bg-accent p-5">
+        <p className="font-bold text-primary">CLANCLAST helps reduce duplicate registration, verify patient identity and connect authorised information.</p>
+        <p className="mt-2 text-sm text-muted-foreground">No smartphone? Use a CLANCLAST Health Card, CLANCLAST ID, USSD verification or provider-assisted registration.</p>
       </div>
     </>
   );
 }
 
 function Verification({ notify }: { notify: (kind: string, payload?: any) => void }) {
-  const [humanetId, setHumanetId] = useState("HN-8042-1975");
+  const [ccId, setCcId] = useState("CC-4821-1990");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [last, setLast] = useState<any>(null);
@@ -1734,7 +1537,7 @@ function Verification({ notify }: { notify: (kind: string, payload?: any) => voi
   async function verify() {
     setBusy(true); setError("");
     try {
-      const res = await providerApi.verify({ humanetId });
+      const res = await providerApi.verify({ ccId });
       setLast(res);
       notify("verified", res);
     } catch (e) {
@@ -1746,20 +1549,20 @@ function Verification({ notify }: { notify: (kind: string, payload?: any) => voi
 
   return (
     <>
-      <Header title="Humanet Verify" sub="Fast, confidence-building checks for care teams." />
+      <Header title="CLANCLAST Verify" sub="Fast, confidence-building checks for care teams." />
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-[25px] bg-[#173b32] p-7 text-white"><QrCode size={29} /><p className="mt-12 font-display text-xl font-extrabold">Scan QR or Health Card</p><p className="mt-2 text-sm text-white/60">Camera scanning isn't available in this demo — enter the Humanet ID below instead.</p></div>
-        <div className="rounded-[25px] border border-border bg-white p-7"><BadgeCheck className="text-primary" size={29} /><p className="mt-12 font-display text-xl font-extrabold">Verify a credential</p><p className="mt-2 text-sm text-muted-foreground">Confirm issuer, status and validity.</p></div>
+        <div className="rounded-[25px] cc-hero p-7 text-white"><QrCode size={29} /><p className="mt-12 font-display text-xl font-extrabold">Scan QR or Health Card</p><p className="mt-2 text-sm text-white/60">Camera scanning isn't available in this demo — enter the CLANCLAST ID below instead.</p></div>
+        <div className="rounded-[25px] border border-border bg-card p-7"><BadgeCheck className="text-primary" size={29} /><p className="mt-12 font-display text-xl font-extrabold">Verify a credential</p><p className="mt-2 text-sm text-muted-foreground">Confirm issuer, status and validity.</p></div>
       </div>
-      <div className="mt-6 rounded-[23px] border border-border bg-white p-6">
-        <label className="text-xs font-bold text-muted-foreground">Humanet ID</label>
+      <div className="mt-6 rounded-[23px] border border-border bg-card p-6">
+        <label className="text-xs font-bold text-muted-foreground">CLANCLAST ID</label>
         <div className="mt-2 flex gap-2">
-          <input value={humanetId} onChange={(e) => setHumanetId(e.target.value)} className="flex-1 rounded-xl border border-border bg-muted px-4 py-3.5 text-sm font-bold outline-none" />
-          <button disabled={busy} onClick={verify} className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Verify</button>
+          <input value={ccId} onChange={(e) => setCcId(e.target.value)} className="flex-1 rounded-xl border border-border bg-muted px-4 py-3.5 text-sm font-bold outline-none" />
+          <button disabled={busy} onClick={verify} className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Verify</button>
         </div>
         <ErrorNote message={error} />
       </div>
-      <section className="mt-6 rounded-[23px] border border-border bg-white p-5">
+      <section className="mt-6 rounded-[23px] border border-border bg-card p-5">
         <p className="text-sm font-bold">Recent verification</p>
         {last ? (
           <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
@@ -1820,51 +1623,50 @@ function CheckIn({ notify, go }: { notify: (kind: string, payload?: any) => void
   return (
     <>
       <Header title="Check-in" sub="Identify a returning patient from what they can tell you — name, DOB, mobile, or ID." />
-      <div className="rounded-[23px] border border-border bg-white p-6">
+      <div className="rounded-[23px] border border-border bg-card p-6">
         <div className="grid gap-3 sm:grid-cols-2">
           <input value={form.fullName} onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))} placeholder="Full name (required)" className="rounded-xl border border-border bg-muted px-4 py-3 text-sm font-medium outline-none sm:col-span-2" />
           <input value={form.dateOfBirth} onChange={(e) => setForm((f) => ({ ...f, dateOfBirth: e.target.value }))} placeholder="Date of birth (YYYY-MM-DD)" className="rounded-xl border border-border bg-muted px-4 py-3 text-sm font-medium outline-none" />
           <input value={form.mobile} onChange={(e) => setForm((f) => ({ ...f, mobile: e.target.value }))} placeholder="Mobile number" className="rounded-xl border border-border bg-muted px-4 py-3 text-sm font-medium outline-none" />
           <input value={form.nationalId} onChange={(e) => setForm((f) => ({ ...f, nationalId: e.target.value }))} placeholder="National ID / student number" className="rounded-xl border border-border bg-muted px-4 py-3 text-sm font-medium outline-none sm:col-span-2" />
         </div>
-        <button disabled={busy || !form.fullName.trim()} onClick={lookup} className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Look up patient</button>
+        <button disabled={busy || !form.fullName.trim()} onClick={lookup} className="mt-4 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Look up patient</button>
         <ErrorNote message={error} />
       </div>
 
       {confirmed && (
-        <section className="mt-5 rounded-[23px] border border-[#c9e5d5] bg-[#e7f6ed] p-6">
+        <section className="mt-5 rounded-[23px] border border-primary/20 bg-accent p-6">
           <CheckCircle2 className="text-primary" />
           <p className="mt-3 font-bold">Checked in: {confirmed.fullName}</p>
-          <p className="mt-1 font-mono text-xs text-muted-foreground">{confirmed.humanetId}</p>
+          <p className="mt-1 font-mono text-xs text-muted-foreground">{confirmed.ccId}</p>
         </section>
       )}
 
       {searched && !confirmed && (
         <div className="mt-5 space-y-4">
           {autoLink && (
-            <section className="rounded-[23px] border border-[#c9e5d5] bg-[#e7f6ed] p-6">
-              <PillStatus tone="green">High-confidence match</PillStatus>
+            <section className="rounded-[23px] border border-primary/20 bg-accent p-6">
+              <PillStatus tone="green">Likely match</PillStatus>
               <p className="mt-3 font-bold">{autoLink.fullName}</p>
-              <p className="mt-1 font-mono text-xs text-muted-foreground">{autoLink.humanetId}</p>
+              <p className="mt-1 font-mono text-xs text-muted-foreground">{autoLink.ccId}</p>
               <ul className="mt-3 space-y-1 text-xs text-muted-foreground">{autoLink.explanation.map((e: string, i: number) => <li key={i}>· {e}</li>)}</ul>
-              <button disabled={confirmingId === autoLink.patientId} onClick={() => confirm(autoLink.patientId)} className="mt-4 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{confirmingId === autoLink.patientId ? "Confirming…" : "Proceed with this patient"}</button>
+              <button disabled={confirmingId === autoLink.patientId} onClick={() => confirm(autoLink.patientId)} className="mt-4 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground disabled:opacity-60">{confirmingId === autoLink.patientId ? "Confirming…" : "Proceed with this patient"}</button>
             </section>
           )}
           {escalated.length > 0 && (
-            <section className="rounded-[23px] border border-[#ead9ac] bg-[#fffbef] p-6">
+            <section className="rounded-[23px] border border-warning/25 bg-warning-tint p-6">
               <PillStatus tone="amber">Possible matches — please confirm</PillStatus>
               <p className="mt-2 text-xs text-muted-foreground">None of these were confident enough to auto-select. Check with the patient before proceeding.</p>
               <div className="mt-3 space-y-3">
                 {escalated.map((m) => (
-                  <div key={m.patientId} className="rounded-xl border border-[#ead9ac] bg-white p-4">
+                  <div key={m.patientId} className="rounded-xl border border-warning/25 bg-card p-4">
                     <div className="flex items-center justify-between">
                       <p className="font-bold">{m.fullName}</p>
-                      <span className="text-xs font-bold text-muted-foreground">{(m.overallScore * 100).toFixed(0)}%</span>
                     </div>
-                    <p className="mt-1 font-mono text-[11px] text-muted-foreground">{m.humanetId}</p>
+                    <p className="mt-1 font-mono text-[11px] text-muted-foreground">{m.ccId}</p>
                     <ul className="mt-2 space-y-0.5 text-[11px] text-muted-foreground">{m.explanation.map((e: string, i: number) => <li key={i}>· {e}</li>)}</ul>
                     <div className="mt-3 flex gap-2">
-                      <button disabled={confirmingId === m.patientId} onClick={() => confirm(m.patientId)} className="rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-white disabled:opacity-60">{confirmingId === m.patientId ? "Confirming…" : "Yes, this is them"}</button>
+                      <button disabled={confirmingId === m.patientId} onClick={() => confirm(m.patientId)} className="rounded-lg bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground disabled:opacity-60">{confirmingId === m.patientId ? "Confirming…" : "Yes, this is them"}</button>
                       <button onClick={() => setDismissed((d) => [...d, m.patientId])} className="rounded-lg border border-border px-3.5 py-2 text-xs font-bold">Not a match</button>
                     </div>
                   </div>
@@ -1873,10 +1675,10 @@ function CheckIn({ notify, go }: { notify: (kind: string, payload?: any) => void
             </section>
           )}
           {!autoLink && escalated.length === 0 && (
-            <section className="rounded-[23px] border border-border bg-white p-6 text-center">
+            <section className="rounded-[23px] border border-border bg-card p-6 text-center">
               <p className="font-bold">No existing match found.</p>
               <p className="mt-1 text-sm text-muted-foreground">This is likely a new patient.</p>
-              <button onClick={() => go("registration")} className="mt-4 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white">Register as new patient</button>
+              <button onClick={() => go("registration")} className="mt-4 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground">Register as new patient</button>
             </section>
           )}
         </div>
@@ -1924,22 +1726,22 @@ function Referrals({ notify }: { notify: (kind: string, payload?: any) => void }
   return (
     <>
       <Header title="Create referral" sub="Send a secure, consent-led referral to a connected provider." />
-      <div className="max-w-2xl rounded-[25px] border border-border bg-white p-5">
+      <div className="max-w-2xl rounded-[25px] border border-border bg-card p-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-xs font-bold text-muted-foreground">
             Patient
-            <input value={patientLabel || patientQuery} onChange={(e) => searchPatients(e.target.value)} placeholder="Search by name or Humanet ID" className="mt-1.5 w-full rounded-xl border border-border bg-white px-3.5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20" />
+            <input value={patientLabel || patientQuery} onChange={(e) => searchPatients(e.target.value)} placeholder="Search by name or CLANCLAST ID" className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20" />
             {patientResults.length > 0 && !patientLabel && (
-              <div className="mt-1 overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+              <div className="mt-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
                 {patientResults.map((p) => (
-                  <button type="button" key={p.id} onClick={() => { setPatientId(p.id); setPatientLabel(p.fullName); setPatientResults([]); }} className="block w-full px-3 py-2 text-left text-xs font-semibold hover:bg-muted">{p.fullName} · {p.humanetId}</button>
+                  <button type="button" key={p.id} onClick={() => { setPatientId(p.id); setPatientLabel(p.fullName); setPatientResults([]); }} className="block w-full px-3 py-2 text-left text-xs font-semibold hover:bg-muted">{p.fullName} · {p.ccId}</button>
                 ))}
               </div>
             )}
           </label>
           <label className="block text-xs font-bold text-muted-foreground">
             Receiving organisation
-            <select value={toOrgId} onChange={(e) => setToOrgId(e.target.value)} className="mt-1.5 w-full rounded-xl border border-border bg-white px-3.5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+            <select value={toOrgId} onChange={(e) => setToOrgId(e.target.value)} className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
               <option value="">Select organisation</option>
               {orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
             </select>
@@ -1947,10 +1749,10 @@ function Referrals({ notify }: { notify: (kind: string, payload?: any) => void }
         </div>
         <div className="mt-4"><Input label="Reason for referral" value={reason} onChange={setReason} /></div>
         <div className="mt-4"><Input label="Urgency" value={urgency} onChange={setUrgency} /></div>
-        <div className="mt-4 rounded-xl bg-muted p-4 text-sm"><FileText className="mr-2 inline text-primary" size={17} /><b>Supporting information:</b> Latest laboratory results, consultation note</div>
-        <div className="mt-5 flex items-center justify-between rounded-xl bg-[#fff9e9] p-4"><span className="text-sm font-bold">Patient consent required</span><PillStatus tone="amber">Awaiting approval</PillStatus></div>
+        <div className="mt-4 rounded-xl bg-muted p-4 text-sm"><FileText className="mr-2 inline text-primary" size={17} /><b>Supporting information:</b> shared institution to institution, only after the patient agrees</div>
+        <div className="mt-5 flex items-center justify-between rounded-xl bg-warning-tint p-4"><span className="text-sm font-bold">Patient consent required</span><PillStatus tone="amber">Awaiting approval</PillStatus></div>
         <ErrorNote message={error} />
-        <button disabled={busy} onClick={submit} className="mt-5 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Send consent request</button>
+        <button disabled={busy} onClick={submit} className="mt-5 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Send consent request</button>
       </div>
     </>
   );
@@ -1976,7 +1778,7 @@ function ProviderConsent({ notify }: { notify: (kind: string, payload?: any) => 
       {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
       {!loading && requests.length === 0 && <p className="text-sm text-muted-foreground">No requests sent yet.</p>}
       {requests.map((r) => (
-        <section key={r.id} className="mb-4 rounded-[25px] border border-border bg-white p-5">
+        <section key={r.id} className="mb-4 rounded-[25px] border border-border bg-card p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div><p className="font-display text-xl font-extrabold">{r.patient}</p><p className="text-sm text-muted-foreground">{r.scope.join(" · ")}</p></div>
             {r.status === "APPROVED" ? (
@@ -1987,10 +1789,10 @@ function ProviderConsent({ notify }: { notify: (kind: string, payload?: any) => 
               <PillStatus tone={r.status === "DECLINED" ? "red" : "gray"}>{r.status}</PillStatus>
             )}
           </div>
-          <p className="mt-5 text-sm leading-6 text-muted-foreground">Request delivered to the patient's Humanet app, with USSD and SMS fallback available.</p>
+          <p className="mt-5 text-sm leading-6 text-muted-foreground">Request delivered to the patient's CLANCLAST app, with USSD and SMS fallback available.</p>
           {r.status === "PENDING" && (
             <div className="mt-5 flex gap-3">
-              <button onClick={() => resend(r.id)} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white">Resend request</button>
+              <button onClick={() => resend(r.id)} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground">Resend request</button>
             </div>
           )}
         </section>
@@ -2051,15 +1853,15 @@ function ProviderConnections({ go }: { go: (c: Context) => void }) {
     return (
       <>
         <button onClick={() => setDetail(null)} className="mb-5 flex items-center gap-2 text-sm font-bold text-muted-foreground"><ArrowLeft size={17} />Connections</button>
-        <Header title={detail.name} sub={`${detail.type.charAt(0) + detail.type.slice(1).toLowerCase()} · ${detail.gatewayUrl || "No gateway URL on file"}`} />
+        <Header title={detail.name} sub={detail.type.charAt(0) + detail.type.slice(1).toLowerCase()} />
         <div className="flex flex-wrap items-center gap-3">
           <PillStatus tone={tone(detail.status) as any}>{label(detail.status)}</PillStatus>
-          <span className="text-xs text-muted-foreground">Last synced: {detail.lastSyncedAt ? new Date(detail.lastSyncedAt).toLocaleString() : "Never"}</span>
-          <button disabled={busyId === detail.id} onClick={() => simulateSync(detail.id)} className="ml-auto rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white disabled:opacity-60">{busyId === detail.id ? "Syncing…" : "Simulate gateway sync"}</button>
+          <span className="text-xs text-muted-foreground">Last checked: {detail.lastSyncedAt ? new Date(detail.lastSyncedAt).toLocaleString() : "Never"}</span>
+          <button disabled={busyId === detail.id} onClick={() => simulateSync(detail.id)} className="ml-auto rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground disabled:opacity-60">{busyId === detail.id ? "Checking…" : "Run connection check"}</button>
         </div>
-        <div className="mt-6 overflow-hidden rounded-[23px] border border-border bg-white">
-          <p className="border-b border-border px-5 py-3 text-sm font-bold">Sync log</p>
-          {detail.syncEvents.length === 0 && <p className="px-5 py-6 text-sm text-muted-foreground">No sync events yet.</p>}
+        <div className="mt-6 overflow-hidden rounded-[23px] border border-border bg-card">
+          <p className="border-b border-border px-5 py-3 text-sm font-bold">Connection checks</p>
+          {detail.syncEvents.length === 0 && <p className="px-5 py-6 text-sm text-muted-foreground">No checks yet.</p>}
           {detail.syncEvents.map((e: any) => (
             <div key={e.id} className="flex items-center justify-between border-t border-border px-5 py-3.5 text-xs">
               <span>{e.message}</span>
@@ -2073,12 +1875,12 @@ function ProviderConnections({ go }: { go: (c: Context) => void }) {
 
   return (
     <>
-      <Header title="Connected organisations" sub="Humanet links trusted systems—not replaces them." />
+      <Header title="Connected organisations" sub="CLANCLAST links trusted systems—not replaces them." />
       <div className="grid gap-4 md:grid-cols-3">
         {data.organizations.map((o) => (
-          <button key={o.id} onClick={() => openDetail(o.id)} className="rounded-[22px] border border-border bg-white p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md">
+          <button key={o.id} onClick={() => openDetail(o.id)} className="rounded-[22px] border border-border bg-card p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md">
             <Building2 className="text-primary" /><p className="mt-7 font-bold">{o.name}{o.isOwnOrganization && <span className="ml-2 text-xs font-medium text-muted-foreground">(your organisation)</span>}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{o.fhirGateway ? "FHIR gateway · " : ""}Identity & consent enabled</p>
+            <p className="mt-1 text-xs text-muted-foreground">Identity & consent enabled</p>
             <div className="mt-4 flex items-center gap-2"><PillStatus tone={tone(o.status) as any}>{label(o.status)}</PillStatus></div>
             {!o.isOwnOrganization && (
               <span
@@ -2101,12 +1903,12 @@ function ProviderConnections({ go }: { go: (c: Context) => void }) {
             <div className="space-y-3">
               {data.incoming.length === 0 && <p className="text-xs text-muted-foreground">None right now.</p>}
               {data.incoming.map((c) => (
-                <div key={c.id} className="rounded-2xl border border-border bg-white p-4">
+                <div key={c.id} className="rounded-2xl border border-border bg-card p-4">
                   <p className="text-sm font-bold">{c.organization}</p>
                   <p className="mt-1 text-xs text-muted-foreground">Requested by {c.requestedBy}{c.message ? ` — ${c.message}` : ""}</p>
                   {c.status === "PENDING" ? (
                     <div className="mt-3 flex gap-2">
-                      <button disabled={busyId === c.id} onClick={() => respond(c.id, true)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white disabled:opacity-60">Accept</button>
+                      <button disabled={busyId === c.id} onClick={() => respond(c.id, true)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-60">Accept</button>
                       <button disabled={busyId === c.id} onClick={() => respond(c.id, false)} className="rounded-lg border border-border px-3 py-2 text-xs font-bold disabled:opacity-60">Decline</button>
                     </div>
                   ) : <div className="mt-2"><PillStatus tone={c.status === "ACCEPTED" ? "green" : "red"}>{c.status}</PillStatus></div>}
@@ -2119,7 +1921,7 @@ function ProviderConnections({ go }: { go: (c: Context) => void }) {
             <div className="space-y-3">
               {data.outgoing.length === 0 && <p className="text-xs text-muted-foreground">None sent yet.</p>}
               {data.outgoing.map((c) => (
-                <div key={c.id} className="rounded-2xl border border-border bg-white p-4">
+                <div key={c.id} className="rounded-2xl border border-border bg-card p-4">
                   <p className="text-sm font-bold">{c.organization}</p>
                   <div className="mt-2"><PillStatus tone={c.status === "ACCEPTED" ? "green" : c.status === "DECLINED" ? "red" : "amber"}>{c.status}</PillStatus></div>
                 </div>
@@ -2129,7 +1931,7 @@ function ProviderConnections({ go }: { go: (c: Context) => void }) {
         </div>
       )}
 
-      <button onClick={() => go("connect")} className="mt-8 text-sm font-bold text-primary">Open Humanet Connect <ArrowRight className="ml-1 inline" size={15} /></button>
+      <button onClick={() => go("connect")} className="mt-8 text-sm font-bold text-primary">Open CLANCLAST Connect <ArrowRight className="ml-1 inline" size={15} /></button>
     </>
   );
 }
@@ -2140,7 +1942,7 @@ function ActivityLog() {
   return (
     <>
       <Header title="Activity log" sub="Every important action is traceable." />
-      <div className="overflow-hidden rounded-[23px] border border-border bg-white">
+      <div className="overflow-hidden rounded-[23px] border border-border bg-card">
         <div className="grid grid-cols-[1.1fr_1fr_1fr_.55fr] gap-2 bg-muted px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground"><span>User</span><span>Action</span><span>Subject</span><span>Time</span></div>
         {rows.length === 0 && <p className="px-4 py-6 text-sm text-muted-foreground">No activity recorded yet.</p>}
         {rows.map((x) => (
@@ -2161,24 +1963,24 @@ function ProviderSettings({ profile, save, busy, error, signOut }: { profile: Pr
   return (
     <>
       <Header title="Settings" sub="Your profile and organisation details." />
-      <div className="max-w-xl rounded-[23px] border border-border bg-white p-6">
+      <div className="max-w-xl rounded-[23px] border border-border bg-card p-6">
         <p className="font-bold">Your profile</p>
         <div className="mt-4 space-y-4">
           <Input label="Full name" value={form.fullName} onChange={(v) => setForm((f) => ({ ...f, fullName: v }))} />
           <Input label="Role" value={form.role} onChange={(v) => setForm((f) => ({ ...f, role: v }))} />
         </div>
         <ErrorNote message={error} />
-        <button disabled={busy} onClick={() => save(form)} className="mt-5 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Save changes</button>
+        <button disabled={busy} onClick={() => save(form)} className="mt-5 flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Save changes</button>
       </div>
-      <div className="mt-5 max-w-xl rounded-[23px] border border-border bg-white p-6">
+      <div className="mt-5 max-w-xl rounded-[23px] border border-border bg-card p-6">
         <p className="font-bold">Organisation</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Mini label="Name" value={profile?.organization.name || "—"} />
           <Mini label="Status" value={profile?.organization.status || "—"} />
         </div>
-        <p className="mt-4 text-xs leading-5 text-muted-foreground">Organisation-level details (FHIR gateway, integration status) are managed by Humanet Connect during onboarding.</p>
+        <p className="mt-4 text-xs leading-5 text-muted-foreground">Organisation details are set up with the CLANCLAST team during onboarding.</p>
       </div>
-      <button onClick={signOut} className="mt-5 text-sm font-bold text-[#a52c31]">Sign out</button>
+      <button onClick={signOut} className="mt-5 text-sm font-bold text-critical">Sign out</button>
     </>
   );
 }
@@ -2187,42 +1989,39 @@ function ProviderModal({ kind, payload, close }: { kind: string; payload: any; c
   if (kind === "verified" && payload) {
     return (
       <Modal title="Identity Verified" close={close}>
-        <p className="text-sm leading-6 text-muted-foreground">{payload.patient.fullName} · {payload.patient.humanetId}. Verified via {payload.method} at {new Date(payload.verifiedAt).toLocaleTimeString()}. Trust level: {payload.trustLevel}.</p>
-        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+        <p className="text-sm leading-6 text-muted-foreground">{payload.patient.fullName} · {payload.patient.ccId}. Verified via {payload.method} at {new Date(payload.verifiedAt).toLocaleTimeString()}. Trust level: {payload.trustLevel}.</p>
+        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
       </Modal>
     );
   }
   if (kind === "registered" && payload) {
     return (
       <Modal title="Identity created" close={close}>
-        <p className="text-sm leading-6 text-muted-foreground">{payload.fullName} now has a Humanet identity: <b className="font-mono">{payload.humanetId}</b>. Share this ID or issue a Health Card so they can access care anywhere in the network.</p>
-        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+        <p className="text-sm leading-6 text-muted-foreground">{payload.fullName} now has a CLANCLAST identity: <b className="font-mono">{payload.ccId}</b>. Share this ID or issue a Health Card so they can access care anywhere in the network.</p>
+        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
       </Modal>
     );
   }
   if (kind === "error") {
     return (
       <Modal title="Something went wrong" close={close}>
-        <p className="text-sm leading-6 text-[#a52c31]">{payload?.message || "Please try again."}</p>
-        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Close</button>
+        <p className="text-sm leading-6 text-critical">{payload?.message || "Please try again."}</p>
+        <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Close</button>
       </Modal>
     );
   }
   const data: Record<string, [string, string]> = {
-    "request-sent": ["Request sent to patient", "Sent through the Humanet app with SMS and USSD fallback. You'll be notified as soon as they respond."],
+    "request-sent": ["Request sent to patient", "Sent through the CLANCLAST app with SMS and USSD fallback. You'll be notified as soon as they respond."],
     resend: ["Request resent", "The patient will receive an updated consent request now."],
-    visit: ["Visit recorded", "Outpatient consultation recorded to the Humanet timeline. Clinical notes remain in the hospital system."],
-    referral: ["Consent request sent", "The patient will receive the referral request in the Humanet app, by USSD or by SMS. The referral will send automatically after approval."],
+    referral: ["Consent request sent", "The patient will receive the referral request in the CLANCLAST app, by USSD or by SMS. The referral will send automatically after approval."],
     "credential-issued": ["Credential issued", "The patient can now see this credential in their Health Passport, and has been notified."],
-    "record-imported": ["Sync request sent", "The patient has been notified and must approve this before the record is added to their timeline."],
-    "medication-prescribed": ["Medication prescribed", "The patient has been notified and can see this in their Records → Medications tab."],
     "credential-revoked": ["Credential revoked", "It will now fail public verification. The patient has been notified."],
   };
   const [t, b] = data[kind] || ["Complete", "Your action has been recorded."];
   return (
     <Modal title={t} close={close}>
       <p className="text-sm leading-6 text-muted-foreground">{b}</p>
-      <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white">Done</button>
+      <button onClick={close} className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-primary-foreground">Done</button>
     </Modal>
   );
 }
@@ -2236,30 +2035,30 @@ function Connect({ setContext }: { setContext: (c: Context) => void }) {
     [String(stats?.needsAttention ?? "—").padStart(2, "0"), "Needs attention", "red"],
   ];
   return (
-    <div className="min-h-screen bg-[#f7f9f7]">
-      <header className="flex items-center justify-between border-b border-border bg-white px-6 py-5">
+    <div className="min-h-screen bg-background">
+      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-5">
         <button onClick={() => setContext("landing")}><Brand /></button>
         <div className="flex items-center gap-5">
           <button onClick={() => setContext("provider")} className="text-sm font-bold text-primary">Open provider workspace</button>
         </div>
       </header>
       <div className="mx-auto max-w-6xl px-6 py-12">
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">Humanet Connect</p>
+        <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">CLANCLAST Connect</p>
         <h1 className="mt-3 max-w-3xl font-display text-5xl font-extrabold tracking-[-.04em]">The secure connective tissue for healthcare.</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">Humanet connects existing systems through identity, consent and trusted exchange. Organisations keep their clinical systems; patients gain continuity.</p>
-        <button onClick={() => setContext("onboard")} className="mt-7 rounded-2xl bg-primary px-6 py-3.5 text-sm font-bold text-white">Connect your organisation<ArrowRight className="ml-2 inline" size={15} /></button>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">CLANCLAST connects existing systems through identity, consent and trusted exchange. Organisations keep their clinical systems; patients gain continuity.</p>
+        <button onClick={() => setContext("onboard")} className="mt-7 rounded-2xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground">Connect your organisation<ArrowRight className="ml-2 inline" size={15} /></button>
         <section className="mt-12 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
-          <div className="relative min-h-[420px] overflow-hidden rounded-[30px] bg-[#173b32] p-8 text-white">
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-[#a7d5c3]">Authorised information exchange</p>
-            <div className="absolute left-[12%] top-[27%] grid h-24 w-24 place-items-center rounded-full border border-[#84c9ae] bg-[#215044] text-center text-xs font-bold shadow-[0_0_0_14px_rgba(143,210,177,.08)]">Patient<br />identity</div>
-            <div className="absolute right-[12%] top-[15%] grid h-20 w-20 place-items-center rounded-2xl bg-white text-center text-xs font-bold text-primary">Provider<br />consent</div>
-            <div className="absolute bottom-[16%] right-[21%] grid h-20 w-20 place-items-center rounded-2xl bg-[#b9e7d3] text-center text-xs font-bold text-[#14362c]">Connected<br />systems</div>
-            <i className="absolute left-[30%] top-[39%] h-px w-[38%] -rotate-[19deg] bg-[#92d8bb]" /><i className="absolute left-[29%] top-[47%] h-px w-[39%] rotate-[20deg] bg-[#92d8bb]" />
-            <p className="absolute bottom-7 left-8 max-w-sm text-sm leading-6 text-white/60">Authorised requests flow through Humanet's consent layer. Clinical records remain with their source organisations.</p>
+          <div className="relative min-h-[420px] overflow-hidden rounded-[30px] cc-hero p-8 text-white">
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-brand-300">Authorised information exchange</p>
+            <div className="absolute left-[12%] top-[27%] grid h-24 w-24 place-items-center rounded-full border border-brand-500 bg-[#10322e] text-center text-xs font-bold shadow-[0_0_0_14px_rgba(141,212,202,.08)]">Patient<br />identity</div>
+            <div className="absolute right-[12%] top-[15%] grid h-20 w-20 place-items-center rounded-2xl bg-card text-center text-xs font-bold text-primary">Provider<br />consent</div>
+            <div className="absolute bottom-[16%] right-[21%] grid h-20 w-20 place-items-center rounded-2xl bg-brand-200 text-center text-xs font-bold text-brand-ink">Connected<br />systems</div>
+            <i className="absolute left-[30%] top-[39%] h-px w-[38%] -rotate-[19deg] bg-brand-300" /><i className="absolute left-[29%] top-[47%] h-px w-[39%] rotate-[20deg] bg-brand-300" />
+            <p className="absolute bottom-7 left-8 max-w-sm text-sm leading-6 text-white/60">Authorised requests flow through CLANCLAST's consent layer. Clinical records remain with their source organisations.</p>
           </div>
           <div className="space-y-3">
             {tiles.map(([a, b, t]) => (
-              <div key={b} className="rounded-[23px] border border-border bg-white p-6">
+              <div key={b} className="rounded-[23px] border border-border bg-card p-6">
                 <p className="font-display text-4xl font-extrabold">{a}</p>
                 <p className="mt-1 font-bold">{b}</p>
                 <div className="mt-3"><PillStatus tone={t}>{t === "green" ? "Operational" : t === "amber" ? "In implementation" : "Review needed"}</PillStatus></div>
@@ -2301,23 +2100,23 @@ function OnboardOrganization({ setContext }: { setContext: (c: Context) => void 
   const canSubmit = form.organizationName && form.contactName && form.contactEmail && form.adminFullName && form.adminEmail && form.adminPassword.length >= 8;
 
   return (
-    <div className="min-h-screen bg-[#f7f9f7]">
-      <header className="flex items-center justify-between border-b border-border bg-white px-6 py-5">
+    <div className="min-h-screen bg-background">
+      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-5">
         <button onClick={() => setContext("connect")}><Brand /></button>
         <button onClick={() => setContext("connect")} className="text-sm font-bold text-muted-foreground">Cancel</button>
       </header>
       <div className="mx-auto max-w-2xl px-6 py-12">
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">Humanet Connect</p>
+        <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">CLANCLAST Connect</p>
         <h1 className="mt-3 font-display text-4xl font-extrabold tracking-[-.03em]">Connect your organisation.</h1>
-        <p className="mt-4 text-base leading-7 text-muted-foreground">This creates your organisation's Humanet profile (status starts as pending review) and your first administrator login.</p>
+        <p className="mt-4 text-base leading-7 text-muted-foreground">This creates your organisation's CLANCLAST profile (status starts as pending review) and your first administrator login.</p>
 
-        <div className="mt-8 rounded-[23px] border border-border bg-white p-6">
+        <div className="mt-8 rounded-[23px] border border-border bg-card p-6">
           <p className="font-bold">Organisation details</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Input label="Organisation name" value={form.organizationName} onChange={(v) => set("organizationName", v)} />
             <div>
               <label className="mb-1.5 block text-xs font-bold text-muted-foreground">Type</label>
-              <select value={form.organizationType} onChange={(e) => set("organizationType", e.target.value)} className="w-full rounded-xl border border-border bg-white px-3.5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+              <select value={form.organizationType} onChange={(e) => set("organizationType", e.target.value)} className="w-full rounded-xl border border-border bg-card px-3.5 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
                 {orgTypes.map((t) => <option key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</option>)}
               </select>
             </div>
@@ -2326,7 +2125,7 @@ function OnboardOrganization({ setContext }: { setContext: (c: Context) => void 
           </div>
         </div>
 
-        <div className="mt-5 rounded-[23px] border border-border bg-white p-6">
+        <div className="mt-5 rounded-[23px] border border-border bg-card p-6">
           <p className="font-bold">Your administrator login</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Input label="Full name" value={form.adminFullName} onChange={(v) => set("adminFullName", v)} />
@@ -2336,7 +2135,7 @@ function OnboardOrganization({ setContext }: { setContext: (c: Context) => void 
         </div>
 
         <ErrorNote message={error} />
-        <button disabled={busy || !canSubmit} onClick={submit} className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Connect organisation & sign in</button>
+        <button disabled={busy || !canSubmit} onClick={submit} className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Connect organisation & sign in</button>
       </div>
     </div>
   );
@@ -2344,7 +2143,7 @@ function OnboardOrganization({ setContext }: { setContext: (c: Context) => void 
 
 function Verify({ setContext }: { setContext: (c: Context) => void }) {
   const [mode, setMode] = useState<"identity" | "credential">("identity");
-  const [humanetId, setHumanetId] = useState("HN-8042-1975");
+  const [ccId, setCcId] = useState("CC-4821-1990");
   const [credentialId, setCredentialId] = useState("");
   const [result, setResult] = useState<any>(null);
   const [credResult, setCredResult] = useState<any>(null);
@@ -2354,7 +2153,7 @@ function Verify({ setContext }: { setContext: (c: Context) => void }) {
   async function check() {
     setBusy(true); setError(""); setResult(null); setCredResult(null);
     try {
-      if (mode === "identity") setResult(await verifyApi.lookup(humanetId));
+      if (mode === "identity") setResult(await verifyApi.lookup(ccId));
       else setCredResult(await verifyApi.credentialLookup(credentialId));
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Could not verify that reference.");
@@ -2364,29 +2163,29 @@ function Verify({ setContext }: { setContext: (c: Context) => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef4f1]">
-      <header className="flex items-center justify-between bg-white px-6 py-5">
+    <div className="min-h-screen cc-canvas">
+      <header className="flex items-center justify-between bg-card px-6 py-5">
         <button onClick={() => setContext("landing")}><Brand /></button>
         <button onClick={() => setContext("provider")} className="text-sm font-bold text-primary">Provider sign in</button>
       </header>
       <div className="mx-auto grid max-w-5xl gap-10 px-6 py-16 lg:grid-cols-[.85fr_1.15fr]">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">Humanet Verify</p>
+          <p className="text-xs font-bold uppercase tracking-[.18em] text-primary">CLANCLAST Verify</p>
           <h1 className="mt-3 font-display text-5xl font-extrabold leading-[1.02]">Know who and what you can trust.</h1>
           <p className="mt-5 text-lg leading-8 text-muted-foreground">Verify patients, providers, credentials and consent status with an auditable trust response.</p>
         </div>
-        <div className="rounded-[30px] bg-white p-7 shadow-xl">
+        <div className="rounded-[30px] bg-card p-7 shadow-xl">
           <div className="flex gap-2 rounded-2xl bg-muted p-1">
-            <button onClick={() => { setMode("identity"); setResult(null); setCredResult(null); setError(""); }} className={`flex-1 rounded-xl py-2.5 text-xs font-bold ${mode === "identity" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Verify an identity</button>
-            <button onClick={() => { setMode("credential"); setResult(null); setCredResult(null); setError(""); }} className={`flex-1 rounded-xl py-2.5 text-xs font-bold ${mode === "credential" ? "bg-white shadow-sm" : "text-muted-foreground"}`}>Verify a credential</button>
+            <button onClick={() => { setMode("identity"); setResult(null); setCredResult(null); setError(""); }} className={`flex-1 rounded-xl py-2.5 text-xs font-bold ${mode === "identity" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>Verify an identity</button>
+            <button onClick={() => { setMode("credential"); setResult(null); setCredResult(null); setError(""); }} className={`flex-1 rounded-xl py-2.5 text-xs font-bold ${mode === "credential" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>Verify a credential</button>
           </div>
 
           {mode === "identity" ? (
             <>
-              <label className="mt-5 block text-xs font-bold text-muted-foreground">Humanet ID</label>
+              <label className="mt-5 block text-xs font-bold text-muted-foreground">CLANCLAST ID</label>
               <div className="mt-2 flex gap-2">
-                <input value={humanetId} onChange={(e) => setHumanetId(e.target.value)} className="flex-1 rounded-xl border border-border bg-muted px-4 text-sm font-bold outline-none" />
-                <button disabled={busy} onClick={check} className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Verify</button>
+                <input value={ccId} onChange={(e) => setCcId(e.target.value)} className="flex-1 rounded-xl border border-border bg-muted px-4 text-sm font-bold outline-none" />
+                <button disabled={busy} onClick={check} className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Verify</button>
               </div>
             </>
           ) : (
@@ -2394,8 +2193,8 @@ function Verify({ setContext }: { setContext: (c: Context) => void }) {
               <label className="mt-5 block text-xs font-bold text-muted-foreground">Credential reference</label>
               <p className="mt-1 text-[11px] text-muted-foreground">Found on a printed certificate, or scan its verification QR code.</p>
               <div className="mt-2 flex gap-2">
-                <input value={credentialId} onChange={(e) => setCredentialId(e.target.value)} placeholder="e.g. cmxa1b2c3d4e5f6g7h8i9j0k1" className="flex-1 rounded-xl border border-border bg-muted px-4 text-sm font-bold outline-none" />
-                <button disabled={busy || !credentialId} onClick={check} className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Verify</button>
+                <input value={credentialId} onChange={(e) => setCredentialId(e.target.value)} placeholder="e.g. cred_demo_vaccination" className="flex-1 rounded-xl border border-border bg-muted px-4 text-sm font-bold outline-none" />
+                <button disabled={busy || !credentialId} onClick={check} className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Verify</button>
               </div>
             </>
           )}
@@ -2403,12 +2202,12 @@ function Verify({ setContext }: { setContext: (c: Context) => void }) {
           <ErrorNote message={error} />
 
           {result && mode === "identity" && (
-            <div className="mt-7 rounded-[23px] bg-[#e9f7ef] p-6">
+            <div className="mt-7 rounded-[23px] bg-accent p-6">
               <div className="flex items-center gap-3">
-                <div className="grid h-12 w-12 place-items-center rounded-full bg-primary text-white"><Check size={25} /></div>
-                <div><p className="font-display text-xl font-extrabold text-[#145c52]">{result.verified ? "Verified" : "Not verified"}</p><p className="text-xs text-[#39735e]">Trust response received just now</p></div>
+                <div className="grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground"><Check size={25} /></div>
+                <div><p className="font-display text-xl font-extrabold text-primary">{result.verified ? "Verified" : "Not verified"}</p><p className="text-xs text-accent-foreground">Trust response received just now</p></div>
               </div>
-              <div className="mt-5 grid gap-3 border-t border-[#c9e5d5] pt-5 text-sm">
+              <div className="mt-5 grid gap-3 border-t border-primary/20 pt-5 text-sm">
                 <p><b>What was verified:</b> {result.whatWasVerified}</p>
                 <p><b>Issued by:</b> {result.issuedBy}</p>
                 <p><b>Method:</b> {result.method}</p>
@@ -2418,15 +2217,15 @@ function Verify({ setContext }: { setContext: (c: Context) => void }) {
           )}
 
           {credResult && mode === "credential" && (
-            <div className={`mt-7 rounded-[23px] p-6 ${credResult.valid ? "bg-[#e9f7ef]" : "bg-[#fdf1ef]"}`}>
+            <div className={`mt-7 rounded-[23px] p-6 ${credResult.valid ? "bg-accent" : "bg-critical-tint"}`}>
               <div className="flex items-center gap-3">
-                <div className={`grid h-12 w-12 place-items-center rounded-full text-white ${credResult.valid ? "bg-primary" : "bg-[#a52c31]"}`}>{credResult.valid ? <Check size={25} /> : <X size={25} />}</div>
+                <div className={`grid h-12 w-12 place-items-center rounded-full text-primary-foreground ${credResult.valid ? "bg-primary" : "bg-critical"}`}>{credResult.valid ? <Check size={25} /> : <X size={25} />}</div>
                 <div>
-                  <p className={`font-display text-xl font-extrabold ${credResult.valid ? "text-[#145c52]" : "text-[#7a2e20]"}`}>{credResult.valid ? "Valid credential" : credResult.revoked ? "Revoked" : "Not valid"}</p>
-                  <p className={`text-xs ${credResult.valid ? "text-[#39735e]" : "text-[#a5554a]"}`}>Trust response received just now</p>
+                  <p className={`font-display text-xl font-extrabold ${credResult.valid ? "text-primary" : "text-critical"}`}>{credResult.valid ? "Valid credential" : credResult.revoked ? "Revoked" : "Not valid"}</p>
+                  <p className={`text-xs ${credResult.valid ? "text-accent-foreground" : "text-critical"}`}>Trust response received just now</p>
                 </div>
               </div>
-              <div className={`mt-5 grid gap-3 border-t pt-5 text-sm ${credResult.valid ? "border-[#c9e5d5]" : "border-[#f2d3cd]"}`}>
+              <div className={`mt-5 grid gap-3 border-t pt-5 text-sm ${credResult.valid ? "border-primary/20" : "border-critical/25"}`}>
                 <p><b>Credential type:</b> {credResult.credentialType}</p>
                 <p><b>Held by:</b> {credResult.holderName}</p>
                 <p><b>Issued by:</b> {credResult.issuedBy}</p>
@@ -2439,26 +2238,6 @@ function Verify({ setContext }: { setContext: (c: Context) => void }) {
       </div>
     </div>
   );
-}
-
-// Raw request helper for the USSD simulator: it deliberately does NOT use
-// getToken/setToken("patient", ...) so that trying the USSD experience in
-// the same browser never clobbers an already-open Patient app session. It
-// keeps its own token in local component state instead, exactly like a
-// second, independent device would.
-async function ussdRequest<T>(path: string, token: string | null, options: { method?: string; body?: unknown } = {}): Promise<T> {
-  const headers: Record<string, string> = {};
-  if (options.body) headers["Content-Type"] = "application/json";
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: options.method || "GET",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-  const isJson = res.headers.get("content-type")?.includes("application/json");
-  const data = isJson ? await res.json() : undefined;
-  if (!res.ok) throw new ApiError(res.status, (data && data.error) || res.statusText);
-  return data as T;
 }
 
 type UssdScreen = "mobile" | "pin" | "menu" | "id" | "consent-list" | "consent-detail" | "emergency";
@@ -2479,10 +2258,7 @@ function UssdSimulator({ setContext }: { setContext: (c: Context) => void }) {
   async function submitPin() {
     setBusy(true); setError("");
     try {
-      const res = await ussdRequest<{ token: string; patient: any }>("/auth/patient/login", null, {
-        method: "POST",
-        body: { identifier: mobile, password: pin },
-      });
+      const res = await ussdApi.login(mobile, pin);
       setSession(res);
       setScreen("menu");
     } catch (e) {
@@ -2500,15 +2276,15 @@ function UssdSimulator({ setContext }: { setContext: (c: Context) => void }) {
     } else if (n === "2") {
       setBusy(true);
       try {
-        const all = await ussdRequest<any[]>("/patient/consent", session.token);
+        const all = await ussdApi.consent(session.token);
         setConsentList(all.filter((c) => c.status === "PENDING"));
         setScreen("consent-list");
       } catch { setError("Could not load requests."); } finally { setBusy(false); }
     } else if (n === "3") {
       setBusy(true);
       try {
-        const p = await ussdRequest<any>("/patient/passport", session.token);
-        setPassport(p);
+        const p = await ussdApi.emergency(session.token);
+        setPassport({ emergencyInformation: p });
         setScreen("emergency");
       } catch { setError("Could not load emergency info."); } finally { setBusy(false); }
     } else if (n === "0") {
@@ -2538,13 +2314,13 @@ function UssdSimulator({ setContext }: { setContext: (c: Context) => void }) {
     setBusy(true);
     try {
       if (n === "1") {
-        await ussdRequest(`/patient/consent/${selectedConsent.id}/approve`, session.token, { method: "POST", body: { duration: "SEVEN_DAYS" } });
+        await ussdApi.respond(session.token, selectedConsent.id, "approve");
         setLastMessage("Access approved for 7 days.");
       } else {
-        await ussdRequest(`/patient/consent/${selectedConsent.id}/decline`, session.token, { method: "POST" });
+        await ussdApi.respond(session.token, selectedConsent.id, "decline");
         setLastMessage("Request declined.");
       }
-      const all = await ussdRequest<any[]>("/patient/consent", session.token);
+      const all = await ussdApi.consent(session.token);
       setConsentList(all.filter((c) => c.status === "PENDING"));
       setScreen("menu");
     } catch (e) {
@@ -2568,10 +2344,10 @@ function UssdSimulator({ setContext }: { setContext: (c: Context) => void }) {
   }
 
   const lines: string[] = (() => {
-    if (screen === "mobile") return ["Dial *134*1# to begin.", "", "Enter your mobile number below and press Send."];
-    if (screen === "pin") return [`Mobile: ${mobile}`, "", "Enter your Humanet PIN (your app password)."];
-    if (screen === "menu") return [`Welcome, ${session?.patient?.fullName || ""}`, "", "1. My Humanet ID", "2. Pending consent requests", "3. Emergency info", "0. Exit"];
-    if (screen === "id") return ["MY HUMANET ID", "", session?.patient?.fullName || "", session?.patient?.humanetId || "", "", "0. Back"];
+    if (screen === "mobile") return ["Simulated USSD session.", "", "Enter your mobile number below and press Send.", "", "Demo: 082 555 0198"];
+    if (screen === "pin") return [`Mobile: ${mobile}`, "", "Enter your PIN.", "", "Demo PIN: 2580"];
+    if (screen === "menu") return [`Welcome, ${session?.patient?.fullName || ""}`, "", "1. My CLANCLAST ID", "2. Pending consent requests", "3. Emergency info", "0. Exit"];
+    if (screen === "id") return ["MY HUMANET ID", "", session?.patient?.fullName || "", session?.patient?.ccId || "", "", "0. Back"];
     if (screen === "consent-list") {
       if (consentList.length === 0) return ["No pending requests.", "", "0. Back"];
       return ["PENDING REQUESTS", "", ...consentList.map((c, i) => `${i + 1}. ${c.organization}`), "", "0. Back"];
@@ -2588,37 +2364,37 @@ function UssdSimulator({ setContext }: { setContext: (c: Context) => void }) {
   })();
 
   return (
-    <div className="min-h-screen bg-[#0b1f18] p-4 md:grid md:place-items-center">
-      <div className="mx-auto w-full max-w-sm rounded-[28px] border-4 border-[#1c3a30] bg-black p-5 font-mono text-[#8fe6b8] shadow-2xl">
-        <div className="mb-4 flex items-center justify-between text-[10px] text-[#5f9c7f]">
+    <div className="min-h-screen bg-[#041c19] p-4 md:grid md:place-items-center">
+      <div className="mx-auto w-full max-w-sm rounded-[28px] border-4 border-[#10322e] bg-black p-5 font-mono text-[#8dd4ca] shadow-2xl">
+        <div className="mb-4 flex items-center justify-between text-[10px] text-[#5cbbae]">
           <span>USSD SESSION</span>
-          <button onClick={() => setContext("landing")} className="text-[#5f9c7f] underline">exit</button>
+          <button onClick={() => setContext("landing")} className="text-[#5cbbae] underline">exit</button>
         </div>
         <div className="min-h-[220px] whitespace-pre-line text-sm leading-6">
           {lines.map((l, i) => <p key={i}>{l || "\u00A0"}</p>)}
-          {lastMessage && <p className="mt-2 text-[#c8f5da]">{lastMessage}</p>}
+          {lastMessage && <p className="mt-2 text-[#eafbf8]">{lastMessage}</p>}
           {error && <p className="mt-2 text-[#ff9d8a]">{error}</p>}
-          {busy && <p className="mt-2 text-[#5f9c7f]">Loading…</p>}
+          {busy && <p className="mt-2 text-[#5cbbae]">Loading…</p>}
         </div>
         {screen === "mobile" && (
           <div className="mt-4 flex gap-2">
-            <input value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="+27…" className="flex-1 rounded-lg border border-[#2c5443] bg-[#0b1f18] px-3 py-2 text-sm text-[#c8f5da] outline-none" />
-            <button onClick={() => mobile && setScreen("pin")} className="rounded-lg bg-[#1c3a30] px-4 py-2 text-xs font-bold text-[#8fe6b8]">Send</button>
+            <input value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="+27…" className="flex-1 rounded-lg border border-[#173d38] bg-[#041c19] px-3 py-2 text-sm text-[#eafbf8] outline-none" />
+            <button onClick={() => mobile && setScreen("pin")} className="rounded-lg bg-[#10322e] px-4 py-2 text-xs font-bold text-[#8dd4ca]">Send</button>
           </div>
         )}
         {screen === "pin" && (
           <div className="mt-4 flex gap-2">
-            <input value={pin} onChange={(e) => setPin(e.target.value)} type="password" placeholder="PIN" className="flex-1 rounded-lg border border-[#2c5443] bg-[#0b1f18] px-3 py-2 text-sm text-[#c8f5da] outline-none" />
-            <button disabled={busy} onClick={submitPin} className="rounded-lg bg-[#1c3a30] px-4 py-2 text-xs font-bold text-[#8fe6b8] disabled:opacity-60">Send</button>
+            <input value={pin} onChange={(e) => setPin(e.target.value)} type="password" placeholder="PIN" className="flex-1 rounded-lg border border-[#173d38] bg-[#041c19] px-3 py-2 text-sm text-[#eafbf8] outline-none" />
+            <button disabled={busy} onClick={submitPin} className="rounded-lg bg-[#10322e] px-4 py-2 text-xs font-bold text-[#8dd4ca] disabled:opacity-60">Send</button>
           </div>
         )}
         {(screen === "menu" || screen === "id" || screen === "consent-list" || screen === "consent-detail" || screen === "emergency") && (
           <div className="mt-4 flex gap-2">
-            <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Reply" className="flex-1 rounded-lg border border-[#2c5443] bg-[#0b1f18] px-3 py-2 text-sm text-[#c8f5da] outline-none" />
-            <button disabled={busy} onClick={send} className="rounded-lg bg-[#1c3a30] px-4 py-2 text-xs font-bold text-[#8fe6b8] disabled:opacity-60">Send</button>
+            <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Reply" className="flex-1 rounded-lg border border-[#173d38] bg-[#041c19] px-3 py-2 text-sm text-[#eafbf8] outline-none" />
+            <button disabled={busy} onClick={send} className="rounded-lg bg-[#10322e] px-4 py-2 text-xs font-bold text-[#8dd4ca] disabled:opacity-60">Send</button>
           </div>
         )}
-        {session && <button onClick={endSession} className="mt-4 w-full text-center text-[10px] text-[#5f9c7f] underline">End session</button>}
+        {session && <button onClick={endSession} className="mt-4 w-full text-center text-[10px] text-[#5cbbae] underline">End session</button>}
       </div>
     </div>
   );
@@ -2681,8 +2457,8 @@ function CaregiverPortal({ setContext }: { setContext: (c: Context) => void }) {
 
   if (view === "login") {
     return (
-      <div className="min-h-screen bg-[#eaf4ef] p-4 md:grid md:place-items-center">
-        <div className="w-full max-w-sm rounded-[28px] bg-white p-7 shadow-xl">
+      <div className="min-h-screen cc-canvas p-4 md:grid md:place-items-center">
+        <div className="w-full max-w-sm rounded-[28px] bg-card p-7 shadow-xl">
           <button onClick={() => setContext("landing")}><Brand /></button>
           <h1 className="mt-6 font-display text-2xl font-extrabold">Caregiver sign in</h1>
           <p className="mt-2 text-sm text-muted-foreground">Sign in with the phone number and PIN a patient set up for you in their Profile.</p>
@@ -2691,24 +2467,24 @@ function CaregiverPortal({ setContext }: { setContext: (c: Context) => void }) {
             <Input label="PIN" value={form.pin} onChange={(v) => setForm((f) => ({ ...f, pin: v.replace(/\D/g, "").slice(0, 6) }))} type="password" />
           </div>
           <ErrorNote message={error} />
-          <button disabled={busy || !form.phone || !form.pin} onClick={login} className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-white disabled:opacity-60">{busy && <Spinner />}Sign in</button>
+          <button disabled={busy || !form.phone || !form.pin} onClick={login} className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground disabled:opacity-60">{busy && <Spinner />}Sign in</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#eaf4ef] p-4 md:grid md:place-items-center">
-      <div className="w-full max-w-sm rounded-[28px] bg-white p-7 shadow-xl">
+    <div className="min-h-screen cc-canvas p-4 md:grid md:place-items-center">
+      <div className="w-full max-w-sm rounded-[28px] bg-card p-7 shadow-xl">
         <div className="flex items-center justify-between">
           <button onClick={() => setContext("landing")}><Brand /></button>
-          <button onClick={signOut} className="text-xs font-bold text-[#a52c31]">Sign out</button>
+          <button onClick={signOut} className="text-xs font-bold text-critical">Sign out</button>
         </div>
         <p className="mt-6 text-xs font-bold uppercase tracking-[.18em] text-primary">Caring for</p>
         <h1 className="mt-1 font-display text-2xl font-extrabold">{patient?.fullName || "…"}</h1>
-        <p className="mt-1 font-mono text-xs text-muted-foreground">{patient?.humanetId}</p>
+        <p className="mt-1 font-mono text-xs text-muted-foreground">{patient?.ccId}</p>
 
-        <div className="mt-6 rounded-2xl bg-[#f5f8f6] p-4">
+        <div className="mt-6 rounded-2xl bg-muted p-4">
           <p className="text-xs font-bold uppercase text-muted-foreground">Emergency info</p>
           <p className="mt-2 text-sm"><b>Blood type:</b> {patient?.bloodType || "Not on file"}</p>
           <p className="mt-1 text-sm"><b>Allergies:</b> {patient?.allergies || "Not on file"}</p>
@@ -2724,7 +2500,7 @@ function CaregiverPortal({ setContext }: { setContext: (c: Context) => void }) {
               <p className="mt-1 text-xs text-muted-foreground">{(c.scope as string[]).join(" · ")}</p>
               {c.status === "PENDING" ? (
                 <div className="mt-3 flex gap-2">
-                  <button disabled={busy} onClick={() => respond(c.id, "approve")} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white disabled:opacity-60">Approve (7 days)</button>
+                  <button disabled={busy} onClick={() => respond(c.id, "approve")} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-60">Approve (7 days)</button>
                   <button disabled={busy} onClick={() => respond(c.id, "decline")} className="rounded-lg border border-border px-3 py-2 text-xs font-bold disabled:opacity-60">Decline</button>
                 </div>
               ) : <div className="mt-2"><PillStatus tone={c.status === "APPROVED" ? "green" : c.status === "DECLINED" ? "red" : "amber"}>{c.status}</PillStatus></div>}

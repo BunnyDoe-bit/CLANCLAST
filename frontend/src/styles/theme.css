@@ -1,81 +1,155 @@
-@custom-variant dark (&:is(.dark *));
+/* ==========================================================================
+   CLANCLAST brand theme for the website and its prototype screens.
+   Same palette as the live CLANCLAST apps (taken from the approved logo files):
+   a neutral canvas, deep brand ink, and one teal accent.
+   ========================================================================== */
 
-:root {
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+.cc-site {
+  color-scheme: light;
   --font-size: 16px;
-  --background: #f7f9f7;
-  --foreground: oklch(0.145 0 0);
+
+  /* .cc-site (the marketing landing) always uses the light palette, even on a dark device. */
+  /* Brand primitives (from the logo SVGs) */
+  --brand-ink: #072b27;
+  --brand-700: #2c8176;
+  --brand-600: #3fa99b;
+  --brand-500: #5cbbae;
+  --brand-300: #8dd4ca;
+  --brand-200: #b0e4dc;
+  --brand-50: #eafbf8;
+  --brand-paper: #f7faf9;
+
+  --background: #eef3f2;
+  --foreground: #072b27;
   --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #145c52;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #15201d;
-  --muted: #ececf0;
-  --muted-foreground: #64716c;
-  --accent: #dcf0e9;
-  --accent-foreground: #145c52;
-  --destructive: #d4183d;
+  --card-foreground: #072b27;
+  --popover: #ffffff;
+  --popover-foreground: #072b27;
+  --primary: #2c8176;
+  --primary-foreground: #ffffff;
+  --secondary: #eff4f3;
+  --secondary-foreground: #072b27;
+  --muted: #eff4f3;
+  --muted-foreground: #4a625f;
+  --accent: #e8f4f1;
+  --accent-foreground: #1f5d55;
+  --destructive: #b42318;
   --destructive-foreground: #ffffff;
-  --border: #dce5df;
+  --border: rgb(7 43 39 / 0.1);
   --input: transparent;
-  --input-background: #f1f5f2;
-  --switch-background: #cbced4;
+  --input-background: #eff4f3;
+  --switch-background: #c9d6d3;
+  --ring: #2c8176;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #2c7a6c;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
   --radius: 1rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Status */
+  --warning: #8a5a00;
+  --warning-tint: #fff4dc;
+  --critical: #b42318;
+  --critical-tint: #fdecea;
+
+  /* Brand hero: deep ink with two soft teal glows. Stays dark in both themes. */
+  --hero:
+    radial-gradient(90% 80% at 100% 0%, rgb(63 169 155 / 0.5) 0%, transparent 60%),
+    radial-gradient(70% 60% at 0% 100%, rgb(44 129 118 / 0.32) 0%, transparent 65%),
+    #072b27;
+  --ambient:
+    radial-gradient(70% 55% at 0% 0%, rgb(176 228 220 / 0.55) 0%, transparent 70%),
+    radial-gradient(60% 50% at 100% 100%, rgb(198 214 226 / 0.55) 0%, transparent 70%),
+    #eef3f2;
+
+  --chart-1: #2c8176;
+  --chart-2: #5cbbae;
+  --chart-3: #31556b;
+  --chart-4: #8dd4ca;
+  --chart-5: #8a5a00;
+  --sidebar: #072b27;
+  --sidebar-foreground: #eafbf8;
+  --sidebar-primary: #5cbbae;
+  --sidebar-primary-foreground: #052320;
+  --sidebar-accent: rgb(255 255 255 / 0.08);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.1);
+  --sidebar-ring: #5cbbae;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+/* Dark: deep brand teal rather than black. Follows the device unless a page pins a theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --background: #041c19;
+    --foreground: #eafbf8;
+    --card: #0a2724;
+    --card-foreground: #eafbf8;
+    --popover: #0a2724;
+    --popover-foreground: #eafbf8;
+    --primary: #5cbbae;
+    --primary-foreground: #052320;
+    --secondary: #10322e;
+    --secondary-foreground: #eafbf8;
+    --muted: #10322e;
+    --muted-foreground: #a3c2bd;
+    --accent: rgb(92 187 174 / 0.14);
+    --accent-foreground: #8dd4ca;
+    --destructive: #ff8a7f;
+    --destructive-foreground: #052320;
+    --border: rgb(234 251 248 / 0.1);
+    --input-background: #10322e;
+    --switch-background: #173d38;
+    --ring: #5cbbae;
+    --warning: #f2c46b;
+    --warning-tint: rgb(242 196 107 / 0.12);
+    --critical: #ff8a7f;
+    --critical-tint: rgb(255 138 127 / 0.12);
+    --hero:
+      radial-gradient(90% 80% at 100% 0%, rgb(63 169 155 / 0.42) 0%, transparent 60%),
+      radial-gradient(70% 60% at 0% 100%, rgb(44 129 118 / 0.26) 0%, transparent 65%),
+      #06241f;
+    --ambient:
+      radial-gradient(70% 55% at 0% 0%, rgb(44 129 118 / 0.32) 0%, transparent 70%),
+      radial-gradient(60% 50% at 100% 100%, rgb(31 70 86 / 0.45) 0%, transparent 70%),
+      #041c19;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #041c19;
+  --foreground: #eafbf8;
+  --card: #0a2724;
+  --card-foreground: #eafbf8;
+  --popover: #0a2724;
+  --popover-foreground: #eafbf8;
+  --primary: #5cbbae;
+  --primary-foreground: #052320;
+  --secondary: #10322e;
+  --secondary-foreground: #eafbf8;
+  --muted: #10322e;
+  --muted-foreground: #a3c2bd;
+  --accent: rgb(92 187 174 / 0.14);
+  --accent-foreground: #8dd4ca;
+  --destructive: #ff8a7f;
+  --destructive-foreground: #052320;
+  --border: rgb(234 251 248 / 0.1);
+  --input-background: #10322e;
+  --switch-background: #173d38;
+  --ring: #5cbbae;
+  --warning: #f2c46b;
+  --warning-tint: rgb(242 196 107 / 0.12);
+  --critical: #ff8a7f;
+  --critical-tint: rgb(255 138 127 / 0.12);
+  --hero:
+    radial-gradient(90% 80% at 100% 0%, rgb(63 169 155 / 0.42) 0%, transparent 60%),
+    radial-gradient(70% 60% at 0% 100%, rgb(44 129 118 / 0.26) 0%, transparent 65%),
+    #06241f;
+  --ambient:
+    radial-gradient(70% 55% at 0% 0%, rgb(44 129 118 / 0.32) 0%, transparent 70%),
+    radial-gradient(60% 50% at 100% 100%, rgb(31 70 86 / 0.45) 0%, transparent 70%),
+    #041c19;
 }
 
 @theme inline {
@@ -100,6 +174,14 @@
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);
   --color-ring: var(--ring);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-critical: var(--critical);
+  --color-critical-tint: var(--critical-tint);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-300: var(--brand-300);
+  --color-brand-200: var(--brand-200);
+  --color-brand-500: var(--brand-500);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -123,59 +205,38 @@
   * {
     @apply border-border outline-ring/50;
   }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
-
   html {
     font-size: var(--font-size);
+    background: var(--background);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  ::selection { background: var(--accent); color: var(--foreground); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+}
 
-  h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
+@layer components {
+  /* Brand hero surface: the passport card, provider sidebar and feature panels. */
+  .cc-hero { background: var(--hero); color: #fff; }
+  .cc-canvas { background: var(--ambient); background-attachment: fixed; }
 
-  h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  /* Theme-aware logo swap (see Logo.tsx) */
+  .logo-dark { display: none; }
+  :root[data-theme="dark"] .logo-light { display: none; }
+  :root[data-theme="dark"] .logo-dark { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .logo-light { display: none; }
+    :root:not([data-theme="light"]) .logo-dark { display: block; }
   }
+}
 
-  h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h4 {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  label {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  button {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
-  }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AccessTiles, type LandingContext } from "./AccessTiles";
-import { Brand } from "../shared/Brand";
+import { Logo } from "../shared/Brand";
 import { HeroMetalScales } from "./HeroMetalScales";
 import { landingImages, brandPhotos as P, tileIcons } from "./landingAssets";
 import "./maven-landing.css";
@@ -31,9 +31,9 @@ const STEPS = [
   {
     mode: "STEP 01 · IDENTITY",
     title: "One person. Fewer fragments.",
-    desc: "Potential duplicate records are grouped with explainable evidence. A human makes the decision on uncertain matches.",
+    desc: "Records that may belong to the same person are brought together with a clear reason. A person decides every uncertain case.",
     heading: "Candidate identity review",
-    rows: [["Name similarity", "Evidence shown"], ["Date of birth", "Compared"], ["Decision", "Human review"]],
+    rows: [["Possible match", "Reason shown"], ["Uncertain case", "Sent to a person"], ["Decision", "Human review"]],
   },
   {
     mode: "STEP 02 · CONSENT",
@@ -45,9 +45,9 @@ const STEPS = [
   {
     mode: "STEP 03 · VERIFICATION",
     title: "Trust that can travel.",
-    desc: "A signed, time-stamped summary can be verified against cached institutional public keys, even without a live connection.",
+    desc: "An institution-signed, dated summary can be checked even without a live connection.",
     heading: "Workflow detail",
-    rows: [["Issuer signature", "Verified offline"], ["Version & date", "Displayed"], ["Clinical authority", "Source institution"]],
+    rows: [["Issuer", "Checked offline"], ["Version & date", "Displayed"], ["Clinical authority", "Source institution"]],
   },
 ];
 
@@ -55,8 +55,8 @@ const AUDIENCES = {
   hospital: {
     tab: "Hospitals & groups",
     title: "Understand identity duplication in your records.",
-    desc: "A Stage 1 study can use one hospital's historical, pseudonymised export to produce a confidence-scored duplicate-identity report with field-level evidence. The output is advisory; the institution retains decision authority.",
-    list: ["Batch identity-resolution pipeline", "Human review for uncertain matches", "Reproducible model and audit trail", "No automatic record merging"],
+    desc: "A first study uses one hospital's historical, pseudonymised export to produce a duplicate-identity report, with a reason for every suggestion. The report is advisory; the institution decides.",
+    list: ["Duplicate-identity report", "Human review for uncertain matches", "Audit trail for every decision", "No automatic record merging"],
   },
   lab: {
     tab: "Laboratories",
@@ -68,7 +68,7 @@ const AUDIENCES = {
     tab: "Medical schemes",
     title: "Strengthen trust across membership boundaries.",
     desc: "Identity resolution can help institutions investigate duplicate identities and overlapping records. The extent of any addressable fraud or savings must be measured; CLANCLAST does not claim a proven reduction.",
-    list: ["Evidence-backed candidate matching", "Conservative thresholds and review", "Auditable identity decisions", "Aggregate insights, not identifiable-data sales"],
+    list: ["A reason for every suggestion", "Human review of uncertain matches", "Auditable identity decisions", "Aggregate insights, not identifiable-data sales"],
   },
   public: {
     tab: "Public health",
@@ -99,10 +99,10 @@ const AUDIENCE_IMG: Record<string, { img: { src: string; alt: string }; pos: str
 type ProdId = "id" | "verify" | "provider" | "connect" | "insights" | "health";
 
 const PRODUCTS: { id: ProdId; icon: string; name: string; tag: string; blurb: string; ctx?: LandingContext; cta?: string }[] = [
-  { id: "id", icon: "⌕", name: "CLANCLAST ID", tag: "Core engine", blurb: "Resolve fragmented identities into trusted clusters. Candidate matches are scored with field-level evidence; uncertain cases go to a human reviewer. Nothing is merged automatically." },
-  { id: "verify", icon: "✓", name: "CLANCLAST Verify", tag: "Consent & credentials", blurb: "Consent capture, lightweight credentials, a Trust Registry and an auditable trail of trust events.", ctx: "verify", cta: "Open Verify prototype" },
+  { id: "id", icon: "⌕", name: "CLANCLAST ID", tag: "Identity", blurb: "Find the same person across fragmented records, with a clear reason for each suggestion. Uncertain cases go to a person to decide. Nothing is merged automatically." },
+  { id: "verify", icon: "✓", name: "CLANCLAST Verify", tag: "Consent & credentials", blurb: "Consent, credentials and verification, with an auditable trail of every decision.", ctx: "verify", cta: "Open Verify prototype" },
   { id: "provider", icon: "⌘", name: "CLANCLAST Provider", tag: "Clinical access", blurb: "Authenticate clinical staff, apply role-based access and surface authorised information requests.", ctx: "provider", cta: "Open Provider prototype" },
-  { id: "connect", icon: "⇄", name: "CLANCLAST Connect", tag: "Interoperability", blurb: "Translate and route requests between institution systems, with failover mapping and a queue that holds no clinical content.", ctx: "connect", cta: "Open Connect prototype" },
+  { id: "connect", icon: "⇄", name: "CLANCLAST Connect", tag: "Interoperability", blurb: "Route authorised requests between institution systems. Holds no clinical content.", ctx: "connect", cta: "Open Connect prototype" },
   { id: "insights", icon: "▥", name: "CLANCLAST Insights", tag: "Operational analytics", blurb: "De-identified, aggregate operational analytics for institutional customers." },
   { id: "health", icon: "▣", name: "CLANCLAST Health", tag: "Stage 2 · Patient layer", blurb: "A patient-facing wallet for credentials and institution-signed summaries, a consent centre, and card and USSD interfaces. Summaries live on the patient’s own device or card.", ctx: "patient", cta: "Open Health prototype" },
 ];
@@ -112,7 +112,7 @@ function VerifyDemo() {
   return (
     <div className="pe-card">
       <div className="pe-card-top"><span>CONSENT REQUEST</span><b className="pe-sim">SIMULATED</b></div>
-      <div className="pe-title">Livingstone Hospital</div>
+      <div className="pe-title">Riverside General Hospital</div>
       <p className="pe-sub">Requests permission to access your laboratory results · 7 days</p>
       <div className="pe-btns">
         <button type="button" className="allow" onClick={() => setS("allowed")}>Allow access</button>
@@ -130,9 +130,9 @@ function ProductVisual({ id }: { id: ProdId }) {
 
   if (id === "id") {
     const rows: [string, string, string, number][] = [
-      ["Thandi Mokoena", "Candidate A", "", 82],
+      ["Thandi Mokoena", "Possible match", "", 82],
       ["Thandiwe Mokoena", "Needs review", "warn", 64],
-      ["T. Mokoena", "Candidate C", "", 48],
+      ["T. Mokoena", "Possible match", "", 48],
     ];
     return (
       <div className="pe-card">
@@ -327,8 +327,8 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
     <div className="cc-site" ref={rootRef}>
       <header>
         <div className="wrap nav">
-          <a className="brand" href="#home" aria-label="clanclast health home">
-            <Brand height={46} />
+          <a className="brand" href="#home" aria-label="CLANCLAST home">
+            <Logo height={30} surface="light" priority />
           </a>
           <nav className={`navlinks${menuOpen ? " open" : ""}`} id="navlinks">
             {NAV.map(([href, label]) => (
@@ -376,12 +376,12 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               <div className="float-tag two"><b>Offline-ready</b>Trust can travel</div>
               <div className="hero-panel">
                 <div className="panel-top">
-                  <span className="panel-brand">CLANCLAST <span style={{ color: "#8da99b" }}>/ VERIFY</span></span>
+                  <span className="panel-brand">CLANCLAST <span style={{ color: "#8dd4ca" }}>/ VERIFY</span></span>
                   <span className="live">● INTERACTIVE DEMO</span>
                 </div>
                 <div className="request-card">
                   <small>CONSENT REQUEST · SIMULATED DATA</small>
-                  <h3>Livingstone Hospital</h3>
+                  <h3>Riverside General Hospital</h3>
                   <p>Requests permission to access your laboratory results.</p>
                   <div className="request-meta"><span>Purpose · Continuity of care</span><span>7 days</span></div>
                   <div className="choice-row">
@@ -392,7 +392,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
                     style={{
                       fontSize: 10,
                       marginTop: 10,
-                      color: consent === "allowed" ? "#26775f" : consent === "declined" ? "#9b5b32" : "#6a7b72",
+                      color: consent === "allowed" ? "#2c8176" : consent === "declined" ? "#8a5a00" : "#4a625f",
                     }}
                   >
                     {consent === "allowed"
@@ -439,9 +439,9 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               </figure>
             </div>
             <div className="stat-stack reveal">
-              <div className="stat"><strong>R30bn</strong><p><span className="tag">Reported estimate</span><br />Estimated annual healthcare fraud, waste and abuse.<span className="source">BHF / SIU, July 2026 · as cited in Blueprint v4.1</span></p></div>
-              <div className="stat"><strong>R76bn</strong><p><span className="tag">Reported</span><br />Public-sector medico-legal contingent liability in 2023/24.<span className="source">National Treasury, March 2025 Budget Review · as cited in Blueprint v4.1</span></p></div>
-              <div className="stat"><strong>122–209</strong><p><span className="tag">Reported</span><br />Published public-clinic waiting times in minutes, against a 120-minute target.<span className="source">SAMJ / Gauteng DoH research · as cited in Blueprint v4.1</span></p></div>
+              <div className="stat"><strong>R30bn</strong><p><span className="tag">Reported estimate</span><br />Estimated annual healthcare fraud, waste and abuse.<span className="source">BHF / SIU, July 2026</span></p></div>
+              <div className="stat"><strong>R76bn</strong><p><span className="tag">Reported</span><br />Public-sector medico-legal contingent liability in 2023/24.<span className="source">National Treasury, March 2025 Budget Review</span></p></div>
+              <div className="stat"><strong>122–209</strong><p><span className="tag">Reported</span><br />Published public-clinic waiting times in minutes, against a 120-minute target.<span className="source">SAMJ / Gauteng DoH research</span></p></div>
             </div>
           </div>
         </section>
@@ -459,7 +459,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               </figure>
             </div>
             <div className="pillars reveal">
-              <div className="pillar"><div className="pillar-num">01</div><div><h3>Identity that connects</h3><p>Resolve fragmented patient identities across records, with field-level evidence and human review for uncertain matches.</p></div></div>
+              <div className="pillar"><div className="pillar-num">01</div><div><h3>Identity that connects</h3><p>Find the same patient across fragmented records, with a clear reason for each suggestion and human review for uncertain matches.</p></div></div>
               <div className="pillar"><div className="pillar-num">02</div><div><h3>Consent that belongs to people</h3><p>Give patients control over who may access authorised information, with consent designed for app, USSD and physical-card channels.</p></div></div>
               <div className="pillar"><div className="pillar-num">03</div><div><h3>Continuity when networks fail</h3><p>Verify institution-signed, patient-carried summaries offline, with clear issuer, version and date information.</p></div></div>
             </div>
@@ -515,9 +515,9 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             <div className="steps-layout">
               <div className="steps-list reveal">
                 {[
-                  ["Match identity", "Records are compared using demographic signals. Uncertain candidates go to a human reviewer."],
+                  ["Match identity", "Records that may belong to the same person are found. Uncertain cases go to a person to decide."],
                   ["Ask for consent", "A protected request is sent to the patient, who can approve or decline on an available channel."],
-                  ["Verify — even offline", "An institution-signed summary can be checked against cached public keys without a live network."],
+                  ["Verify, even offline", "An institution-signed summary can be checked without a live network."],
                 ].map(([h, p], i) => (
                   <div key={h} className={`step${step === i ? " active" : ""}`} onClick={() => setStep(i)} role="button" tabIndex={0}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setStep(i); } }}>
@@ -531,7 +531,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
                 <h3>{s.title}</h3>
                 <p>{s.desc}</p>
                 <div className="screen-content">
-                  <h4>{s.heading} <span style={{ fontSize: 9, color: "#a17a25" }}>· SIMULATED</span></h4>
+                  <h4>{s.heading} <span style={{ fontSize: 9, color: "#8a5a00" }}>· SIMULATED</span></h4>
                   {s.rows.map(([k, v]) => (
                     <div className="screen-row" key={k}><span>{k}</span><b>{v}</b></div>
                   ))}
@@ -567,7 +567,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             <div className="section-head reveal">
               <span className="eyebrow">Working prototypes</span>
               <h2>See the workflows running, not just described.</h2>
-              <p>These screens run against a real API and database, loaded with seeded demonstration data. They show intended workflows; they are not validated production systems.</p>
+              <p>These screens run entirely in your browser with fictional demonstration data. Nothing you type is sent anywhere. They show intended workflows; they are not the production systems.</p>
             </div>
           </div>
           <AccessTiles setContext={setContext} />
@@ -596,9 +596,9 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               </figure>
             </div>
             <div className="fallback-grid">
-              <div className="fallback reveal"><div className="num">01</div><h3>Patient-carried summary</h3><p>An institution-signed snapshot can be verified without a network, showing its issuer, version and date. It remains advisory, not a replacement for the source record.</p><small>Works without network</small></div>
-              <div className="fallback reveal"><div className="num">02</div><h3>Institution replica</h3><p>Where an institution has its own replica, Connect can route to it with the patient's consent. The replica is read-only during an outage.</p><small>Institution-owned resilience</small></div>
-              <div className="fallback reveal"><div className="num">03</div><h3>Queued request</h3><p>If neither route is available, a request can wait for reconnection. The queue contains no clinical data; the response is encrypted to the requester.</p><small>Completes on recovery</small></div>
+              <div className="fallback reveal"><div className="num">01</div><h3>Patient-carried summary</h3><p>An institution-signed summary can be checked without a network, showing who issued it and when. It remains advisory, not a replacement for the source record.</p><small>Works without network</small></div>
+              <div className="fallback reveal"><div className="num">02</div><h3>Institution backup</h3><p>Where an institution runs its own backup, an authorised request can still reach it, with the patient's consent.</p><small>Institution-owned resilience</small></div>
+              <div className="fallback reveal"><div className="num">03</div><h3>Request waits</h3><p>If neither is available, a request waits for the connection to return. No clinical data is held while it waits.</p><small>Completes on recovery</small></div>
             </div>
           </div>
         </section>
@@ -670,11 +670,11 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               <p>CLANCLAST advances through defined stages. Each stage has a trigger; progress is not claimed before the evidence exists.</p>
             </div>
             <div className="stage-grid">
-              <div className="stage current reveal"><div className="status">● Current · In development</div><h3>Stage 1 — Prove the engine</h3><p>Batch identity-resolution study on one institution's historical records. No live consent flow or patient app in this stage.</p></div>
-              <div className="stage reveal"><div className="status">Indicative · Gated</div><h3>Stage 2 — Early production</h3><p>Verify, Provider and Health live flows, once a real institution is ready and required security and legal reviews are in place.</p></div>
-              <div className="stage reveal"><div className="status">Indicative · Gated</div><h3>Stage 3 — Scale</h3><p>Multi-institution linkage, enterprise infrastructure and Insights at real volume, when justified by usage and compliance needs.</p></div>
+              <div className="stage current reveal"><div className="status">● Current</div><h3>Stage 1: Prove it on real records</h3><p>A duplicate-identity study on one institution's historical records, measured against the institution's own staff.</p></div>
+              <div className="stage reveal"><div className="status">Next · Gated</div><h3>Stage 2: Early production</h3><p>Live identity, consent and verification with a partner institution, once the required reviews are in place.</p></div>
+              <div className="stage reveal"><div className="status">Later · Gated</div><h3>Stage 3: Scale</h3><p>More institutions and regions, when the evidence from earlier stages supports it.</p></div>
             </div>
-            <div className="progress-note"><b>Current status (October 2026):</b> Pre-pilot. Working prototypes demonstrate intended workflows on seeded demonstration data. No matching precision or recall has been measured; no pilot institution has signed; no revenue has been earned. Independent security review, POPIA legal opinions and trademark clearance remain outstanding. Prototypes are not validated production systems.</div>
+            <div className="progress-note"><b>Current status:</b> Pre-pilot. The prototypes on this site use fictional data and show intended workflows. Accuracy is measured with each partner institution, on its own records, before any live use.</div>
           </div>
         </section>
 
@@ -698,7 +698,7 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             <form className="form-card reveal" onSubmit={onSubmit}>
               {sent && (
                 <div className="success" style={{ display: "block" }}>
-                  Thank you. This is a front-end demonstration form; no information has been transmitted. Connect a secure form service before publishing.
+                  Thank you. Online enquiries are not open yet, so nothing was sent. Please contact us through your existing CLANCLAST contact for now.
                 </div>
               )}
               <div className="form-grid">
@@ -725,10 +725,10 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
               </div>
               <label className="consent-check">
                 <input type="checkbox" required />
-                <span>I agree that CLANCLAST may use these details to respond to this enquiry. I understand this demonstration form does not transmit or store my information.</span>
+                <span>I agree that CLANCLAST may use these details to respond to this enquiry.</span>
               </label>
               <button className="btn" type="submit">Submit enquiry <span className="arrow">↗</span></button>
-              <p className="form-note">Please do not submit patient information. A production enquiry form requires a secure backend, privacy notice and retention controls.</p>
+              <p className="form-note">Please do not include patient information.</p>
             </form>
           </div>
         </section>
@@ -738,8 +738,8 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
         <div className="wrap">
           <div className="footer-grid">
             <div className="footer-brand">
-              <a className="brand" href="#home" aria-label="clanclast health home">
-                <Brand dark height={52} />
+              <a className="brand" href="#home" aria-label="CLANCLAST home">
+                <Logo height={34} surface="dark" />
               </a>
               <p>Federated healthcare trust and identity infrastructure. Connecting institutions without replacing their systems.</p>
             </div>
@@ -748,10 +748,10 @@ export function MavenLanding({ setContext }: { setContext: Go }) {
             <div className="footer-col"><strong>Company</strong><a href="#story">Our approach</a><a href="#trust">Commitments</a><a href="#prototype">Prototypes</a><a href="#contact">Contact</a></div>
           </div>
           <div className="footer-bottom">
-            <span>© 2026 CLANCLAST. Working brand name; trademark clearance outstanding.</span>
+            <span>© 2026 CLANCLAST. All rights reserved.</span>
             <span>Built around trust · Designed for continuity</span>
           </div>
-          <p className="disclaimer">This website describes a pre-pilot product and roadmap. Product screens and workflow examples are illustrative and use simulated data. No matching accuracy, clinical outcome, institutional adoption or financial saving is claimed as achieved. Photographs and graphics are illustrative.</p>
+          <p className="disclaimer">This website describes a pre-pilot product. Product screens and workflow examples are illustrative and use fictional data. No accuracy, clinical outcome, adoption or saving is claimed as achieved. Photographs and graphics are illustrative.</p>
         </div>
       </footer>
     </div>
