@@ -1,0 +1,302 @@
+/* ==========================================================================
+   CLANCLAST Health — design tokens (single source of truth)
+   Palette is taken from the approved logo files. 90% neutral canvas,
+   10% accent. Every colour in the app should resolve to a token below.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Brand primitives (from logo SVGs) — reference only, prefer semantic tokens */
+  --brand-ink: #072b27;
+  --brand-700: #2c8176;
+  --brand-600: #3fa99b;
+  --brand-500: #5cbbae;
+  --brand-300: #8dd4ca;
+  --brand-200: #b0e4dc;
+  --brand-150: #bfe8df;
+  --brand-50: #eafbf8;
+  --brand-paper: #f7faf9;
+
+  /* Surfaces */
+  --canvas: #eef3f2;            /* app background (solid fallback for --ambient) */
+  --surface: #ffffff;           /* cards, lists, sheets */
+  --surface-2: #eff4f3;         /* grouped fills, inputs, segmented controls */
+  --surface-3: #e4ecea;         /* pressed fills */
+  --surface-inverse: #072b27;   /* brand panel */
+  --bar: rgb(255 255 255 / 0.72); /* translucent nav/tab bars only */
+
+
+  /* Glass — the signature surface. Cards are translucent; only floating
+     chrome (bars, sheets, sidebar) adds a real backdrop blur. */
+  --canvas-base: #eef3f2;
+  --ambient:
+    radial-gradient(70% 55% at 0% 0%, rgb(176 228 220 / 0.55) 0%, transparent 70%),
+    radial-gradient(60% 50% at 100% 100%, rgb(198 214 226 / 0.55) 0%, transparent 70%),
+    radial-gradient(50% 40% at 100% 0%, rgb(255 255 255 / 0.9) 0%, transparent 70%),
+    var(--canvas-base);
+  --glass: rgb(255 255 255 / 0.62);
+  --glass-strong: rgb(255 255 255 / 0.72);
+  --glass-edge: rgb(255 255 255 / 0.85);
+  --glass-line: rgb(7 43 39 / 0.06);
+  --glass-shadow: 0 1px 2px rgb(7 43 39 / 0.04), 0 10px 28px -14px rgb(7 43 39 / 0.14);
+  --glass-tint: linear-gradient(140deg, rgb(234 251 248 / 0.9) 0%, rgb(176 228 220 / 0.75) 55%, rgb(141 212 202 / 0.7) 100%);
+  --hero:
+    radial-gradient(90% 80% at 100% 0%, rgb(63 169 155 / 0.55) 0%, transparent 60%),
+    radial-gradient(70% 60% at 0% 100%, rgb(44 129 118 / 0.35) 0%, transparent 65%),
+    #072b27;
+  --radius-card: 24px;
+  --radius-pill: 32px;
+
+  /* Text */
+  --ink: #072b27;               /* 15.4:1 on white */
+  --ink-2: #4a625f;             /* secondary, 6.3:1 on white */
+  --ink-3: #7b8e8b;             /* tertiary/placeholder, non-essential only */
+  --ink-inverse: #ffffff;
+
+  /* Lines */
+  --hairline: rgb(7 43 39 / 0.08);
+  --hairline-strong: rgb(7 43 39 / 0.14);
+  --focus: rgb(44 129 118 / 0.35);
+
+  /* Accent (the 10%) */
+  --accent: #2c8176;            /* 4.6:1 on white — AA for text */
+  --accent-hover: #256f65;
+  --accent-pressed: #1f5d55;
+  --on-accent: #ffffff;
+  --accent-tint: #e8f4f1;       /* selected rows, active nav */
+  --accent-tint-2: #d3ebe6;
+
+  /* Semantic status */
+  --positive: #2c8176;
+  --positive-tint: #e8f4f1;
+  --warning: #8a5a00;
+  --warning-tint: #fff4dc;
+  --critical: #b42318;
+  --critical-tint: #fdecea;
+  --info: #31556b;
+  --info-tint: #e9f0f5;
+
+  /* Typography — system first (SF Pro on Apple, zero download); Inter elsewhere */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Variable", "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Variable", "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  --tracking-tight: -0.02em;
+  --tracking-display: -0.025em;
+  --tracking-caps: 0.06em;
+
+  /* Type scale (size / line-height) — Apple HIG derived */
+  --text-large-title: 2.125rem; --leading-large-title: 2.5rem;   /* 34/40 */
+  --text-title-1: 1.75rem;      --leading-title-1: 2.125rem;     /* 28/34 */
+  --text-title-2: 1.375rem;     --leading-title-2: 1.75rem;      /* 22/28 */
+  --text-title-3: 1.25rem;      --leading-title-3: 1.5625rem;    /* 20/25 */
+  --text-headline: 1.0625rem;   --leading-headline: 1.375rem;    /* 17/22 semibold */
+  --text-body: 1rem;            --leading-body: 1.5rem;          /* 16/24 */
+  --text-callout: 0.9375rem;    --leading-callout: 1.375rem;     /* 15/22 */
+  --text-subhead: 0.875rem;     --leading-subhead: 1.25rem;      /* 14/20 */
+  --text-footnote: 0.8125rem;   --leading-footnote: 1.125rem;    /* 13/18 */
+  --text-caption: 0.75rem;      --leading-caption: 1rem;         /* 12/16 */
+  --text-micro: 0.6875rem;      --leading-micro: 0.875rem;       /* 11/14 */
+
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-full: 999px;
+
+  /* Elevation — only overlays float; content uses hairlines */
+  --shadow-popover: 0 0 0 1px var(--hairline), 0 12px 32px -8px rgb(7 43 39 / 0.16);
+  --shadow-sheet: 0 0 0 1px var(--hairline), 0 24px 64px -16px rgb(7 43 39 / 0.28);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-instant: 90ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 380ms;
+
+  /* Layout */
+  --sidebar-w: 256px;
+  --rail-w: 72px;
+  --topbar-h: 52px;
+  --tabbar-h: 50px;
+  --content-max: 760px;
+  --gutter: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Dark — deep brand teal canvas rather than pure black */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #041c19;
+    --canvas-base: #041c19;
+    --ambient:
+      radial-gradient(70% 55% at 0% 0%, rgb(44 129 118 / 0.32) 0%, transparent 70%),
+      radial-gradient(60% 50% at 100% 100%, rgb(31 70 86 / 0.45) 0%, transparent 70%),
+      var(--canvas-base);
+    --glass: rgb(255 255 255 / 0.05);
+    --glass-strong: rgb(10 39 36 / 0.72);
+    --glass-edge: rgb(255 255 255 / 0.09);
+    --glass-line: rgb(255 255 255 / 0.04);
+    --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+    --glass-tint: linear-gradient(140deg, rgb(63 169 155 / 0.32) 0%, rgb(44 129 118 / 0.22) 60%, rgb(31 70 86 / 0.3) 100%);
+    --hero:
+      radial-gradient(90% 80% at 100% 0%, rgb(63 169 155 / 0.45) 0%, transparent 60%),
+      radial-gradient(70% 60% at 0% 100%, rgb(44 129 118 / 0.28) 0%, transparent 65%),
+      #06241f;
+    --surface: #0a2724;
+    --surface-2: #10322e;
+    --surface-3: #173d38;
+    --surface-inverse: #072b27;
+    --bar: rgb(4 28 25 / 0.82);
+    --ink: #eafbf8;
+    --ink-2: #a3c2bd;
+    --ink-3: #6d8c87;
+    --hairline: rgb(234 251 248 / 0.09);
+    --hairline-strong: rgb(234 251 248 / 0.16);
+    --focus: rgb(92 187 174 / 0.45);
+    --accent: #5cbbae;
+    --accent-hover: #74c8bc;
+    --accent-pressed: #8dd4ca;
+    --on-accent: #052320;
+    --accent-tint: rgb(92 187 174 / 0.14);
+    --accent-tint-2: rgb(92 187 174 / 0.22);
+    --positive: #5cbbae;
+    --positive-tint: rgb(92 187 174 / 0.14);
+    --warning: #f2c46b;
+    --warning-tint: rgb(242 196 107 / 0.12);
+    --critical: #ff8a7f;
+    --critical-tint: rgb(255 138 127 / 0.12);
+    --info: #9cc3dc;
+    --info-tint: rgb(156 195 220 / 0.12);
+    --shadow-popover: 0 0 0 1px var(--hairline-strong), 0 12px 32px -8px rgb(0 0 0 / 0.5);
+    --shadow-sheet: 0 0 0 1px var(--hairline-strong), 0 24px 64px -16px rgb(0 0 0 / 0.6);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #041c19;
+  --canvas-base: #041c19;
+  --ambient:
+    radial-gradient(70% 55% at 0% 0%, rgb(44 129 118 / 0.32) 0%, transparent 70%),
+    radial-gradient(60% 50% at 100% 100%, rgb(31 70 86 / 0.45) 0%, transparent 70%),
+    var(--canvas-base);
+  --glass: rgb(255 255 255 / 0.05);
+  --glass-strong: rgb(10 39 36 / 0.72);
+  --glass-edge: rgb(255 255 255 / 0.09);
+  --glass-line: rgb(255 255 255 / 0.04);
+  --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+  --glass-tint: linear-gradient(140deg, rgb(63 169 155 / 0.32) 0%, rgb(44 129 118 / 0.22) 60%, rgb(31 70 86 / 0.3) 100%);
+  --hero:
+    radial-gradient(90% 80% at 100% 0%, rgb(63 169 155 / 0.45) 0%, transparent 60%),
+    radial-gradient(70% 60% at 0% 100%, rgb(44 129 118 / 0.28) 0%, transparent 65%),
+    #06241f;
+  --surface: #0a2724;
+  --surface-2: #10322e;
+  --surface-3: #173d38;
+  --surface-inverse: #072b27;
+  --bar: rgb(4 28 25 / 0.82);
+  --ink: #eafbf8;
+  --ink-2: #a3c2bd;
+  --ink-3: #6d8c87;
+  --hairline: rgb(234 251 248 / 0.09);
+  --hairline-strong: rgb(234 251 248 / 0.16);
+  --focus: rgb(92 187 174 / 0.45);
+  --accent: #5cbbae;
+  --accent-hover: #74c8bc;
+  --accent-pressed: #8dd4ca;
+  --on-accent: #052320;
+  --accent-tint: rgb(92 187 174 / 0.14);
+  --accent-tint-2: rgb(92 187 174 / 0.22);
+  --positive: #5cbbae;
+  --positive-tint: rgb(92 187 174 / 0.14);
+  --warning: #f2c46b;
+  --warning-tint: rgb(242 196 107 / 0.12);
+  --critical: #ff8a7f;
+  --critical-tint: rgb(255 138 127 / 0.12);
+  --info: #9cc3dc;
+  --info-tint: rgb(156 195 220 / 0.12);
+  --shadow-popover: 0 0 0 1px var(--hairline-strong), 0 12px 32px -8px rgb(0 0 0 / 0.5);
+  --shadow-sheet: 0 0 0 1px var(--hairline-strong), 0 24px 64px -16px rgb(0 0 0 / 0.6);
+}
+
+/* Expose tokens to Tailwind utilities: bg-canvas, text-ink-2, border-hairline, rounded-lg, ease-out … */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+  --color-bar: var(--bar);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-inverse: var(--ink-inverse);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-on-accent: var(--on-accent);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-tint-2: var(--accent-tint-2);
+  --color-positive: var(--positive);
+  --color-positive-tint: var(--positive-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-critical: var(--critical);
+  --color-critical-tint: var(--critical-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
+
+  --font-sans: var(--font-sans);
+  --font-body: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  --text-large-title: var(--text-large-title);
+  --text-large-title--line-height: var(--leading-large-title);
+  --text-title-1: var(--text-title-1);
+  --text-title-1--line-height: var(--leading-title-1);
+  --text-title-2: var(--text-title-2);
+  --text-title-2--line-height: var(--leading-title-2);
+  --text-title-3: var(--text-title-3);
+  --text-title-3--line-height: var(--leading-title-3);
+  --text-headline: var(--text-headline);
+  --text-headline--line-height: var(--leading-headline);
+  --text-body: var(--text-body);
+  --text-body--line-height: var(--leading-body);
+  --text-callout: var(--text-callout);
+  --text-callout--line-height: var(--leading-callout);
+  --text-subhead: var(--text-subhead);
+  --text-subhead--line-height: var(--leading-subhead);
+  --text-footnote: var(--text-footnote);
+  --text-footnote--line-height: var(--leading-footnote);
+  --text-caption: var(--text-caption);
+  --text-caption--line-height: var(--leading-caption);
+  --text-micro: var(--text-micro);
+  --text-micro--line-height: var(--leading-micro);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
+
+  --shadow-popover: var(--shadow-popover);
+  --shadow-sheet: var(--shadow-sheet);
+
+  --ease-out: var(--ease-out);
+  --ease-spring: var(--ease-spring);
+  --ease-in-out: var(--ease-in-out);
+}
