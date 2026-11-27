@@ -22,7 +22,7 @@ function figmaAssetResolver(): Plugin {
 function appRoutes(): Plugin {
   const rewrite = (url = '') => {
     const p = url.split('?')[0]
-    for (const app of ['patient', 'provider']) {
+    for (const app of ['patient', 'provider', 'pitch']) {
       if ((p === `/${app}` || p.startsWith(`/${app}/`)) && !/\.[a-z0-9]+$/i.test(p)) return `/${app}/index.html${url.slice(p.length)}`
     }
     return url
@@ -46,6 +46,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         patient: path.resolve(__dirname, 'patient/index.html'),
         provider: path.resolve(__dirname, 'provider/index.html'),
+        pitch: path.resolve(__dirname, 'pitch/index.html'),
       },
     },
   },

@@ -81,7 +81,7 @@ function ScanFinder({ onFound }: { onFound: (f: Found) => void }) {
 
   async function resolve(raw: string, via: string) {
     const parsed = parseCode(raw);
-    if (!parsed) { setError("That isn’t a CLANCLAST code or ID. IDs look like HN-1234-5678."); return; }
+    if (!parsed) { setError("That isn’t a CLANCLAST code or ID. IDs look like CC-1234-5678."); return; }
     setBusy(true); setError("");
     try {
       const r = await providerApi.verify(parsed);
@@ -104,7 +104,7 @@ function ScanFinder({ onFound }: { onFound: (f: Found) => void }) {
       <form onSubmit={(e) => { e.preventDefault(); resolve(code, /^\s*\{/.test(code) ? "scanning their code" : "CLANCLAST ID"); }}>
         <label className="field">
           <span className="field-label">{canScan ? "Or use a scanner, or type their CLANCLAST ID" : "Scan with a hand-held scanner, or type their CLANCLAST ID"}</span>
-          <input ref={input} className="input mono" value={code} onChange={(e) => setCode(e.target.value)} placeholder="HN-1234-5678" autoComplete="off" spellCheck={false} />
+          <input ref={input} className="input mono" value={code} onChange={(e) => setCode(e.target.value)} placeholder="CC-1234-5678" autoComplete="off" spellCheck={false} />
         </label>
         {error && <p role="alert" className="mt-3 rounded-[14px] bg-critical-tint px-3.5 py-2.5 text-footnote text-critical">{error}</p>}
         <button type="submit" disabled={!code.trim() || busy} className="btn btn-primary btn-block mt-4">{busy ? "Checking…" : "Find patient"}</button>
