@@ -216,6 +216,6 @@ function Presenter() {
 function Print() {
   useEffect(() => { document.documentElement.classList.add("printing"); }, []);
   const only = new URLSearchParams(window.location.search).get("print");
-  const list = only ? SLIDES.map((_, k) => k).filter((k) => String(k + 1) === only || SLIDES[k].id === only) : SLIDES.map((_, k) => k);
+  const list = only === "main" ? MAIN.map((_, k) => k) : only ? SLIDES.map((_, k) => k).filter((k) => String(k + 1) === only || SLIDES[k].id === only) : SLIDES.map((_, k) => k);
   return <div className="print">{list.map((k) => <Frame key={k} i={k} print />)}</div>;
 }

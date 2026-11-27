@@ -24,7 +24,7 @@ const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("clanc
 export function DemoPlayer() {
   const { active, print } = useContext(DeckCtx);
   const [ch, setCh] = useState(0);
-  const [rate, setRate] = useState(1.5);
+  const [rate, setRate] = useState(2);
   const [playing, setPlaying] = useState(true);
   const [prog, setProg] = useState(0);
   const vid = useRef<HTMLVideoElement>(null);

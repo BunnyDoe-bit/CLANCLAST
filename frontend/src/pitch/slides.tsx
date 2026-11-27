@@ -29,7 +29,6 @@ export const NAV = [
   ["why", "Why us"],
   ["market", "Market"],
   ["model", "Model"],
-  ["progress", "Progress"],
   ["impact", "Impact"],
   ["team", "Team"],
 ] as const;
@@ -313,37 +312,6 @@ const Model = (
   </section>
 );
 
-/* ------------------------------------------------------------------ 8. progress */
-const Progress = (
-  <section className="section progress pg-progress">
-    <div className="wrap">
-      <div className="prog-head">
-        <div>
-          <Rv><span className="eyebrow">Progress, honestly</span></Rv>
-          <Rv d={100}><h2>Built with no funding. <em>Already working.</em></h2></Rv>
-        </div>
-        <Rv d={200}><p>Every component is proven technology, using the same standards as the national exchange. The open work is tuning the matching engine to high precision.</p></Rv>
-      </div>
-      <div className="stage-grid four">
-        {[
-          ["Built", "3 working products", "Provider platform, patient app with Summary Vault, and an operations console. Synthetic data."],
-          ["Measured", "14,994-record benchmark", "Synthetic South African records: 6,980 people and 2,520 look-alike traps, calibrated to published rates."],
-          ["Government", "NHIE request logged", "Connection and certificate-signing request lodged on the Department of Health HIS Support portal, 26 Nov 2026."],
-          ["Listened", "80 hospital staff", "About 75% say duplicates are a real problem. Convenience sample, 2026."],
-        ].map(([s, t, d], i) => (
-          <Rv d={260 + i * 100} key={t}><div className={`stage ${i === 0 ? "current" : ""}`}><div className="status">{s}</div><h3>{t}</h3><p>{d}</p></div></Rv>
-        ))}
-      </div>
-      <Rv d={700}>
-        <div className="tech-row">
-          {["HL7 FHIR R4", "IHE PDQm · mCSD · ATNA", "Splink record linkage", "PostgreSQL", "USSD & SMS", "Ed25519 signed summaries", "Hash-chained audit", "Passkeys"].map((t) => <span key={t}>{t}</span>)}
-        </div>
-      </Rv>
-      <Rv d={800}><div className="progress-note"><b>Target before claiming results:</b> at least 99% precision on automatic links, with uncertain pairs sent to a person, scored against the full answer key. No accuracy figure is claimed until then.</div></Rv>
-    </div>
-  </section>
-);
-
 /* ------------------------------------------------------------------ 9. impact */
 const Impact = (
   <section className="section pg-impact">
@@ -377,14 +345,19 @@ const Team = (
   <section className="section pg-team">
     <div className="wrap team-grid">
       <div>
-        <Rv><span className="eyebrow">Team</span></Rv>
-        <Rv d={100}><h2>Three builders who shipped <em>before raising a cent.</em></h2></Rv>
-        <Rv d={200}><p>Three computing students who built three working products and a national-scale test set with no funding, and who are adding the healthcare and leadership experience they lack.</p></Rv>
+        <Rv><span className="eyebrow">Team &amp; progress</span></Rv>
+        <Rv d={100}><h2>Three builders. <em>Already working, with no funding.</em></h2></Rv>
         <div className="people">
           {[["MT", "Martin Tlabela", "Founder & CEO", "IT, specialising in cyber security"], ["TM", "Thendo Mulaudzi", "CTO", "Computer science"], ["NT", "Nathaniel Tsumbe", "Engineering", "Computer science"]].map(([i, n, r, b], k) => (
-            <Rv d={320 + k * 120} key={n}><div className="person"><span className="av">{i}</span><div><h3>{n}</h3><b>{r}</b><p>{b}</p></div></div></Rv>
+            <Rv d={220 + k * 100} key={n}><div className="person"><span className="av">{i}</span><div><h3>{n}</h3><b>{r}</b><p>{b}</p></div></div></Rv>
           ))}
         </div>
+        <div className="built">
+          {[["3", "working products", "Provider platform, patient app with Summary Vault, operations console"], ["14,994", "record SA benchmark", "6,980 people, 2,520 look-alike traps, synthetic"], ["26 Nov", "NHIE request logged", "With the Department of Health, HIS Support portal"], ["80", "hospital staff surveyed", "About 75% say duplicates are a real problem"]].map(([n, t, d], k) => (
+            <Rv d={560 + k * 90} key={t}><div className="b"><strong>{n}</strong><b>{t}</b><span>{d}</span></div></Rv>
+          ))}
+        </div>
+        <Rv d={940}><p className="target">Proven standards (HL7 FHIR R4, the national exchange’s IHE profiles). <b>Target before claiming any accuracy result: 99%+ precision on automatic links.</b></p></Rv>
       </div>
       <div className="team-side">
         <Rv d={300}>
@@ -456,25 +429,23 @@ const QA = (eyebrow: string, title: ReactNode, rows: [string, string][], note?: 
 export const SLIDES: Slide[] = [
   { id: "home", title: "No patient a stranger", seconds: 15, tone: "dark", body: Hero,
     notes: "Meet Thandi. She has been to a clinic, a hospital and casualty, and the health system now thinks she is three different people. CLANCLAST makes sure no patient is a stranger to their own healthcare system." },
-  { id: "problem", nav: "problem", title: "The problem", seconds: 35, tone: "light", body: Problem,
+  { id: "problem", nav: "problem", title: "The problem", seconds: 30, tone: "light", body: Problem,
     notes: "When an ID is missing or a name is spelled differently, each system registers her as someone new: Thandi, Thandiwe, T. Mokoena. One person, three files, none complete. The Department of Health itself found over 437,000 patients under one ID with different names; in the Western Cape about one in ten new registrations was a probable duplicate. And it isn't careless staff. It's good choices, like working offline and treating everyone, with nothing to reconcile the records afterwards. [Confirm the exact wording of the 437,342 figure in the NDoH 2025 book.]" },
-  { id: "solution", nav: "solution", title: "The solution", seconds: 30, tone: "dark", body: Solution,
+  { id: "solution", nav: "solution", title: "The solution", seconds: 25, tone: "dark", body: Solution,
     notes: "Every existing system covers part of the picture: HPRS is public only, the national exchange has no consent service, hospital groups and schemes see only their own people. The private sector's own exchange, CareConnect, closed because competitors owned it. CLANCLAST is the neutral switch. Every organisation connects once and keeps its own records. The switch answers three questions: is this the same patient, may I see her history, and is this record real. And the patient decides, on any phone." },
-  { id: "demo", nav: "demo", title: "Live demo", seconds: 80, tone: "dark", body: Demo,
+  { id: "demo", nav: "demo", title: "Live demo", seconds: 110, tone: "dark", body: Demo,
     notes: "This is the working product, not a mockup. Chapter one: Riverside's register has Thandi three times. The engine finds the possible matches and shows its evidence; it never merges on its own. A staff member confirms. Three files, one Thandi. Chapter two: the hospital asks for her history; the request lands on her phone; she allows it for seven days, and it's logged on both sides. Chapter three: the hospital signs a summary she carries. The network goes down, and another desk can still verify it's genuine. Press → to move to the next chapter; Space pauses." },
-  { id: "why", nav: "why", title: "What's new", seconds: 25, tone: "light", body: Why,
+  { id: "why", nav: "why", title: "What's new", seconds: 20, tone: "light", body: Why,
     notes: "Matching patients isn't new. A neutral, patient-controlled bridge across all of South Africa's systems is. We recognise, we don't store; we suggest, we never merge; and we're built for South African records, without ID numbers and with offline capture. Because a wrong match can kill someone, safety comes first: ID-to-birth-date checks, group conflict rules, a twin rule, and no biometrics. It's hard to copy because an incumbent can never be neutral." },
-  { id: "market", nav: "market", title: "Market and why now", seconds: 25, tone: "light", body: Market,
+  { id: "market", nav: "market", title: "Market and why now", seconds: 20, tone: "light", body: Market,
     notes: "The demand has already been paid for: hospital groups and schemes put over 100 million rand into CareConnect and reached 5 million patients, before it closed because it was owned by competitors. Now HPRS is in over 3,200 facilities, the national exchange is onboarding partners, and POPIA's health regulations took effect this March. Who connects: 3,474 public clinics, 329 public hospitals, 200 private hospitals, about 70 schemes." },
-  { id: "model", nav: "model", title: "Business model", seconds: 20, tone: "light", body: Model,
+  { id: "model", nav: "model", title: "Business model", seconds: 15, tone: "light", body: Model,
     notes: "We earn like a bank switch: organisations pay to connect and pay a small fee per check: match, consent, verify. Patients never pay, and we never sell data. Schemes and private hospitals pay first, because duplicates cost them money today. Prices will be tested with the first participants." },
-  { id: "progress", nav: "progress", title: "Progress", seconds: 20, tone: "dark", body: Progress,
-    notes: "With no funding we've built three working products, a 14,994-record South African benchmark full of look-alike traps, and we've lodged our connection request with the national exchange. We hold ourselves to a 99% precision target on automatic links before we claim any accuracy result." },
   { id: "impact", nav: "impact", title: "Impact", seconds: 15, tone: "light", body: Impact,
     notes: "Every patient we connect is one less family forced to prove, again and again, who their loved one is. Our target is two million patients by 2031. It serves universal health coverage, legal identity for all, and works offline, through load-shedding, on a basic phone." },
-  { id: "team", nav: "team", title: "Team", seconds: 15, tone: "light", body: Team,
-    notes: "We're three computing students: cyber security and computer science. We shipped before raising a cent, and we're adding what we lack: an experienced doctor challenged our plan, we're talking to the Batsamayi founder about technical leadership, and Propella is mentoring us. [Add one sentence, in your own words, on why this matters to you.] [Confirm surname for all materials: Tlabela or Mamoloto; and name order for Nathaniel Tsumbe.]" },
-  { id: "ask", title: "The ask", seconds: 20, tone: "dark", body: Ask,
+  { id: "team", nav: "team", title: "Team and progress", seconds: 25, tone: "light", body: Team,
+    notes: "With no funding we've built three working products, a 14,994-record South African benchmark full of look-alike traps, and we've lodged our connection request with the national exchange. We hold ourselves to a 99% precision target before we claim any accuracy result. We're three computing students: cyber security and computer science. We shipped before raising a cent, and we're adding what we lack: an experienced doctor challenged our plan, we're talking to the Batsamayi founder about technical leadership, and Propella is mentoring us. [Add one sentence, in your own words, on why this matters to you.] [Confirm surname for all materials: Tlabela or Mamoloto; and name order for Nathaniel Tsumbe.]" },
+  { id: "ask", title: "The ask", seconds: 25, tone: "dark", body: Ask,
     notes: "We're asking for R900,000 over 16 months, released in three stages, each unlocked only by evidence: validate, then secure and comply, then prove it in one Nelson Mandela Bay facility. Your money moves with evidence, not promises. No patient should be a stranger to their own healthcare system. Thank you." },
   { id: "q-accuracy", title: "Q: How accurate is it?", seconds: 0, tone: "light", backup: true,
     notes: "Be straight: the engine is being tuned. Give the best run, the fixes since, and the 99% target before any claim. Never quote an accuracy figure as a result.",

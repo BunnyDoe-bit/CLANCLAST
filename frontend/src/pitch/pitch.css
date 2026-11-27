@@ -282,7 +282,17 @@ html, body { margin: 0; height: 100%; background: #041c19; overflow: hidden; }
 
 /* ---------- 10. team ---------- */
 .cc-site.deck .team-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 64px; align-items: center; }
-.cc-site.deck .pg-team h2 { font-size: 70px; }
+.cc-site.deck .pg-team h2 { font-size: 66px; margin-bottom: 8px; }
+.cc-site.deck .people { margin-top: 22px; }
+.cc-site.deck .person { padding: 22px; gap: 14px; }
+.cc-site.deck .av { width: 60px; height: 60px; font-size: 21px; }
+.cc-site.deck .built { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+.cc-site.deck .built .b { height: 100%; padding: 18px 18px 20px; border-radius: 20px; background: var(--deep); }
+.cc-site.deck .built strong { display: block; font: 800 36px var(--font-display); letter-spacing: -.05em; color: #8dd4ca; }
+.cc-site.deck .built b { display: block; margin-top: 2px; font-size: 16px; color: #fff; }
+.cc-site.deck .built span { display: block; margin-top: 6px; font-size: 13.5px; line-height: 1.4; color: #b5cbc4; }
+.cc-site.deck .target { margin-top: 16px; font-size: 16px !important; line-height: 1.5; }
+.cc-site.deck .target b { color: var(--deep); }
 .cc-site.deck .people { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 34px; }
 .cc-site.deck .person { display: flex; flex-direction: column; gap: 18px; padding: 26px; border-radius: 24px; background: rgba(255, 255, 255, .8); border: 1px solid var(--line); box-shadow: var(--shadow-sm); height: 100%; }
 .cc-site.deck .av { width: 72px; height: 72px; border-radius: 50%; background: var(--deep); color: #8dd4ca; display: grid; place-items: center; font: 800 24px var(--font-display); }
