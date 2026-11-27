@@ -1,253 +1,507 @@
 import type { ReactNode } from "react";
-import reception from "../assets/landing/photo-reception-desk-scene.webp";
-import elder from "../assets/landing/brand-doctor-elder-smile.webp";
-import { DemoReel } from "./DemoReel";
+import { HeroMetalScales } from "../app/components/landing/HeroMetalScales";
+import { brandPhotos as P } from "../app/components/landing/landingAssets";
+import { Logo } from "../app/components/shared/Brand";
+import { DemoPlayer } from "./DemoPlayer";
 
 /**
- * The ProFuture pitch: 10 slides for a 5-minute slot, then backup slides for questions.
- * Order follows the Pitch Canvas; time follows the judging weights (problem, innovation and
- * feasibility carry 15% each, so they get the most time). Notes are the spoken script.
+ * The CLANCLAST pitch, built from the website's own sections (`.cc-site` styles).
+ * Content follows Blueprint v5.0 (27 Nov 2026). Every figure is labelled as reported by a
+ * third party, a CLANCLAST measurement, or a target (Canon Rule 5).
  */
-export type Slide = { id: string; title: string; seconds: number; tone: "dark" | "light"; notes: string; body: ReactNode; backup?: boolean };
 
-const Check = () => <span className="ck" aria-label="yes">✓</span>;
-const No = () => <span className="no" aria-label="no">–</span>;
+export type Tone = "dark" | "light";
+export type Slide = {
+  id: string;
+  nav?: string; // which nav link lights up
+  title: string;
+  seconds: number;
+  tone: Tone;
+  notes: string;
+  backup?: boolean;
+  body: ReactNode;
+};
 
-export const SLIDES: Slide[] = [
-  {
-    id: "open", title: "No patient a stranger", seconds: 20, tone: "dark",
-    notes: "Good morning. Imagine arriving at a clinic sick, and nobody can tell who you are, what you're allergic to, or what was done for you last week across town. That happens every day in South Africa. We're CLANCLAST, and we make sure no patient is a stranger to their own healthcare system.",
-    body: (
-      <div className="s-open">
-        <img className="logo" src="/brand/clanclast-horizontal-on-dark.svg" alt="CLANCLAST" />
-        <h1>No patient a stranger to their own <em>healthcare system.</em></h1>
-        <p className="lede">Identity, consent and trusted health summaries that move with people, across every clinic and hospital, even without a network.</p>
-        <p className="foot">ProFuture cohort · Smart City / ICT · Health</p>
-      </div>
-    ),
-  },
-  {
-    id: "pain", title: "The pain", seconds: 40, tone: "light",
-    notes: "Here's the problem. Thandi visits three facilities in a year. She gets three folders and three numbers, and the record of her penicillin allergy stays in the first one. Clinics can't tell that these are the same person, so staff re-register her, repeat tests, and sometimes miss what matters. Multiply that across the public system that most South Africans rely on. It costs money, time and, in the worst case, lives. The figures here are reported national estimates.",
-    body: (
-      <div className="s-pain">
-        <div className="story">
-          <span className="eyebrow">The pain</span>
-          <h2>One patient. Three clinics. <em>Three strangers.</em></h2>
-          <ol className="folders">
-            <li><b>Clinic A</b><span>“Thandiwe Mokoena” · 1990-03-12 · allergy: penicillin</span></li>
-            <li><b>Hospital B</b><span>“Thandi Mokoena” · no ID · new folder</span></li>
-            <li><b>Clinic C</b><span>“T. Mokoena” · 1990-01-01 (estimated) · allergy: unknown</span></li>
-          </ol>
-          <p className="so">Duplicate folders, repeated tests, missed allergies, and long queues while staff search.</p>
-        </div>
-        <div className="side">
-          <img src={reception} alt="" />
-          <div className="stats">
-            <div><strong>R30bn</strong><span>a year lost to healthcare fraud, waste and abuse</span></div>
-            <div><strong>R76bn</strong><span>public-sector medico-legal contingent liability, 2023/24</span></div>
-            <div><strong>122–209 min</strong><span>public clinic waiting times, against a 120-minute target</span></div>
+export const NAV = [
+  ["problem", "Problem"],
+  ["solution", "Solution"],
+  ["demo", "Live demo"],
+  ["why", "Why us"],
+  ["market", "Market"],
+  ["model", "Model"],
+  ["progress", "Progress"],
+  ["impact", "Impact"],
+  ["team", "Team"],
+] as const;
+
+const Rv = ({ d = 0, children, className = "" }: { d?: number; children: ReactNode; className?: string }) => (
+  <div className={`rv ${className}`} style={{ ["--d" as string]: `${d}ms` }}>{children}</div>
+);
+
+/* ------------------------------------------------------------------ 1. hero */
+const Hero = (
+  <section className="hero pg-hero">
+    <div className="hero-bg" aria-hidden="true"><HeroMetalScales /><div className="hero-scrim" /></div>
+    <div className="wrap hero-grid">
+      <div className="hero-copy">
+        <Rv><span className="eyebrow">The neutral switch for patient identity &amp; consent</span></Rv>
+        <Rv d={120}><h1>No patient a stranger to their own <em>healthcare system.</em></h1></Rv>
+        <Rv d={240}><p>South African healthcare has its banks, but no switch. Every system knows its own patients. None of them knows <b>the patient</b>.</p></Rv>
+        <Rv d={360}>
+          <div className="hero-ctas">
+            <a className="btn" href="#demo" data-go="demo">See it running <span className="arrow">↗</span></a>
+            <a className="btn outline" href="#ask" data-go="ask">Partner with us</a>
           </div>
-          <p className="src">Reported: BHF/SIU (2026), National Treasury Budget Review (2025), SAMJ / Gauteng DoH. Context, not CLANCLAST outcomes.</p>
+        </Rv>
+        <Rv d={480}>
+          <div className="trust-mini">
+            <span><i className="check">✓</i> No clinical records stored</span>
+            <span><i className="check">✓</i> The patient decides</span>
+            <span><i className="check">✓</i> Works offline and on basic phones</span>
+          </div>
+        </Rv>
+      </div>
+      <div className="hero-visual">
+        <div className="visual-orbit" />
+        <div className="hero-photo"><img src={P.doctorElderSmile.src} alt={P.doctorElderSmile.alt} /></div>
+        <div className="float-tag one"><b>3 → 1</b>Records reconciled</div>
+        <div className="float-tag two"><b>Offline-ready</b>Trust can travel</div>
+        <div className="hero-panel merge-panel">
+          <div className="panel-top">
+            <span className="panel-brand">CLANCLAST <span style={{ color: "#2c8176" }}>/ MATCH</span></span>
+            <span className="live">● A PERSON DECIDES</span>
+          </div>
+          <div className="merge">
+            {[
+              ["Thandiwe Mokoena", "Outpatients · ID on file"],
+              ["Thandi Mokoena", "Clinic referral · no ID"],
+              ["T. Mokoena", "Casualty, after hours"],
+            ].map(([n, w], i) => (
+              <div className="merge-rec" key={n} style={{ ["--i" as string]: i }}><b>{n}</b><small>{w}</small></div>
+            ))}
+            <div className="merge-one">
+              <span className="merge-tick">✓</span>
+              <div><b>Thandiwe Mokoena</b><small>CC-4821-1990 · 3 records linked · confirmed by staff</small></div>
+            </div>
+            <div className="merge-links">{["Outpatients", "Clinic referral", "Casualty"].map((x) => <span key={x}>✓ {x}</span>)}</div>
+          </div>
+          <div className="offline-card">
+            <div className="offline-icon">⌁</div>
+            <div><strong>Her summary verifies offline</strong><span>Signed by the hospital · carried by her · checked anywhere</span></div>
+          </div>
         </div>
-      </div>
-    ),
-  },
-  {
-    id: "solution", title: "How it works", seconds: 30, tone: "light",
-    notes: "CLANCLAST is a thin trust layer that sits beside the systems clinics already use. Three things. One: we find the same person across messy records, and a person decides anything uncertain. Two: the patient controls who sees what, from an app, a basic phone or a caregiver. Three: clinics sign a short summary the patient carries, and any clinic can check it's genuine, even offline. We never store clinical records.",
-    body: (
-      <div className="s-solution">
-        <span className="eyebrow">The product</span>
-        <h2>A thin trust layer beside the systems clinics already use.</h2>
-        <div className="three">
-          <div><span className="n">1</span><h3>Identify</h3><p>Finds the same person across messy records: typos, nicknames, swapped names, a parent’s ID on a child’s file. Uncertain cases go to a person.</p></div>
-          <div><span className="n">2</span><h3>Consent</h3><p>The patient decides who sees what, and for how long: in the app, by USSD on any phone, or through a caregiver.</p></div>
-          <div><span className="n">3</span><h3>Verify, even offline</h3><p>Clinics sign a short summary the patient carries. Any clinic can check it’s genuine and unchanged with no network.</p></div>
-        </div>
-        <p className="rule">CLANCLAST holds no clinical records. Institutions keep their systems; patients keep control.</p>
-      </div>
-    ),
-  },
-  {
-    id: "demo", title: "Working product", seconds: 55, tone: "dark",
-    notes: "This is the working product: real screens, not mock-ups. At the front desk, staff find Thandiwe without creating a second folder. The clinic asks for her emergency summary. On her phone, she sees exactly who is asking and why, and allows it for seven days. The clinic sees the approval immediately. Then the clinic signs her summary, and it lands in her phone's encrypted vault, with the signature verified. You can try all of this after the session on our laptop.",
-    body: <DemoReel />,
-  },
-  {
-    id: "unique", title: "What’s unique", seconds: 30, tone: "light",
-    notes: "How is this different? Hospital systems and master patient indexes only see their own records. A national ID lookup fails for the millions without a usable ID, and for children on a parent's ID. Paper doesn't travel. We work across institutions, without holding records, with consent the patient controls, offline, and for people without smartphones. And no automatic merge ever happens on a guess: uncertain matches go to a person.",
-    body: (
-      <div className="s-unique">
-        <span className="eyebrow">What’s unique</span>
-        <h2>Built for how South African records really look.</h2>
-        <table className="compare">
-          <thead><tr><th /><th className="us">CLANCLAST</th><th>Hospital system / MPI</th><th>National ID lookup</th><th>Paper folders</th></tr></thead>
-          <tbody>
-            <tr><td>Works across institutions</td><td className="us"><Check /></td><td><No /></td><td><Check /></td><td><No /></td></tr>
-            <tr><td>Handles missing, borrowed or mistyped IDs</td><td className="us"><Check /></td><td><No /></td><td><No /></td><td><No /></td></tr>
-            <tr><td>Patient controls consent</td><td className="us"><Check /></td><td><No /></td><td><No /></td><td><No /></td></tr>
-            <tr><td>Verifiable offline</td><td className="us"><Check /></td><td><No /></td><td><No /></td><td><Check /></td></tr>
-            <tr><td>No smartphone needed (USSD, caregiver)</td><td className="us"><Check /></td><td><No /></td><td><No /></td><td><Check /></td></tr>
-            <tr><td>Holds no clinical records</td><td className="us"><Check /></td><td><No /></td><td><Check /></td><td><No /></td></tr>
-          </tbody>
-        </table>
-        <p className="note">A person decides every uncertain match. Nothing is merged automatically on a guess.</p>
-      </div>
-    ),
-  },
-  {
-    id: "proof", title: "Proof so far", seconds: 30, tone: "light",
-    notes: "What have we proven? We built the whole platform: a patient app, a provider workspace and an admin console, all running. We tested the identity engine against more than forty thousand labelled synthetic records designed to be hard: South African name variants, typos, twins and borrowed IDs. It made zero wrong automatic links. With staff review it finds 99.5 percent of duplicates on a realistic file, and nearly 90 percent on a deliberately adversarial one. These are synthetic results; the next step is measuring on a real hospital's records with its own staff.",
-    body: (
-      <div className="s-proof">
-        <span className="eyebrow">Proof so far</span>
-        <h2>A working platform, and an engine that doesn’t guess.</h2>
-        <div className="metrics">
-          <div className="big"><strong>0</strong><span>wrong automatic links across 4 test sets</span><small>41,000+ labelled synthetic records</small></div>
-          <div><strong>99.5%</strong><span>of duplicates found, with staff review</span><small>realistic 10,000-record file</small></div>
-          <div><strong>89.7%</strong><span>found on a deliberately adversarial file</span><small>98.2% of suggestions correct</small></div>
-          <div><strong>~3 s</strong><span>to check a 15,000-record register</span><small>SA benchmark, 33 facilities</small></div>
-        </div>
-        <ul className="built">
-          <li><Check /> Patient app, provider workspace and admin console, live</li>
-          <li><Check /> Signed summaries verifiable offline</li>
-          <li><Check /> USSD and caregiver channels</li>
-          <li><Check /> Staff labelling tool to measure accuracy on real records</li>
-        </ul>
-        <p className="label">Measured on synthetic data. Real-world accuracy is measured with a pilot institution’s own staff.</p>
-      </div>
-    ),
-  },
-  {
-    id: "impact", title: "Smart City & impact", seconds: 25, tone: "light",
-    notes: "This is digital public infrastructure for health. It improves public services at the front desk, includes people without smartphones or data, and makes care safer because critical information travels with the patient. For institutions, that means fewer duplicate folders, shorter queues and less medico-legal risk. For patients, it means control, and dignity.",
-    body: (
-      <div className="s-impact">
-        <div>
-          <span className="eyebrow">Smart City / ICT</span>
-          <h2>Digital public infrastructure for health.</h2>
-          <div className="tags"><span>Health</span><span>Public services</span><span>Digital inclusion</span><span>Safety</span></div>
-          <ul className="impact">
-            <li><b>Institutions</b> fewer duplicate folders, faster check-in, less medico-legal risk</li>
-            <li><b>Patients</b> control over their information, and safer care when it matters</li>
-            <li><b>Inclusion</b> USSD, caregivers and printed cards for people without smartphones or data</li>
-            <li><b>Resilience</b> trust that still works when networks and systems go down</li>
-          </ul>
-        </div>
-        <img src={elder} alt="" />
-      </div>
-    ),
-  },
-  {
-    id: "model", title: "Business model & scale", seconds: 25, tone: "light",
-    notes: "How we get paid. Institutions pay, never patients, and we never sell data. We start with a paid duplicate-identity study on one hospital's records. That becomes a subscription per facility for identity, consent and summaries. Then we scale across a provincial network, private groups, laboratories and medical schemes, and later the region. Each stage starts only when the evidence from the last one supports it.",
-    body: (
-      <div className="s-model">
-        <span className="eyebrow">Business model & scale</span>
-        <h2>Institutions pay. Patients never do. Data is never sold.</h2>
-        <div className="stages">
-          <div><span className="st">Stage 1</span><h3>Duplicate-identity study</h3><p>Paid study on one institution’s historical records, measured against its own staff.</p></div>
-          <div><span className="st">Stage 2</span><h3>Subscription per facility</h3><p>Identity, consent and signed summaries at the front desk, priced per facility.</p></div>
-          <div><span className="st">Stage 3</span><h3>Network scale</h3><p>Provincial networks, private groups, laboratories and medical schemes; then SADC.</p></div>
-        </div>
-        <div className="payers">Who pays: <span>Hospitals and groups</span><span>Laboratories</span><span>Medical schemes</span><span>Provincial health departments</span></div>
-        <p className="gate">Each stage is gated by evidence from the one before.</p>
-      </div>
-    ),
-  },
-  {
-    id: "team", title: "Team", seconds: 20, tone: "light",
-    notes: "We're three students who built all of this ourselves. Martin brings cyber security, which matters when you're handling identity and consent. Thendo and Natheniel bring computer science and engineering. We've built a working platform before raising a cent. [Add one sentence, in your own words, on why this problem matters to you personally.]",
-    body: (
-      <div className="s-team">
-        <span className="eyebrow">Team</span>
-        <h2>Three builders who shipped a working platform before raising a cent.</h2>
-        <div className="people">
-          <div><span className="av">MT</span><h3>Martin Tlabela</h3><p>IT student · Cyber Security</p></div>
-          <div><span className="av">TM</span><h3>Thendo Mulaudzi</h3><p>Computer Science student</p></div>
-          <div><span className="av">TN</span><h3>Tsumbe Natheniel</h3><p>Computer Science student</p></div>
-        </div>
-        <p className="why">Security first, because identity and consent are only as good as the trust behind them.</p>
-      </div>
-    ),
-  },
-  {
-    id: "ask", title: "The ask", seconds: 25, tone: "dark",
-    notes: "We're asking for R900,000 in staged funding over 16 months. It pays for product development, validating the identity engine on real records, an independent security review, legal and POPIA compliance, and a pilot with a real institution. Our first next step: an introduction to a hospital or clinic network willing to run the Stage 1 study. Thank you. Come and try it with us after the session.",
-    body: <Ask />,
-  },
-  /* ---------------- backup slides for questions (shown after the end, or with B) ---------------- */
-  {
-    id: "q-privacy", title: "Q&A · POPIA and security", seconds: 0, tone: "light", backup: true,
-    notes: "If asked about privacy and security.",
-    body: (
-      <div className="s-qa">
-        <span className="eyebrow">Questions · Privacy and security</span>
-        <h2>We are a certificate authority, not a vault.</h2>
-        <ul>
-          <li><b>No clinical records held.</b> Summaries are signed by the institution and kept encrypted on the patient’s device.</li>
-          <li><b>Consent is explicit, scoped and time-limited.</b> Every access is logged in a tamper-evident log the patient can see.</li>
-          <li><b>Emergency access</b> is possible, loudly logged, and reported to the patient.</li>
-          <li><b>Before any pilot:</b> independent security review and a POPIA legal opinion (part of this funding).</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    id: "q-accuracy", title: "Q&A · How we measure accuracy", seconds: 0, tone: "light", backup: true,
-    notes: "If asked how accuracy is measured or how it would work on real data.",
-    body: (
-      <div className="s-qa">
-        <span className="eyebrow">Questions · Accuracy</span>
-        <h2>We measure, we don’t claim.</h2>
-        <ul>
-          <li><b>Targets before going live:</b> automatic links ≥ 99.5% precise; ≥ 90% of duplicates found with review.</li>
-          <li><b>On real records:</b> hospital staff label a random sample of pairs, blind to the engine; we report precision and recall with confidence ranges.</li>
-          <li><b>Conservative by design:</b> anything uncertain goes to a person; twins, borrowed IDs and conflicting birthdays are never linked automatically.</li>
-          <li><b>Every link is reversible</b> and explained, field by field.</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    id: "q-why", title: "Q&A · Why now, why us", seconds: 0, tone: "light", backup: true,
-    notes: "If asked about competition, adoption or execution.",
-    body: (
-      <div className="s-qa">
-        <span className="eyebrow">Questions · Adoption and execution</span>
-        <h2>We fit beside what clinics already run.</h2>
-        <ul>
-          <li><b>No rip-and-replace:</b> standard HL7 FHIR interfaces; institutions keep their systems and remain the source of truth.</li>
-          <li><b>Low-connectivity first:</b> offline verification, USSD and caregiver access from day one.</li>
-          <li><b>Staged risk:</b> the paid Stage 1 study proves value on an institution’s own data before any live use.</li>
-          <li><b>Execution:</b> a working platform already built by the team; funding goes to validation, security, compliance and a pilot.</li>
-        </ul>
-      </div>
-    ),
-  },
-];
-
-function Ask() {
-  return (
-    <div className="s-ask">
-      <div>
-        <span className="eyebrow">The ask</span>
-        <h2><span className="amt">R900k</span> staged funding over 16 months</h2>
-        <ul className="uses">
-          <li>Product development</li>
-          <li>Identity-match validation on real records</li>
-          <li>Independent security review</li>
-          <li>Legal and POPIA compliance</li>
-          <li>A pilot with a real institution</li>
-        </ul>
-        <p className="cta">First next step: <b>an introduction to a hospital or clinic network</b> for a Stage 1 study.</p>
-      </div>
-      <div className="close">
-        <img className="logo" src="/brand/clanclast-horizontal-on-dark.svg" alt="CLANCLAST" />
-        <p className="end">No patient a stranger to their own healthcare system.</p>
-        <p className="try">Try the live product with us after the session.</p>
       </div>
     </div>
-  );
-}
+  </section>
+);
+
+/* ------------------------------------------------------------------ 2. problem */
+const Problem = (
+  <section className="section problem pg-problem">
+    <div className="wrap problem-grid">
+      <div className="problem-copy">
+        <Rv><span className="eyebrow">Where care breaks</span></Rv>
+        <Rv d={100}><h2>One woman. Three files. <em>None complete.</em></h2></Rv>
+        <Rv d={200}><p>When an ID is missing, mistyped or never captured, or a name is spelled differently, each system registers her as someone new. Her history and her consent don’t follow her.</p></Rv>
+        <div className="files">
+          {[
+            ["Lakeside Community Clinic", "Thandi Mokoena", "12-03-1990 · no ID · registered offline", "Allergy: penicillin"],
+            ["Riverside General Hospital", "Thandiwe Mokoena", "12-03-1990 · 900312 0245 085", "New folder · history unknown"],
+            ["Casualty, 02:40", "T. Mokoena", "01-01-1990 (estimated) · ID unreadable", "Allergy: not recorded"],
+          ].map(([where, name, meta, note], i) => (
+            <Rv d={320 + i * 140} key={where}>
+              <div className={`file f${i}`}>
+                <span className="file-tab">{where}</span>
+                <b>{name}</b>
+                <small>{meta}</small>
+                <em>{note}</em>
+              </div>
+            </Rv>
+          ))}
+        </div>
+        <Rv d={800}><p className="why-note">Not careless staff: the result of good choices, like working offline and treating everyone, in a system with no neutral layer to reconcile afterwards.</p></Rv>
+      </div>
+      <div className="stat-stack">
+        {[
+          ["437,342", "patients registered under the same ID number with different names (1.34%).", "NDoH, The Emerging SA Digital Health System, 2025"],
+          ["1 in 10", "new registrations was a probable duplicate (2020). Only about 29% of records carry an SA ID.", "Western Cape PMI study, IJPDS 2023"],
+          ["28%", "of clinic HIV lab results in Ekurhuleni could not be linked to the patient’s record.", "PLOS Global Public Health, July 2025"],
+          ["R77bn", "in medico-legal claims. Eastern Cape cases settled because no record could be found.", "Auditor-General, September 2023"],
+        ].map(([n, t, s], i) => (
+          <Rv d={300 + i * 120} key={n}>
+            <div className="stat"><strong>{n}</strong><p><span className="tag">Reported</span><br />{t}<span className="source">{s}</span></p></div>
+          </Rv>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 3. solution */
+const Solution = (
+  <section className="section thesis pg-solution">
+    <div className="wrap thesis-grid">
+      <div>
+        <Rv><span className="eyebrow">The solution</span></Rv>
+        <Rv d={100}><h2>Healthcare has the banks. <em>We built the switch.</em></h2></Rv>
+        <Rv d={200}><p>CLANCLAST does for patient identity what a bank switch does for card payments: every organisation connects once, keeps its own records, and recognises the same person anywhere.</p></Rv>
+        <div className="gap-list">
+          {[
+            ["HPRS · national register", "Public sector only"],
+            ["NHIE · national exchange", "No patient consent service"],
+            ["Hospital groups", "See only their own patients"],
+            ["Medical schemes", "See only their own members"],
+            ["CareConnect HIE", "Closed 2024: owned by competitors"],
+          ].map(([a, b], i) => (
+            <Rv d={320 + i * 80} key={a}><div className="gap"><b>{a}</b><span>{b}</span></div></Rv>
+          ))}
+        </div>
+      </div>
+      <Rv d={250} className="switch-wrap">
+        <svg className="switch" viewBox="0 0 860 720" role="img" aria-label="Every system connects once to the CLANCLAST switch; the patient decides">
+          <defs>
+            <linearGradient id="sw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#2c8176" /><stop offset="1" stopColor="#1d5f56" /></linearGradient>
+          </defs>
+          {[[107, "Public clinics", "HPRS and the NHIE"], [322, "Hospitals", "public and private"], [538, "Medical schemes", "members and claims"], [753, "GPs, pharmacies, labs", "their own systems"]].map(([x, t, s], i) => (
+            <g key={t as string} className="node" style={{ ["--i" as string]: i }}>
+              <path className="flow" d={`M${x} 118 C ${x} 190, 430 170, 430 262`} />
+              <rect x={(x as number) - 98} y="24" width="196" height="94" rx="18" />
+              <text x={x as number} y="64" className="nt">{t}</text>
+              <text x={x as number} y="90" className="ns">{s}</text>
+            </g>
+          ))}
+          <rect className="hub" x="150" y="262" width="560" height="250" rx="30" fill="url(#sw)" />
+          <text x="430" y="312" className="ht">CLANCLAST · the neutral switch</text>
+          {["Is this the same patient?  (evidence shown)", "May I see her history?  (she decides)", "Is this record real?  (signed, checks offline)"].map((q, i) => (
+            <g key={q}><circle cx="196" cy={358 + i * 44} r="6" className="hd" /><text x="214" y={364 + i * 44} className="hq">{q}</text></g>
+          ))}
+          <text x="430" y="494" className="hs">Holds links, consent and audit only · never clinical records</text>
+          <path className="flow up" d="M430 512 L430 588" />
+          <rect className="pt" x="250" y="588" width="360" height="96" rx="20" />
+          <text x="430" y="628" className="nt">The patient decides</text>
+          <text x="430" y="656" className="ns">smartphone · basic phone (USSD) · at the desk</text>
+        </svg>
+      </Rv>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 4. demo */
+const Demo = (
+  <section className="liveprod pg-demo">
+    <div className="live-glow" aria-hidden="true" />
+    <DemoPlayer />
+  </section>
+);
+
+/* ------------------------------------------------------------------ 5. why us */
+const Why = (
+  <section className="section pg-why">
+    <div className="wrap why-grid">
+      <div>
+        <Rv><span className="eyebrow">What’s new</span></Rv>
+        <Rv d={100}><h2>Suggest, never merge. <em>Built for South Africa.</em></h2></Rv>
+        <Rv d={200}><p>Matching patients isn’t new. A neutral, patient-controlled bridge between all of South Africa’s health systems is.</p></Rv>
+        <div className="new-grid">
+          {[
+            ["01", "Neutral by design", "No hospital group, scheme, vendor or department owns the switch, so competitors can all connect."],
+            ["02", "Recognise, don’t store", "Records stay with their owners. CLANCLAST holds the link, the consent and the audit trail."],
+            ["03", "Suggest, never merge", "Possible matches arrive with their evidence. A person decides, and it can be undone."],
+            ["04", "Built for SA records", "Works without ID numbers, reconciles offline capture, and handles SA naming patterns."],
+            ["05", "Consent on any channel", "Smartphone, basic phone over USSD, or at the desk. No data bundle needed."],
+            ["06", "Proven parts", "HL7 FHIR R4 and the IHE profiles the national exchange uses. Signed summaries verify offline."],
+          ].map(([n, t, d], i) => (
+            <Rv d={300 + i * 90} key={n}><div className="fallback"><div className="num">{n}</div><h3>{t}</h3><p>{d}</p></div></Rv>
+          ))}
+        </div>
+      </div>
+      <div className="why-side">
+        <Rv d={250}>
+          <div className="promise-card">
+            <span className="eyebrow">Safety rules · because a wrong match can kill</span>
+            <div className="never-list">
+              {["Never auto-merge. Every link is logged and reversible.", "An SA ID whose birth date or sex doesn’t fit the record isn’t hers.", "A group can’t hold two valid IDs or birthdays a year apart.", "Same birthday, surname and household: possible twins, a person checks.", "Emergency access is logged, reviewed and the patient is told.", "No biometrics or facial recognition."].map((t) => (
+                <div className="never" key={t}><span>✓</span>{t}</div>
+              ))}
+            </div>
+          </div>
+        </Rv>
+        <Rv d={500}>
+          <div className="moat">
+            <b>Why it’s hard to copy</b>
+            <div className="chips">{["Neutrality", "Network effect", "Local matching data", "Certification & trust"].map((c) => <span key={c}>{c}</span>)}</div>
+          </div>
+        </Rv>
+      </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 6. market */
+const Market = (
+  <section className="section audience pg-market">
+    <div className="wrap market-grid">
+      <div>
+        <Rv><span className="eyebrow">Market &amp; why now</span></Rv>
+        <Rv d={100}><h2>The demand is proven. <em>The neutral switch is missing.</em></h2></Rv>
+        <Rv d={220}>
+          <div className="proof">
+            <span className="tag">Proof of demand · reported</span>
+            <div className="proof-n"><b>5 million+</b><span>patients on CareConnect, the private sector’s own shared exchange</span></div>
+            <div className="proof-n"><b>R100m+</b><span>invested by hospital groups and schemes, then closed in 2024 because it was owned by competitors</span></div>
+            <p>BusinessDay, 17 July 2024 · Life Healthcare statement, 26 July 2024</p>
+          </div>
+        </Rv>
+        <Rv d={360}>
+          <div className="now">
+            <b>Why now</b>
+            {[["3,200+", "public facilities on HPRS, the national patient number"], ["2026", "the national health exchange (NHIE) is onboarding partners"], ["6 Mar 2026", "POPIA health-information regulations in force"]].map(([a, b]) => (
+              <div key={a}><strong>{a}</strong><span>{b}</span></div>
+            ))}
+          </div>
+        </Rv>
+      </div>
+      <Rv d={200}>
+        <div className="audience-panel who">
+          <div className="who-head"><h3>Who connects</h3><span className="tag">Reported counts</span></div>
+          {[
+            ["Public clinics", "3,474", "Reconcile offline and duplicate records with HPRS"],
+            ["Public hospitals", "329", "Find a patient’s history across clinics"],
+            ["Private hospitals", "200+", "Patients arrive from public care with no history"],
+            ["Medical schemes", "~70", "Covering ~9m people. Duplicate members and claims"],
+            ["GPs, pharmacies, labs", "Thousands", "Identity at the counter; results to the right patient"],
+            ["Rest of Africa", "SADC", "The same switch on each country’s national health ID"],
+          ].map(([a, n, w]) => (
+            <div className="who-row" key={a}><b>{a}</b><strong>{n}</strong><span>{w}</span></div>
+          ))}
+          <p className="who-note">Minister of Health replies, HASA, Council for Medical Schemes. No rand market size is claimed until pricing is tested.</p>
+        </div>
+      </Rv>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 7. business model */
+const Model = (
+  <section className="section pg-model">
+    <div className="wrap">
+      <div className="model-head">
+        <div>
+          <Rv><span className="eyebrow">Business model</span></Rv>
+          <Rv d={100}><h2>Earns like a bank switch. <em>Patients never pay.</em></h2></Rv>
+        </div>
+        <Rv d={200}><p>No central record store to pay for, so every new connection adds income at little extra cost. That is where CareConnect, funded by six players, could not go.</p></Rv>
+      </div>
+      <div className="rev-grid">
+        {[
+          ["01", "Onboarding & clean-up", "Facilities, EHR vendors, implementers", "First: early cash"],
+          ["02", "Annual connection fee", "Every participant, tiered by size", "As each one connects"],
+          ["03", "Per-check fee", "Match · consent · verify, paid by the organisation asking", "Grows with the network"],
+          ["04", "Public-sector contract", "Province or national programme, at cost", "Builds the network’s base"],
+        ].map(([n, t, w, when], i) => (
+          <Rv d={260 + i * 100} key={n}>
+            <div className={`rev ${i === 2 ? "hot" : ""}`}><span className="rev-n">{n}</span><h3>{t}</h3><p>{w}</p><small>{when}</small></div>
+          </Rv>
+        ))}
+      </div>
+      <div className="model-foot">
+        <Rv d={700}><div className="mf"><b>Who pays first</b><span>Medical schemes and private hospitals, who lose money to duplicate tests and claims today.</span></div></Rv>
+        <Rv d={780}><div className="mf"><b>Go-to-market</b><span>National standards → one Nelson Mandela Bay facility → paying participants → other provinces and SADC.</span></div></Rv>
+        <Rv d={860}><div className="mf never-mf"><b>Never</b><span>Charging patients, or selling or monetising identifiable patient data. Prices are tested with the first participants before any are quoted.</span></div></Rv>
+      </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 8. progress */
+const Progress = (
+  <section className="section progress pg-progress">
+    <div className="wrap">
+      <div className="prog-head">
+        <div>
+          <Rv><span className="eyebrow">Progress, honestly</span></Rv>
+          <Rv d={100}><h2>Built with no funding. <em>Already working.</em></h2></Rv>
+        </div>
+        <Rv d={200}><p>Every component is proven technology, using the same standards as the national exchange. The open work is tuning the matching engine to high precision.</p></Rv>
+      </div>
+      <div className="stage-grid four">
+        {[
+          ["Built", "3 working products", "Provider platform, patient app with Summary Vault, and an operations console. Synthetic data."],
+          ["Measured", "14,994-record benchmark", "Synthetic South African records: 6,980 people and 2,520 look-alike traps, calibrated to published rates."],
+          ["Government", "NHIE request logged", "Connection and certificate-signing request lodged on the Department of Health HIS Support portal, 26 Nov 2026."],
+          ["Listened", "80 hospital staff", "About 75% say duplicates are a real problem. Convenience sample, 2026."],
+        ].map(([s, t, d], i) => (
+          <Rv d={260 + i * 100} key={t}><div className={`stage ${i === 0 ? "current" : ""}`}><div className="status">{s}</div><h3>{t}</h3><p>{d}</p></div></Rv>
+        ))}
+      </div>
+      <Rv d={700}>
+        <div className="tech-row">
+          {["HL7 FHIR R4", "IHE PDQm · mCSD · ATNA", "Splink record linkage", "PostgreSQL", "USSD & SMS", "Ed25519 signed summaries", "Hash-chained audit", "Passkeys"].map((t) => <span key={t}>{t}</span>)}
+        </div>
+      </Rv>
+      <Rv d={800}><div className="progress-note"><b>Target before claiming results:</b> at least 99% precision on automatic links, with uncertain pairs sent to a person, scored against the full answer key. No accuracy figure is claimed until then.</div></Rv>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 9. impact */
+const Impact = (
+  <section className="section pg-impact">
+    <div className="wrap impact-grid">
+      <div>
+        <Rv><span className="eyebrow">Impact · smart city &amp; ICT</span></Rv>
+        <Rv d={100}><h2>One less family forced to prove <em>who their loved one is.</em></h2></Rv>
+        <Rv d={220}>
+          <div className="big-target"><strong>2 million</strong><span>patients with a linked, consented identity by 2031</span><small className="tag">Target, not a forecast</small></div>
+        </Rv>
+        <div className="sdgs">
+          {[["SDG 3.8", "Universal health coverage", "Care that follows the patient across public and private."], ["SDG 16.9", "Legal identity for all", "Recognised and able to consent without a perfect ID."], ["SDG 9.c", "Access to ICT", "Works offline, through load-shedding, on basic phones."]].map(([a, b, c], i) => (
+            <Rv d={340 + i * 100} key={a}><div className="sdg"><b>{a}</b><h3>{b}</h3><p>{c}</p></div></Rv>
+          ))}
+        </div>
+      </div>
+      <Rv d={200} className="impact-side">
+        <figure className="photo-card tall"><img src={P.womanLookingUp.src} alt={P.womanLookingUp.alt} /><figcaption>Illustrative photograph</figcaption></figure>
+        <div className="benefit">
+          {[["Patients", "Recognised anywhere, in control"], ["Staff", "Less searching, fewer duplicates"], ["Clinicians", "The right history at the point of care"], ["Health system", "Cleaner data for HPRS and NHI"]].map(([a, b]) => (
+            <div key={a}><b>{a}</b><span>{b}</span></div>
+          ))}
+        </div>
+      </Rv>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 10. team */
+const Team = (
+  <section className="section pg-team">
+    <div className="wrap team-grid">
+      <div>
+        <Rv><span className="eyebrow">Team</span></Rv>
+        <Rv d={100}><h2>Three builders who shipped <em>before raising a cent.</em></h2></Rv>
+        <Rv d={200}><p>Three computing students who built three working products and a national-scale test set with no funding, and who are adding the healthcare and leadership experience they lack.</p></Rv>
+        <div className="people">
+          {[["MT", "Martin Tlabela", "Founder & CEO", "IT, specialising in cyber security"], ["TM", "Thendo Mulaudzi", "CTO", "Computer science"], ["NT", "Nathaniel Tsumbe", "Engineering", "Computer science"]].map(([i, n, r, b], k) => (
+            <Rv d={320 + k * 120} key={n}><div className="person"><span className="av">{i}</span><div><h3>{n}</h3><b>{r}</b><p>{b}</p></div></div></Rv>
+          ))}
+        </div>
+      </div>
+      <div className="team-side">
+        <Rv d={300}>
+          <div className="with">
+            <span className="eyebrow">Working with</span>
+            {[["An experienced doctor in the field", "Her challenge to the earlier plan led to the safety rules and a first milestone that needs no patient data."], ["The Batsamayi founder", "In conversation about technical leadership and strategic partnerships."], ["Propella Business Incubator", "Mentorship and investor readiness."]].map(([a, b]) => (
+              <div key={a}><b>{a}</b><p>{b}</p></div>
+            ))}
+          </div>
+        </Rv>
+        <Rv d={460}>
+          <div className="gaps"><b>Gaps, and how they close</b><p>A senior technical lead (funded in Stage 1), a clinical safety lead before any pilot, and POPIA legal advice. Founder agreement, vesting and IP assignment signed before external funding.</p></div>
+        </Rv>
+      </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ 11. ask */
+const Ask = (
+  <section className="section progress pg-ask">
+    <div className="wrap">
+      <div className="ask-head">
+        <div>
+          <Rv><span className="eyebrow">The ask</span></Rv>
+          <Rv d={100}><h2><span className="ask-n">R900,000</span> over 16 months, <em>released on evidence.</em></h2></Rv>
+        </div>
+        <Rv d={200}><p>Product development, identity-match validation, an independent security review, legal and compliance work, and a structured pilot. Each stage unlocks only when the last one delivers.</p></Rv>
+      </div>
+      <div className="stage-grid">
+        {[
+          ["Stage 1 · months 1–4", "Validate", "R250,000", ["NHIE test-environment conformance", "Engine tuned and scored on the SA benchmark", "Senior technical lead"], "Gate: conformance passed, 99%+ automatic precision"],
+          ["Stage 2 · months 5–9", "Secure & comply", "R300,000", ["Independent security review and penetration test", "POPIA legal opinion", "Research ethics approval · facility data agreement"], "Gate: security and ethics approved, facility signed"],
+          ["Stage 3 · months 10–16", "Prove", "R350,000", ["Structured pilot with one Nelson Mandela Bay facility", "Duplicates prevented and time saved, measured", "Results published"], "Result: proven pilot, first paying participants"],
+        ].map(([when, t, amt, items, gate], i) => (
+          <Rv d={300 + i * 140} key={t as string}>
+            <div className={`stage ask-stage ${i === 0 ? "current" : ""}`}>
+              <div className="status">{when as string}</div>
+              <div className="ask-row"><h3>{t as string}</h3><strong>{amt as string}</strong></div>
+              <ul>{(items as string[]).map((x) => <li key={x}>{x}</li>)}</ul>
+              <div className="gate">{gate as string}</div>
+            </div>
+          </Rv>
+        ))}
+      </div>
+      <div className="ask-foot">
+        <Rv d={800}><p className="ask-line">Your money moves with evidence, not promises.</p></Rv>
+        <Rv d={900}><div className="ask-cta"><Logo height={34} surface="dark" /><span>No patient should be a stranger to their own healthcare system.</span></div></Rv>
+      </div>
+      <Rv d={1000}><p className="ask-small">Proposed split; final amounts follow the detailed budget. CIPC, SARS tax compliance, CSD and B-BBEE documents are completed before any funds are drawn.</p></Rv>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ backups */
+const QA = (eyebrow: string, title: ReactNode, rows: [string, string][], note?: string) => (
+  <section className="section pg-qa">
+    <div className="wrap">
+      <Rv><span className="eyebrow">Questions · {eyebrow}</span></Rv>
+      <Rv d={100}><h2>{title}</h2></Rv>
+      <div className="qa-list">
+        {rows.map(([a, b], i) => <Rv d={200 + i * 70} key={a}><div className="qa"><b>{a}</b><span>{b}</span></div></Rv>)}
+      </div>
+      {note && <Rv d={700}><p className="qa-note">{note}</p></Rv>}
+    </div>
+  </section>
+);
+
+export const SLIDES: Slide[] = [
+  { id: "home", title: "No patient a stranger", seconds: 15, tone: "dark", body: Hero,
+    notes: "Meet Thandi. She has been to a clinic, a hospital and casualty, and the health system now thinks she is three different people. CLANCLAST makes sure no patient is a stranger to their own healthcare system." },
+  { id: "problem", nav: "problem", title: "The problem", seconds: 35, tone: "light", body: Problem,
+    notes: "When an ID is missing or a name is spelled differently, each system registers her as someone new: Thandi, Thandiwe, T. Mokoena. One person, three files, none complete. The Department of Health itself found over 437,000 patients under one ID with different names; in the Western Cape about one in ten new registrations was a probable duplicate. And it isn't careless staff. It's good choices, like working offline and treating everyone, with nothing to reconcile the records afterwards. [Confirm the exact wording of the 437,342 figure in the NDoH 2025 book.]" },
+  { id: "solution", nav: "solution", title: "The solution", seconds: 30, tone: "dark", body: Solution,
+    notes: "Every existing system covers part of the picture: HPRS is public only, the national exchange has no consent service, hospital groups and schemes see only their own people. The private sector's own exchange, CareConnect, closed because competitors owned it. CLANCLAST is the neutral switch. Every organisation connects once and keeps its own records. The switch answers three questions: is this the same patient, may I see her history, and is this record real. And the patient decides, on any phone." },
+  { id: "demo", nav: "demo", title: "Live demo", seconds: 80, tone: "dark", body: Demo,
+    notes: "This is the working product, not a mockup. Chapter one: Riverside's register has Thandi three times. The engine finds the possible matches and shows its evidence; it never merges on its own. A staff member confirms. Three files, one Thandi. Chapter two: the hospital asks for her history; the request lands on her phone; she allows it for seven days, and it's logged on both sides. Chapter three: the hospital signs a summary she carries. The network goes down, and another desk can still verify it's genuine. Press → to move to the next chapter; Space pauses." },
+  { id: "why", nav: "why", title: "What's new", seconds: 25, tone: "light", body: Why,
+    notes: "Matching patients isn't new. A neutral, patient-controlled bridge across all of South Africa's systems is. We recognise, we don't store; we suggest, we never merge; and we're built for South African records, without ID numbers and with offline capture. Because a wrong match can kill someone, safety comes first: ID-to-birth-date checks, group conflict rules, a twin rule, and no biometrics. It's hard to copy because an incumbent can never be neutral." },
+  { id: "market", nav: "market", title: "Market and why now", seconds: 25, tone: "light", body: Market,
+    notes: "The demand has already been paid for: hospital groups and schemes put over 100 million rand into CareConnect and reached 5 million patients, before it closed because it was owned by competitors. Now HPRS is in over 3,200 facilities, the national exchange is onboarding partners, and POPIA's health regulations took effect this March. Who connects: 3,474 public clinics, 329 public hospitals, 200 private hospitals, about 70 schemes." },
+  { id: "model", nav: "model", title: "Business model", seconds: 20, tone: "light", body: Model,
+    notes: "We earn like a bank switch: organisations pay to connect and pay a small fee per check: match, consent, verify. Patients never pay, and we never sell data. Schemes and private hospitals pay first, because duplicates cost them money today. Prices will be tested with the first participants." },
+  { id: "progress", nav: "progress", title: "Progress", seconds: 20, tone: "dark", body: Progress,
+    notes: "With no funding we've built three working products, a 14,994-record South African benchmark full of look-alike traps, and we've lodged our connection request with the national exchange. We hold ourselves to a 99% precision target on automatic links before we claim any accuracy result." },
+  { id: "impact", nav: "impact", title: "Impact", seconds: 15, tone: "light", body: Impact,
+    notes: "Every patient we connect is one less family forced to prove, again and again, who their loved one is. Our target is two million patients by 2031. It serves universal health coverage, legal identity for all, and works offline, through load-shedding, on a basic phone." },
+  { id: "team", nav: "team", title: "Team", seconds: 15, tone: "light", body: Team,
+    notes: "We're three computing students: cyber security and computer science. We shipped before raising a cent, and we're adding what we lack: an experienced doctor challenged our plan, we're talking to the Batsamayi founder about technical leadership, and Propella is mentoring us. [Add one sentence, in your own words, on why this matters to you.] [Confirm surname for all materials: Tlabela or Mamoloto; and name order for Nathaniel Tsumbe.]" },
+  { id: "ask", title: "The ask", seconds: 20, tone: "dark", body: Ask,
+    notes: "We're asking for R900,000 over 16 months, released in three stages, each unlocked only by evidence: validate, then secure and comply, then prove it in one Nelson Mandela Bay facility. Your money moves with evidence, not promises. No patient should be a stranger to their own healthcare system. Thank you." },
+  { id: "q-accuracy", title: "Q: How accurate is it?", seconds: 0, tone: "light", backup: true,
+    notes: "Be straight: the engine is being tuned. Give the best run, the fixes since, and the 99% target before any claim. Never quote an accuracy figure as a result.",
+    body: QA("accuracy, honestly", <>We measure. <em>We don’t claim.</em></>, [
+      ["Best run so far", "79.1% automatic precision and 88.4% recall on the labelled subset of our 14,994-record synthetic benchmark (platform’s own scoring). A simple fuzzy baseline: 95.5% precision, 66.5% recall."],
+      ["Fixes since", "SA ID checked against the record’s birth date and sex; conflict rules applied to whole groups; a twin rule; the score display fixed. Re-scoring against the full answer key next."],
+      ["Target before any claim", "At least 99% precision on automatic links. Everything uncertain goes to a person with the evidence."],
+      ["Then real records", "Staff label a random, blinded sample of pairs; we report precision and recall with confidence ranges. Only after ethics approval and a data agreement."],
+    ], "Measured on synthetic data. Real-world accuracy is measured with a pilot facility’s own staff.") },
+  { id: "q-privacy", title: "Q: Privacy and POPIA", seconds: 0, tone: "light", backup: true,
+    notes: "We store no clinical records: links, consent and audit only. The facility is the responsible party; we are its operator. Synthetic data until ethics approval. Two open legal questions go to a POPIA lawyer before any pilot.",
+    body: QA("privacy & POPIA", <>We hold <em>what we choose not to hold.</em></>, [
+      ["No clinical records", "Data is minimised to links, consent and audit. Health information is special personal information under POPIA, regulated since 6 March 2026."],
+      ["Roles", "In pilots the facility is the responsible party and CLANCLAST its operator, under a signed data-processing agreement."],
+      ["Synthetic first", "No real patient data before research ethics approval and a data agreement. Immigration status is never recorded or exposed."],
+      ["Open legal questions", "Whether cross-organisation linkage needs the Information Regulator’s prior authorisation, and how clinical liability is split. Both go to a POPIA lawyer before any pilot."],
+    ]) },
+  { id: "q-risk", title: "Q: Risks", seconds: 0, tone: "light", backup: true,
+    notes: "The biggest risk is the one that closed CareConnect: running out of money before enough participants connect. We start where a single participant gets value alone, and the money is staged.",
+    body: QA("risks", <>The risk that closed CareConnect <em>is the one we plan for.</em></>, [
+      ["Network doesn’t form in time", "Start where one participant gets value alone; staged funding; low running costs."],
+      ["A wrong match harms a patient", "Never auto-merge; 99%+ target; ID, group and twin rules; human review; clinical safety lead and indemnity before pilots."],
+      ["Seen as competing with HPRS or NHI", "Built on HPRS, links to the national patient number, uses national standards. NHI is upside, not the base case."],
+      ["Incumbents build their own matching", "They can match inside their systems, not across competitors. We partner with them as a channel."],
+      ["Government access is slow", "Stage 1 continues on synthetic data; Eastern Cape and CSIR as sponsors; private participants in parallel."],
+    ]) },
+];
+
+export const MAIN = SLIDES.filter((s) => !s.backup);
+export const TOTAL = MAIN.reduce((n, s) => n + s.seconds, 0);

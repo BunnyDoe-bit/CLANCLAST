@@ -1,23 +1,22 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { SLIDES, type Slide } from "./slides";
-import { DemoStill } from "./DemoReel";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { Logo } from "../app/components/shared/Brand";
+import { MAIN, NAV, SLIDES, TOTAL, type Slide } from "./slides";
+import { DeckCtx } from "./DemoPlayer";
 
 /**
- * The deck: 16:9 slides drawn at 1600×900 and scaled to any screen.
- *   → / Space / PageDown / click   next          ← / PageUp   previous
- *   F   full screen        P   presenter view (notes, next slide, timer) in a second window
- *   B   backup slides for questions        Home / End   first / last
- * Presenter and audience windows stay in step through BroadcastChannel.
- * ?print renders every slide one per page, for the PDF.
+ * The pitch deck is the website: the site's own header, sections and styles, one section per
+ * slide, moving like the page scrolls. Drawn at 1920×1080 and scaled to any screen.
+ *   → / Space / PageDown   next (inside the demo: next chapter)      ← / PageUp   back
+ *   F full screen · P presenter view · B questions · Home / End · nav links jump to a section
+ * The presenter and audience windows stay in step through BroadcastChannel.
+ * ?print renders one slide per page, for the PDF and PowerPoint export.
  */
-const W = 1600, H = 900;
-const MAIN = SLIDES.filter((s) => !s.backup);
-const TOTAL = MAIN.reduce((n, s) => n + s.seconds, 0);
-const fromHash = () => { const n = parseInt(window.location.hash.slice(1), 10); return Number.isFinite(n) && n >= 1 && n <= SLIDES.length ? n - 1 : 0; };
+const W = 1920, H = 1080;
+const indexOf = (id: string) => Math.max(0, SLIDES.findIndex((s) => s.id === id));
+const fromHash = () => { const h = window.location.hash.slice(1); const n = parseInt(h, 10); if (Number.isFinite(n) && n >= 1 && n <= SLIDES.length) return n - 1; const i = SLIDES.findIndex((s) => s.id === h); return i >= 0 ? i : 0; };
 const fmt = (s: number) => `${s < 0 ? "−" : ""}${Math.floor(Math.abs(s) / 60)}:${String(Math.floor(Math.abs(s) % 60)).padStart(2, "0")}`;
 
 type Msg = { type: "go"; i: number } | { type: "timer"; startedAt: number | null };
-
 function useChannel(onMsg: (m: Msg) => void) {
   const ref = useRef<BroadcastChannel | null>(null);
   useEffect(() => {
@@ -30,38 +29,75 @@ function useChannel(onMsg: (m: Msg) => void) {
   return useCallback((m: Msg) => ref.current?.postMessage(m), []);
 }
 
-/** A slide at its natural size, scaled to fit the box it's in. */
-function Stage({ slide, fit = "window", print = false }: { slide: Slide; fit?: "window" | "box"; print?: boolean }) {
-  const box = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+function useScale(fit: "window" | "box", box: React.RefObject<HTMLElement | null>) {
+  const [s, setS] = useState(0.5);
   useLayoutEffect(() => {
-    if (print) return;
-    const el = fit === "window" ? document.documentElement : box.current;
-    if (!el) return;
     const on = () => {
-      const w = fit === "window" ? window.innerWidth : el.clientWidth, h = fit === "window" ? window.innerHeight : el.clientHeight;
-      setScale(Math.min(w / W, h / H));
+      const el = box.current;
+      const w = fit === "window" ? window.innerWidth : el?.clientWidth ?? 0, h = fit === "window" ? window.innerHeight : el?.clientHeight ?? 0;
+      if (w && h) setS(Math.min(w / W, h / H));
     };
     on();
     const ro = new ResizeObserver(on);
-    ro.observe(fit === "window" ? document.body : el);
+    if (box.current) ro.observe(box.current);
     window.addEventListener("resize", on);
     return () => { ro.disconnect(); window.removeEventListener("resize", on); };
-  }, [fit, print]);
-  const body = print && slide.id === "demo" ? <DemoStill /> : slide.body;
+  }, [fit, box]);
+  return s;
+}
+
+/** The site's header, with the deck's sections as its links. */
+function Header({ slide, go }: { slide: Slide; go?: (i: number) => void }) {
+  const click = (id: string) => (e: MouseEvent) => { e.preventDefault(); go?.(indexOf(id)); };
   return (
-    <div ref={box} className={`stage-box ${fit}`}>
-      <section className={`slide ${slide.tone} slide-${slide.id}`} style={print ? undefined : { width: W, height: H, transform: `translate(-50%, -50%) scale(${scale})` }} aria-roledescription="slide" aria-label={slide.title}>
-        {body}
-      </section>
+    <header className={slide.tone === "dark" ? "on-dark" : ""}>
+      <div className="wrap nav">
+        <a className="brand" href="#home" onClick={click("home")} aria-label="CLANCLAST, first slide">
+          <Logo height={34} surface={slide.tone === "dark" ? "dark" : "light"} priority />
+        </a>
+        <nav className="navlinks">
+          {NAV.map(([id, label]) => (
+            <a key={id} href={`#${id}`} onClick={click(id)} className={(slide.nav ?? slide.id) === id ? "here" : ""}>{label}</a>
+          ))}
+        </nav>
+        <div className="nav-actions">
+          <a className="btn small outline" href="#demo" onClick={click("demo")}>Try it live</a>
+          <a className="btn small" href="#ask" onClick={click("ask")}>The ask <span className="arrow">↗</span></a>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Page({ slide, active, print = false }: { slide: Slide; active: boolean; print?: boolean }) {
+  return (
+    <DeckCtx.Provider value={{ active, print }}>
+      <div className={`page tone-${slide.tone} p-${slide.id} ${active ? "on" : ""}`} aria-hidden={!active} aria-roledescription="slide" aria-label={slide.title}>
+        {slide.body}
+      </div>
+    </DeckCtx.Provider>
+  );
+}
+
+/** One slide with its header, scaled into a box (presenter view, print). */
+function Frame({ i, fit = "box", print = false }: { i: number; fit?: "box" | "window"; print?: boolean }) {
+  const box = useRef<HTMLDivElement>(null);
+  const s = useScale(fit, box);
+  const slide = SLIDES[i];
+  return (
+    <div ref={box} className="frame-box">
+      <div className="cc-site deck" style={print ? undefined : { transform: `translate(-50%,-50%) scale(${s})` }}>
+        <Header slide={slide} />
+        <Page slide={slide} active print={print} />
+      </div>
     </div>
   );
 }
 
 export function Deck() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has("print")) return <Print />;
-  if (params.has("presenter")) return <Presenter />;
+  const q = new URLSearchParams(window.location.search);
+  if (q.has("print")) return <Print />;
+  if (q.has("presenter")) return <Presenter />;
   return <Audience />;
 }
 
@@ -69,39 +105,60 @@ function Audience() {
   const [i, setI] = useState(fromHash);
   const [hint, setHint] = useState(true);
   const send = useChannel(useCallback((m: Msg) => { if (m.type === "go") setI(m.i); }, []));
+  const s = useScale("window", useRef(null));
   const go = useCallback((n: number) => {
     setI((cur) => {
       const next = Math.max(0, Math.min(SLIDES.length - 1, n));
-      if (next !== cur) { send({ type: "go", i: next }); history.replaceState(null, "", `#${next + 1}`); }
+      if (next !== cur) { send({ type: "go", i: next }); history.replaceState(null, "", `#${SLIDES[next].id}`); }
       return next;
     });
   }, [send]);
+  const fwd = useCallback(() => { if (SLIDES[i].id === "demo" && window.__pitchDemo?.next()) return; go(i + 1); }, [i, go]);
+  const back = useCallback(() => { if (SLIDES[i].id === "demo" && window.__pitchDemo?.prev()) return; go(i - 1); }, [i, go]);
 
-  useEffect(() => { const t = setTimeout(() => setHint(false), 4500); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setHint(false), 5000); return () => clearTimeout(t); }, []);
+  useEffect(() => { const on = () => go(fromHash()); window.addEventListener("hashchange", on); return () => window.removeEventListener("hashchange", on); }, [go]);
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement; if (t.closest("input, textarea, select")) return;
       const k = e.key;
-      if (["ArrowRight", "PageDown", " ", "Enter"].includes(k)) { e.preventDefault(); go(i + 1); }
-      else if (["ArrowLeft", "PageUp", "Backspace"].includes(k)) { e.preventDefault(); go(i - 1); }
+      if (["ArrowRight", "PageDown", "Enter", "ArrowDown"].includes(k)) { e.preventDefault(); fwd(); }
+      else if (k === " ") { e.preventDefault(); if (SLIDES[i].id === "demo" && window.__pitchDemo) window.__pitchDemo.toggle(); else fwd(); }
+      else if (["ArrowLeft", "PageUp", "Backspace", "ArrowUp"].includes(k)) { e.preventDefault(); back(); }
       else if (k === "Home") go(0);
       else if (k === "End") go(MAIN.length - 1);
       else if (k === "b" || k === "B") go(i >= MAIN.length ? MAIN.length - 1 : MAIN.length);
       else if (k === "f" || k === "F") { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.().catch(() => {}); }
-      else if (k === "p" || k === "P") window.open(`${window.location.pathname}?presenter#${i + 1}`, "clanclast-presenter", "width=1280,height=800");
+      else if (k === "p" || k === "P") window.open(`${window.location.pathname}?presenter#${SLIDES[i].id}`, "clanclast-presenter", "width=1360,height=860");
       else if (k === "?") setHint((h) => !h);
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [i, go]);
+  }, [i, go, fwd, back]);
+
+  // Buttons inside slides (e.g. the hero's calls to action) jump to a section.
+  const onClick = (e: MouseEvent) => {
+    const a = (e.target as HTMLElement).closest("[data-go]") as HTMLElement | null;
+    if (a) { e.preventDefault(); go(indexOf(a.dataset.go!)); }
+  };
 
   const slide = SLIDES[i];
   return (
-    <div className="deck" onClick={(e) => { if ((e.target as HTMLElement).closest("button, a")) return; go(e.clientX < window.innerWidth / 3 ? i - 1 : i + 1); }}>
-      <Stage slide={slide} />
-      <div className="progress" aria-hidden="true"><i style={{ width: `${(Math.min(i + 1, MAIN.length) / MAIN.length) * 100}%` }} /></div>
-      <div className="count" aria-live="polite">{slide.backup ? "Backup" : `${i + 1} / ${MAIN.length}`}</div>
-      <div className={`hint ${hint ? "on" : ""}`}>→ next · ← back · F full screen · P presenter view · B questions</div>
+    <div className="deck-root" onClick={onClick}>
+      <div className="cc-site deck" style={{ transform: `translate(-50%,-50%) scale(${s})` }}>
+        <Header slide={slide} go={go} />
+        <div className="pages" style={{ transform: `translateY(${-i * H}px)` }}>
+          {SLIDES.map((x, k) => <Page key={x.id} slide={x} active={k === i} />)}
+        </div>
+        <div className={`deck-ctl ${slide.tone === "dark" ? "on-dark" : ""}`}>
+          <span className="count">{slide.backup ? "Questions" : `${String(i + 1).padStart(2, "0")} / ${String(MAIN.length).padStart(2, "0")}`}</span>
+          <button onClick={back} aria-label="Previous">←</button>
+          <button onClick={fwd} aria-label="Next">→</button>
+        </div>
+        <div className="deck-progress" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(i + 1, MAIN.length) / MAIN.length})` }} /></div>
+        <div className={`deck-hint ${hint ? "on" : ""}`}>→ next · ← back · F full screen · P presenter view · B questions</div>
+      </div>
     </div>
   );
 }
@@ -142,14 +199,14 @@ function Presenter() {
         <div className={`clock ${TOTAL - elapsed < 30 ? "late" : ""}`}><span>Remaining</span><strong>{fmt(TOTAL - elapsed)}</strong></div>
         <div className="clock"><span>This slide</span><strong className={slide.seconds && onSlide > slide.seconds ? "late" : ""}>{fmt(onSlide)}</strong><em>target {fmt(slide.seconds)}</em></div>
         <div className="clock"><span>Pace</span><strong className={behind > 10 ? "late" : ""}>{startedAt ? (behind > 10 ? `${Math.round(behind)} s behind` : "on time") : "press T or → to start"}</strong></div>
-        <div className="nav"><button onClick={() => go(i - 1)}>←</button><span>{slide.backup ? "Backup" : `${i + 1} / ${MAIN.length}`}</span><button onClick={() => go(i + 1)}>→</button></div>
+        <div className="nav"><button onClick={() => go(i - 1)}>←</button><span>{slide.backup ? "Questions" : `${i + 1} / ${MAIN.length}`}</span><button onClick={() => go(i + 1)}>→</button></div>
       </header>
       <main>
-        <div className="now"><Stage slide={slide} fit="box" /></div>
+        <div className="now"><Frame key={`n${i}`} i={i} /></div>
         <aside>
           <p className="next-label">Next: {next ? next.title : "End"}</p>
-          <div className="next">{next && <Stage slide={next} fit="box" />}</div>
-          <div className="notes"><h3>{slide.title}</h3><p>{slide.notes}</p></div>
+          <div className="next">{next && <Frame key={`x${i}`} i={i + 1} />}</div>
+          <div className="notes"><h3>{slide.title}</h3><p>{slide.notes}</p>{slide.id === "demo" && <p className="tip">In the audience window, → moves to the next demo chapter; Space pauses.</p>}</div>
         </aside>
       </main>
     </div>
@@ -158,6 +215,7 @@ function Presenter() {
 
 function Print() {
   useEffect(() => { document.documentElement.classList.add("printing"); }, []);
-  const slides = useMemo(() => SLIDES, []);
-  return <div className="print">{slides.map((s) => <Stage key={s.id} slide={s} print />)}</div>;
+  const only = new URLSearchParams(window.location.search).get("print");
+  const list = only ? SLIDES.map((_, k) => k).filter((k) => String(k + 1) === only || SLIDES[k].id === only) : SLIDES.map((_, k) => k);
+  return <div className="print">{list.map((k) => <Frame key={k} i={k} print />)}</div>;
 }
