@@ -46,19 +46,18 @@ function useScale(fit: "window" | "box", box: React.RefObject<HTMLElement | null
   return s;
 }
 
-/** The site's header, turned down into the pitch's progress bar: one item per slide, in order. */
+/** The site's header, with the deck's sections as its links. */
 function Header({ slide, go }: { slide: Slide; go?: (i: number) => void }) {
   const click = (id: string) => (e: MouseEvent) => { e.preventDefault(); go?.(indexOf(id)); };
-  const here = NAV.findIndex(([id]) => id === (slide.nav ?? slide.id));
   return (
-    <header className={`${slide.tone === "dark" ? "on-dark" : ""} ${slide.bare ? "bare" : ""}`}>
+    <header className={slide.tone === "dark" ? "on-dark" : ""}>
       <div className="wrap nav">
-        <a className="brand" href="#q" onClick={click("q")} aria-label="CLANCLAST, first slide">
-          <Logo height={28} surface={slide.tone === "dark" ? "dark" : "light"} priority />
+        <a className="brand" href="#home" onClick={click("home")} aria-label="CLANCLAST, first slide">
+          <Logo height={34} surface={slide.tone === "dark" ? "dark" : "light"} priority />
         </a>
-        <nav className="navlinks" aria-label="Pitch progress">
-          {NAV.map(([id, label], k) => (
-            <a key={id} href={`#${id}`} onClick={click(id)} className={k === here ? "here" : here >= 0 && k < here ? "past" : ""}>{label}</a>
+        <nav className="navlinks">
+          {NAV.map(([id, label]) => (
+            <a key={id} href={`#${id}`} onClick={click(id)} className={(slide.nav ?? slide.id) === id ? "here" : ""}>{label}</a>
           ))}
         </nav>
       </div>
@@ -148,7 +147,7 @@ function Audience() {
         <div className="pages" style={{ transform: `translateY(${-i * H}px)` }}>
           {SLIDES.map((x, k) => <Page key={x.id} slide={x} active={k === i} />)}
         </div>
-        <div className={`deck-ctl ${slide.tone === "dark" ? "on-dark" : ""} ${slide.bare ? "bare" : ""}`}>
+        <div className={`deck-ctl ${slide.tone === "dark" ? "on-dark" : ""}`}>
           <span className="count">{slide.backup ? "Questions" : `${String(i + 1).padStart(2, "0")} / ${String(MAIN.length).padStart(2, "0")}`}</span>
           <button onClick={back} aria-label="Previous">←</button>
           <button onClick={fwd} aria-label="Next">→</button>

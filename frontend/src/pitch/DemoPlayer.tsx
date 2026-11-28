@@ -134,26 +134,3 @@ function LiveApps() {
     </div>
   );
 }
-
-/** The pitch's demo: one 33-second clip at normal speed. Click to pause. */
-export function DemoClip() {
-  const { active, print } = useContext(DeckCtx);
-  const vid = useRef<HTMLVideoElement>(null);
-  const [paused, setPaused] = useState(false);
-  useEffect(() => {
-    const v = vid.current; if (!v) return;
-    if (active) { v.currentTime = 0; v.play().catch(() => {}); setPaused(false); } else v.pause();
-  }, [active]);
-  useEffect(() => {
-    if (!active) return;
-    window.__pitchDemo = { next: () => false, prev: () => false, toggle: () => { const v = vid.current; if (!v) return; if (v.paused) { v.play().catch(() => {}); setPaused(false); } else { v.pause(); setPaused(true); } } };
-    return () => { delete window.__pitchDemo; };
-  }, [active]);
-  if (print) return <img className="clip" src="/pitch/video/demo.jpg" alt="Thandi's three records reconciled, her consent and an offline verification, in the working product" />;
-  return (
-    <div className="clip-box">
-      <video ref={vid} className="clip" src="/pitch/video/demo.mp4" poster="/pitch/video/demo.jpg" muted playsInline preload="auto" onClick={() => window.__pitchDemo?.toggle()} />
-      {paused && <button className="paused" onClick={() => window.__pitchDemo?.toggle()} aria-label="Play">▶</button>}
-    </div>
-  );
-}
