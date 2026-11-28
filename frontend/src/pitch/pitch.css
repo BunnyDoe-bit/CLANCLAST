@@ -386,3 +386,39 @@ html.printing, html.printing body { overflow: visible; background: #041c19; heig
 .cc-site.deck .built b { font-size: 18px; } .cc-site.deck .built span { font-size: 15px; } .cc-site.deck .target { font-size: 18px !important; }
 .cc-site.deck .ask-stage li { font-size: 19px; } .cc-site.deck .gate { font-size: 17px; } .cc-site.deck .ask-small { font-size: 15px !important; } .cc-site.deck .ask-cta span { font-size: 20px; }
 .cc-site.deck .qa b { font-size: 22px; } .cc-site.deck .qa span { font-size: 20px; }
+
+/* ---------- easier to read: shorter copy, larger type ---------- */
+.cc-site.deck .hero-copy h1.hero-q { font-size: 66px; line-height: 1.06; max-width: 860px; margin: 24px 0 28px; }
+.cc-site.deck .hero-copy > div > p { font-size: 26px; }
+.cc-site.deck .trust-mini { font-size: 19px; }
+.cc-site.deck p { font-size: 24px; }
+.cc-site.deck h2 { font-size: 74px; }
+.cc-site.deck .problem-copy h2 { font-size: 80px; }
+.cc-site.deck .file b { font-size: 30px; } .cc-site.deck .file small { font-size: 19px; } .cc-site.deck .file em { font-size: 18px; }
+.cc-site.deck .why-note { font-size: 22px; }
+.cc-site.deck .stat strong { font-size: 48px; }
+.cc-site.deck .stat p { font-size: 22px; line-height: 1.35; } .cc-site.deck .source { font-size: 15px; }
+.cc-site.deck .gap b { font-size: 22px; } .cc-site.deck .gap span { font-size: 19px; }
+.cc-site.deck .switch .ns { font-size: 17px; } .cc-site.deck .switch .hq { font-size: 22px; } .cc-site.deck .switch .hs { font-size: 17px; }
+.cc-site.deck .chapters b { font-size: 22px; } .cc-site.deck .chapters small { font-size: 17px; }
+.cc-site.deck .new-grid .fallback { min-height: 200px; }
+.cc-site.deck .new-grid h3 { font-size: 26px; } .cc-site.deck .new-grid p { font-size: 20px; }
+.cc-site.deck .never { font-size: 20px; padding: 16px 18px; }
+.cc-site.deck .chips span { font-size: 17px; } .cc-site.deck .moat b { font-size: 20px; }
+.cc-site.deck .proof-n span { font-size: 22px; } .cc-site.deck .proof p { font-size: 16px; }
+.cc-site.deck .now strong { font-size: 32px; } .cc-site.deck .now span { font-size: 19px; }
+.cc-site.deck .who-row { grid-template-columns: 220px 150px 1fr; padding: 18px 0; }
+.cc-site.deck .who-row b { font-size: 21px; } .cc-site.deck .who-row strong { font-size: 30px; } .cc-site.deck .who-row span { font-size: 19px; }
+.cc-site.deck .who-note { font-size: 16px !important; }
+.cc-site.deck .model-head p { font-size: 24px; }
+.cc-site.deck .rev h3 { font-size: 31px; } .cc-site.deck .rev p { font-size: 22px; } .cc-site.deck .rev small { font-size: 16px; }
+.cc-site.deck .mf span { font-size: 21px; } .cc-site.deck .mf b { font-size: 15px; }
+.cc-site.deck .sdg h3 { font-size: 26px; } .cc-site.deck .sdg p { font-size: 20px; }
+.cc-site.deck .benefit b { font-size: 19px; } .cc-site.deck .benefit span { font-size: 18px; }
+.cc-site.deck .person h3 { font-size: 28px; } .cc-site.deck .person p, .cc-site.deck .person b { font-size: 18px; }
+.cc-site.deck .built b { font-size: 19px; } .cc-site.deck .built span { font-size: 17px; } .cc-site.deck .target { font-size: 20px !important; }
+.cc-site.deck .with b { font-size: 22px; } .cc-site.deck .with p { font-size: 19px; } .cc-site.deck .gaps p { font-size: 19px; }
+.cc-site.deck .ask-head p { font-size: 26px; }
+.cc-site.deck .ask-stage li { font-size: 21px; } .cc-site.deck .gate { font-size: 18px; }
+.cc-site.deck .ask-small { font-size: 16px !important; } .cc-site.deck .ask-cta span { font-size: 21px; }
+.cc-site.deck .file small { font-family: var(--font-body); font-weight: 600; }

@@ -10,9 +10,9 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 export const DeckCtx = createContext<{ active: boolean; print: boolean }>({ active: false, print: false });
 
 export const CHAPTERS = [
-  { n: "01", title: "Three files → one Thandi", sub: "Riverside’s register · the real matching engine · a person confirms", src: "/pitch/video/c1-reconcile.mp4", poster: "/pitch/video/c1-reconcile.jpg" },
-  { n: "02", title: "She decides", sub: "The request lands on her phone · allowed for 7 days · logged both sides", src: "/pitch/video/c2-consent.mp4", poster: "/pitch/video/c2-consent.jpg" },
-  { n: "03", title: "Trust, even offline", sub: "A signed summary she carries · verified with the network down", src: "/pitch/video/c3-trust.mp4", poster: "/pitch/video/c3-trust.jpg" },
+  { n: "01", title: "Three files → one Thandi", sub: "Riverside’s register · the real matching engine · a person confirms", src: "/pitch/video/c1-short.mp4", poster: "/pitch/video/c1-short.jpg" },
+  { n: "02", title: "She decides", sub: "The request lands on her phone · allowed for 7 days · logged both sides", src: "/pitch/video/c2-short.mp4", poster: "/pitch/video/c2-short.jpg" },
+  { n: "03", title: "Trust, even offline", sub: "A signed summary she carries · verified with the network down", src: "/pitch/video/c3-short.mp4", poster: "/pitch/video/c3-short.jpg" },
   { n: "04", title: "Try it yourself", sub: "Both apps, live in this browser, on fictional data", src: "", poster: "" },
 ] as const;
 
@@ -24,7 +24,7 @@ const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("clanc
 export function DemoPlayer() {
   const { active, print } = useContext(DeckCtx);
   const [ch, setCh] = useState(0);
-  const [rate, setRate] = useState(2);
+  const [rate, setRate] = useState(1);
   const [playing, setPlaying] = useState(true);
   const [prog, setProg] = useState(0);
   const vid = useRef<HTMLVideoElement>(null);
